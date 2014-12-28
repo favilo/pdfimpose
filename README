@@ -1,0 +1,16 @@
+TODO
+
+Install
+=======
+
+You can run the program without installing it using `bin/pdfimpose`. To
+install it, run:
+
+  python3 setup.py install
+
+Documentation
+=============
+
+You can build the documentation using:
+
+  cd doc && make html

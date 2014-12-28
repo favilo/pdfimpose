@@ -12,3 +12,9 @@ Options
   6s : nombre de cahiers
   défaut : si --fold : on prend le nombre de pliages
             sinon, 16l
+
+
+- Documentation
+- Find TODOs
+- Write requirements.txt
+- unittest
