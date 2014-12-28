@@ -1,0 +1,14 @@
+pdfimpose FILE.pdf
+
+Options
+
+- bind : top, left, right, right
+- fold : default : vertical / horizontal
+- last : dernières pages
+- section : nombre de sections
+- format : 
+  4l : nombre de feuilles par cahier (défaut : 16)
+  5f : nombre de pliages
+  6s : nombre de cahiers
+  défaut : si --fold : on prend le nombre de pliages
+            sinon, 16l
