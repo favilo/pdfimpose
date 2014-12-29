@@ -45,7 +45,7 @@ def commandline_parser():
         'file',
         metavar="FILE",
         help='PDF file to process',
-        nargs='1',
+        nargs=1,
         type=str,
         )
 
@@ -80,5 +80,8 @@ def destination_name(output, source):
     return output
 
 def process_options(argv):
+    """Make some more checks on options."""
+    processed = {}
     options = commandline_parser().parse_args(argv)
-    return TODO
+
+    return processed

@@ -18,5 +18,5 @@
 
 VERSION = "0.1.0"
 __AUTHOR__ = "Louis Paternault (spalax@gresille.org)"
-__COPYRIGHT__ = "(C) 2011-2014 Louis Paternault. GNU GPL 3."
+__COPYRIGHT__ = "(C) 2014 Louis Paternault. GNU GPL 3 or later."
 
