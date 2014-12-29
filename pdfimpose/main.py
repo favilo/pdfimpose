@@ -25,32 +25,23 @@ from pdfimpose import errors, options, imposition
 
 LOGGER = logging.getLogger(__name__)
 
-def impose(arguments):
+def impose(matrix, pdf):
     #TODO
-    pass
+    print(matrix)
+
+def imposition_matrix(arguments):
+    matrix = imposition.ImpositionMatrix(arguments['size'])
+    for i in arguments['fold']:
+        matrix.fold(i)
+    return matrix
 
 def main():
     """Main function"""
     arguments = options.process_options(sys.argv[1:])
-    print(arguments)
-    sys.exit(1)
-
-    ### TEST TODO
-    matrix = imposition.ImpositionMatrix(8, 4)
-    for i in [
-            imposition.HORIZONTAL,
-            imposition.VERTICAL,
-            imposition.HORIZONTAL,
-            imposition.VERTICAL,
-            imposition.HORIZONTAL,
-            ]:
-        matrix.fold(i)
-    print(matrix)
-
-    ### TEST TODO
 
     try:
-        impose(arguments)
+        matrix = imposition_matrix(arguments)
+        output = impose(matrix, arguments['file'])
     except KeyboardInterrupt:
         print()
         sys.exit(1)

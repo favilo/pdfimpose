@@ -189,8 +189,8 @@ def process_options(argv):
         processed.update(dict([(name, getattr(options, name))]))
 
     # TODO options.size options.fold
-    processed["size"] = Coordinates(3,2)
-    processed["fold"] = [imposition.VH("V"), imposition.VH("H"), imposition.VH("V"), imposition.VH("H"), imposition.VH("H")]
+    processed["size"] = Coordinates(2,2)
+    processed["fold"] = [imposition.VH("V"), imposition.VH("V"), imposition.VH("H"), imposition.VH("H")]
     #if options.size is not None:
     #    match = re.compile(SIZE_RE).match(options.size).groupdict()
     #    if match['unit'] == 's':

@@ -144,17 +144,18 @@ class ImpositionMatrix:
     """Matrix of an imposition: array of numbered, oriented pages."""
     folds = []
 
-    def __init__(self, xsize, ysize):
+    def __init__(self, size):
         self.matrix = [
             [
                 None
                 for y
-                in range(ysize)
+                in range(2**size.y)
                 ]
             for x
-            in range(xsize)
+            in range(2**(size.x+1))
             ]
-        self.matrix[self.size.x-1][0] = ImpositionPage(0, NORTH) # TODO
+        self.matrix[self.size.x-1][0] = ImpositionPage(0, NORTH) TODO
+        self.fold(HORIZONTAL)
 
     @property
     def vfolds(self):
@@ -194,7 +195,7 @@ class ImpositionMatrix:
             item = item[0]
             if isinstance(item, Coordinates):
                 return self.matrix[item.x][item.y]
-        if len(item) == 2:
+        elif len(item) == 2:
             if isinstance(item[0], int) and isinstance(item[1], int):
                 return self.matrix[item[0]][item[1]]
         raise TypeError()
@@ -205,7 +206,7 @@ class ImpositionMatrix:
             if isinstance(item, Coordinates):
                 self.matrix[item.x][item.y] = value
                 return
-        if len(item) == 2:
+        elif len(item) == 2:
             if isinstance(item[0], int) and isinstance(item[1], int):
                 self.matrix[item[0]][item[1]] = value
                 return
