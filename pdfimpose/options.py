@@ -26,7 +26,7 @@ import textwrap
 from pdfimpose import VERSION
 from pdfimpose import imposition
 from pdfimpose.imposition import Coordinates
-from pdfimpose.imposition import VERTICAL, HORIZONTAL
+from pdfimpose.imposition import direction, HORIZONTAL, VERTICAL
 
 def positive_int(text):
     try:
@@ -56,7 +56,7 @@ def size_type(text):
 def fold_type(text):
     if re.compile(r"^[vh]*$").match(text):
         return [
-                imposition.VH(char)
+                direction(char)
                 for char
                 in text
                 ]
@@ -193,24 +193,24 @@ def process_options(argv):
         processed["fold"] = []
         while width != 1 or height != 1:
             if width > height:
-                processed["fold"].append(imposition.VH("H"))
+                processed["fold"].append(HORIZONTAL)
                 width //= 2
             else:
-                processed["fold"].append(imposition.VH("V"))
+                processed["fold"].append(VERTICAL)
                 height //= 2
     elif options.fold:
         processed["fold"] = options.fold
         if options.bind is None:
-            if processed["fold"][-1] == imposition.VH("V"):
+            if processed["fold"][-1] == VERTICAL:
                 processed["bind"] = "top"
             else:
                 processed["bind"] = "right"
         else:
             processed["bind"] = options.bind
             if (
-                processed["fold"][-1] == imposition.VH("V") and options.bind not in ["top", "bottom"]
+                processed["fold"][-1] == VERTICAL and options.bind not in ["top", "bottom"]
                 ) or (
-                processed["fold"][-1] == imposition.VH("H") and options.bind not in ["left", "right"]
+                processed["fold"][-1] == HORIZONTAL and options.bind not in ["left", "right"]
             ):
                 raise errors.IncompatibleBindFold(options.bind, options.fold)
     else:
@@ -218,8 +218,8 @@ def process_options(argv):
             options.bind = "left"
         processed["bind"] = options.bind
         if processed["bind"] in ["top", "bottom"]:
-            processed["fold"] = [imposition.VH("H"), imposition.VH("V"), imposition.VH("H"), imposition.VH("V")]
+            processed["fold"] = [HORIZONTAL, VERTICAL, HORIZONTAL, VERTICAL]
         else:
-            processed["fold"] = [imposition.VH("V"), imposition.VH("H"), imposition.VH("V"), imposition.VH("H")]
+            processed["fold"] = [VERTICAL, HORIZONTAL, VERTICAL, HORIZONTAL]
 
     return processed

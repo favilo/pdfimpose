@@ -18,64 +18,29 @@
 
 import math
 import PyPDF2
+from enum import Enum
 
-_HORIZONTAL = True
-_VERTICAL = False
+class Direction(Enum):
+    vertical = False
+    horizontal = True
 
-class VH:
-    # TODO Make it an enum type
+VERTICAL = Direction.vertical
+HORIZONTAL = Direction.horizontal
 
-    def __init__(self, value):
+def direction(letter):
+    if letter.lower() == 'h':
+        return HORIZONTAL
+    if letter.lower() == 'v':
+        return VERTICAL
+    raise ValueError() # TODO
 
-        self.value = None
-        if isinstance(value, str):
-            if value.lower() == 'h':
-                self.value = _HORIZONTAL
-            if value.lower() == 'v':
-                self.value = _VERTICAL
-        if self.value is None:
-            raise ValueError()
-
-    def __eq__(self, other):
-        return self.value == other.value
-
-    def __str__(self):
-        if self.value == _HORIZONTAL:
-            return "H"
-        else:
-            return "V"
-
-    def __repr__(self):
-        return "{}({})".format(
-                self.__class__.__name__,
-                str(self),
-                )
-
-HORIZONTAL = VH('h')
-VERTICAL = VH('v')
-
-class Orientation:
+class Orientation(Enum):
     """Two dimensions orientation"""
-    # TODO Make it an enum type
-    angle = 0
-    STR = {
-        0: "E",
-        90: "N",
-        180: "W",
-        270: "S",
-        }
-    MATRIX = {
-            90: [1, 0, 0, 1],
-            270: [-1, 0, 0, -1],
-            }
-
-    def __init__(self, angle):
-        self.angle = angle % 360
-        if self.angle not in [0, 90, 180, 270]:
-            raise ValueError()
+    north = 90
+    south = 270
 
     def __str__(self):
-        return self.STR[self.angle]
+        return self.name[0].upper()
 
     def symmetry(self, fold):
         """Return the symmetrical orientation.
@@ -83,20 +48,20 @@ class Orientation:
         :param bool fold: Orientation of fold.
         """
         if fold == VERTICAL:
-            return Orientation(-self.angle)
+            return orientation(-self.value)
         else:
-            return Orientation(180 - self.angle)
+            return orientation(180 - self.value)
 
-    def matrix(self):
-        return self.MATRIX[self.angle]
+NORTH = Orientation.north
+SOUTH = Orientation.south
+ORIENTATION_MATRIX = {
+        NORTH.value: [1, 0, 0, 1],
+        SOUTH.value: [-1, 0, 0, -1],
+        }
 
-    def __eq__(self, other):
-        return self.angle == other.angle
+def orientation(angle):
+    return Orientation(angle % 360)
 
-EAST = Orientation(0)
-NORTH = Orientation(90)
-WEST = Orientation(180)
-SOUTH = Orientation(270)
 
 class Coordinates:
     """Two-dimensions coordinates."""
@@ -287,8 +252,8 @@ class ImpositionMatrix:
 def imposition_matrix(folds, bind):
     matrix = ImpositionMatrix(
             Coordinates(
-                2**folds.count(VH('H')),
-                2**folds.count(VH('V')),
+                2**folds.count(HORIZONTAL),
+                2**folds.count(VERTICAL),
                 ),
             bind,
             )
@@ -331,12 +296,12 @@ def impose(matrix, pdf, last, callback=None):
                     if rectoverso[outpagenumber%2][x][y].orientation == NORTH:
                         currentoutputpage.mergeTransformedPage(
                             pdf.getPage(inputpages[pagenumber]),
-                            NORTH.matrix() + [x*width, y*height],
+                            ORIENTATION_MATRIX[NORTH.value] + [x*width, y*height],
                             )
                     else:
                         currentoutputpage.mergeTransformedPage(
                             pdf.getPage(inputpages[pagenumber]),
-                            SOUTH.matrix() + [(x+1)*width, (y+1)*height],
+                            ORIENTATION_MATRIX[SOUTH.value] + [(x+1)*width, (y+1)*height],
                             )
                         page = rectoverso[outpagenumber%2][x][y]
                     pagecount += 1

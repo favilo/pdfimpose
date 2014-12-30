@@ -37,7 +37,6 @@ def main():
                 arguments['fold'],
                 arguments['bind'],
                 )
-        print(matrix)
         output = imposition.impose(matrix, arguments['file'], arguments['last'], callback)
         output.write(arguments['output'])
     except KeyboardInterrupt:
