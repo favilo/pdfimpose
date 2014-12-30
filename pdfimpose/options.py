@@ -189,16 +189,15 @@ def process_options(argv):
 
     if options.size:
         processed["bind"] = options.bind
-        processed["size"] = Coordinates(options.size[0], options.size[1])
         if (
                 options.bind in ["left", "right"] and options.size[0] == 1
                 ) or (
                 options.bind in ["top", "bottom"] and options.size[1] == 1
             ):
             raise errors.IncompatibleBindSize(options.bind, options.size)
-        width, height = options.bind
+        width, height = [int(num) for num in options.size]
         processed["fold"] = []
-        while width != 1 and height != 1:
+        while width != 1 or height != 1:
             if width > height:
                 processed["fold"].append(imposition.VH("H"))
                 width //= 2
@@ -206,10 +205,6 @@ def process_options(argv):
                 processed["fold"].append(imposition.VH("V"))
                 height //= 2
     elif options.fold:
-        processed["size"] = Coordinates(
-                2**options.fold.count(imposition.VH("H")),
-                2**options.fold.count(imposition.VH("F")),
-                )
         processed["fold"] = options.fold
         if options.bind is None:
             if processed["fold"][-1] == imposition.VH("V"):
@@ -225,7 +220,6 @@ def process_options(argv):
             ):
                 raise errors.IncompatibleBindFold(options.bind, options.fold)
     else:
-        processed["size"] = Coordinates(4, 4)
         if options.bind is None:
             options.bind = "left"
         processed["bind"] = options.bind

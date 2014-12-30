@@ -29,8 +29,15 @@ def impose(matrix, pdf):
     #TODO
     print(matrix)
 
-def imposition_matrix(size, folds, bind):
-    matrix = imposition.ImpositionMatrix(size, bind)
+def imposition_matrix(folds, bind):
+    print(folds)
+    matrix = imposition.ImpositionMatrix(
+            imposition.Coordinates(
+                2**folds.count(imposition.VH('H')),
+                2**folds.count(imposition.VH('V')),
+                ),
+            bind,
+            )
     for i in folds:
         matrix.fold(i)
     return matrix
@@ -41,7 +48,6 @@ def main():
 
     try:
         matrix = imposition_matrix(
-                arguments['size'],
                 arguments['fold'],
                 arguments['bind'],
                 )
