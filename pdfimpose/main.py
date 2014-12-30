@@ -33,12 +33,15 @@ def main():
     arguments = options.process_options(sys.argv[1:])
 
     try:
-        matrix = imposition.imposition_matrix(
+        imposition.impose(
+            imposition.imposition_matrix(
                 arguments['fold'],
                 arguments['bind'],
-                )
-        output = imposition.impose(matrix, arguments['file'], arguments['last'], callback)
-        output.write(arguments['output'])
+                ),
+            arguments['file'],
+            arguments['last'],
+            callback,
+            ).write(arguments['output'])
     except KeyboardInterrupt:
         print()
         sys.exit(1)
