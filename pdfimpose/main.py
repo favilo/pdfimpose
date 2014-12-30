@@ -30,7 +30,6 @@ def impose(matrix, pdf):
     print(matrix)
 
 def imposition_matrix(folds, bind):
-    print(folds)
     matrix = imposition.ImpositionMatrix(
             imposition.Coordinates(
                 2**folds.count(imposition.VH('H')),

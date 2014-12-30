@@ -154,8 +154,10 @@ class ImpositionMatrix:
             for x
             in range(2*size.x)
             ]
-        # TODO Take bind into account
-        self.matrix[self.size.x-1][0] = ImpositionPage(0, NORTH)
+        if bind in ["top", "right"]:
+            self.matrix[0][0] = ImpositionPage(0, NORTH)
+        else: # bind in ["bottom", "left"]:
+            self.matrix[-1][-1] = ImpositionPage(0, NORTH)
         self.fold(HORIZONTAL)
 
     @property

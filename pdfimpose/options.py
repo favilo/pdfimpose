@@ -122,7 +122,7 @@ def commandline_parser():
             '--fold'. If '--fold' is not set, default is 'right'.
             """), # TODO check vocabulary
         default=None,
-        choices=["top", "left", "right", "left"],
+        choices=["top", "left", "right", "bottom"],
         )
 
     parser.add_argument(
