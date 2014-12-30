@@ -16,6 +16,9 @@
 
 """Imposition utilities."""
 
+import math
+import PyPDF2
+
 _HORIZONTAL = True
 _VERTICAL = False
 
@@ -61,6 +64,10 @@ class Orientation:
         180: "W",
         270: "S",
         }
+    MATRIX = {
+            90: [1, 0, 0, 1],
+            270: [-1, 0, 0, -1],
+            }
 
     def __init__(self, angle):
         self.angle = angle % 360
@@ -80,6 +87,11 @@ class Orientation:
         else:
             return Orientation(180 - self.angle)
 
+    def matrix(self):
+        return self.MATRIX[self.angle]
+
+    def __eq__(self, other):
+        return self.angle == other.angle
 
 EAST = Orientation(0)
 NORTH = Orientation(90)
@@ -265,12 +277,68 @@ class ImpositionMatrix:
             ])
 
     @property
-    def verso(self):
-        # TODO
-        pass
+    def recto(self):
+        return self.matrix[:len(self.matrix)//2]
 
     @property
-    def recto(self):
-        # TODO
-        pass
+    def verso(self):
+        return self.matrix[len(self.matrix)//2:]
 
+def imposition_matrix(folds, bind):
+    matrix = ImpositionMatrix(
+            Coordinates(
+                2**folds.count(VH('H')),
+                2**folds.count(VH('V')),
+                ),
+            bind,
+            )
+    for i in folds:
+        matrix.fold(i)
+    return matrix
+
+def get_input_pages(pdfsize, sectionsize, section_number, last):
+    return (
+            [i for i in range(pdfsize - last)] +
+            [None for i in range(pdfsize, section_number * sectionsize)] +
+            [i for i in range(pdfsize - last, pdfsize)]
+            )
+
+def get_pdf_size(page):
+    return (
+        page.mediaBox.lowerRight[0] - page.mediaBox.lowerLeft[0],
+        page.mediaBox.upperRight[1] - page.mediaBox.lowerRight[1],
+        )
+
+def impose(matrix, pdf, last, callback=None):
+    if callback is None:
+        callback = lambda x,y:None
+    width, height = get_pdf_size(pdf.getPage(0))
+    output = PyPDF2.PdfFileWriter()
+    sectionsize = matrix.size.x * matrix.size.y
+    section_number = math.ceil(pdf.numPages / sectionsize)
+    inputpages = get_input_pages(pdf.numPages, sectionsize, section_number, last)
+    rectoverso = [matrix.verso, matrix.recto]
+    pagecount = 0
+    for outpagenumber in range(2 * section_number):
+        currentoutputpage = output.addBlankPage(
+                matrix.size.x * width // 2,
+                matrix.size.y * height,
+                )
+        for x in range(len(rectoverso[outpagenumber%2])):
+            for y in range(len(rectoverso[outpagenumber%2][x])):
+                pagenumber = (outpagenumber//2)*sectionsize + rectoverso[outpagenumber%2][x][y].number
+                if inputpages[pagenumber] is not None:
+                    if rectoverso[outpagenumber%2][x][y].orientation == NORTH:
+                        currentoutputpage.mergeTransformedPage(
+                            pdf.getPage(inputpages[pagenumber]),
+                            NORTH.matrix() + [x*width, y*height],
+                            )
+                    else:
+                        currentoutputpage.mergeTransformedPage(
+                            pdf.getPage(inputpages[pagenumber]),
+                            SOUTH.matrix() + [(x+1)*width, (y+1)*height],
+                            )
+                        page = rectoverso[outpagenumber%2][x][y]
+                    pagecount += 1
+                    callback(pagecount, pdf.numPages)
+    return output

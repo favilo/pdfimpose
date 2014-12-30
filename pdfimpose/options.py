@@ -20,6 +20,7 @@ import PyPDF2
 import argparse
 import math
 import re
+import sys
 import textwrap
 
 from pdfimpose import VERSION
@@ -63,6 +64,13 @@ def fold_type(text):
         Argument must be a sequence of letters 'v' and 'h'.
         """))
 
+def process_output(text, source):
+    if text == "-":
+        return sys.stdout # TODO: sys.stdout expects str, get bytes
+    if text is None:
+        text = "{}-impose.pdf".format(".".join(source.split('.')[:-1]))
+    return open(text, 'wb')
+
 def commandline_parser():
     """Return a command line parser."""
 
@@ -103,7 +111,7 @@ def commandline_parser():
         metavar="FILE",
         help='PDF file to process',
         nargs=1,
-        type=PyPDF2.PdfFileReader,
+        type=str,
         )
 
     parser.add_argument(
@@ -164,28 +172,14 @@ def commandline_parser():
 
     return parser
 
-def destination_name(output, source):
-    """Return the name of the destination file.
-
-    :param str output: Filename, given in command line options. May be
-        ``None`` if it was not provided.
-    :param str source: Name of the first source file.
-    """
-    if output is None:
-        return "{}-impose.pdf".format(".".join(source.split('.')[:-1]))
-    return output
-
 def process_options(argv):
     """Make some more checks on options."""
     processed = {}
     options = commandline_parser().parse_args(argv)
 
-    for name in [
-            'file',
-            'last',
-            'output',
-            ]:
-        processed.update(dict([(name, getattr(options, name))]))
+    processed['last'] = options.last
+    processed['output'] = process_output(options.output, options.file[0])
+    processed["file"] = PyPDF2.PdfFileReader(options.file[0])
 
     if options.size:
         processed["bind"] = options.bind
