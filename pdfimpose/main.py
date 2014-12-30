@@ -29,9 +29,9 @@ def impose(matrix, pdf):
     #TODO
     print(matrix)
 
-def imposition_matrix(arguments):
-    matrix = imposition.ImpositionMatrix(arguments['size'])
-    for i in arguments['fold']:
+def imposition_matrix(size, folds, bind):
+    matrix = imposition.ImpositionMatrix(size, bind)
+    for i in folds:
         matrix.fold(i)
     return matrix
 
@@ -40,7 +40,11 @@ def main():
     arguments = options.process_options(sys.argv[1:])
 
     try:
-        matrix = imposition_matrix(arguments)
+        matrix = imposition_matrix(
+                arguments['size'],
+                arguments['fold'],
+                arguments['bind'],
+                )
         output = impose(matrix, arguments['file'])
     except KeyboardInterrupt:
         print()

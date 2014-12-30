@@ -36,15 +36,20 @@ def positive_int(text):
     except ValueError:
         raise argparse.ArgumentTypeError("Argument must be a positive integer.")
 
-SIZE_RE = r"^(?P<number>\w+)(?P<unit>[lfs])$"
+SIZE_RE = r"^(?P<width>\w+)x(?P<height>\w+)$"
+
+def is_power_of_two(number):
+    return math.trunc(math.log2(int(number)))==math.log2(int(number))
 
 def size_type(text):
     if text is None:
         return None
     if re.compile(SIZE_RE).match(text):
-        return text
+        match = re.compile(SIZE_RE).match(text).groupdict()
+        if is_power_of_two(match['width']) and is_power_of_two(match['height']):
+            return [match['width'], match['height']]
     raise argparse.ArgumentTypeError(textwrap.dedent("""
-        Argument must be a number, followed by 'l', 'f' or 's'.
+        Argument must be "WIDTHxHEIGHT", where both WIDTH and HEIGHT are powers of two.
     """))
 
 def fold_type(text):
@@ -70,21 +75,6 @@ def commandline_parser():
             # Imposition
 
             TODO
-
-            # Section size
-
-            - If option '--size' is set, then, if the argument ends with:
-                - l: set the number of leaves per section (must be a power of
-                  2). For instance, use '--size=4l' for 4 leaves per section.
-                - f: set the number of folds. For instance, use '--size=4f' for
-                  4 folds, or 16 leaves per section.
-                - s: set the number of sections. For instance, use '--size=4s'
-                  on a 30 pages document to get 4 sections, or 8 pages per
-                  section, or 4 leaves per section (blank pages are added if
-                  necessary).
-            - If option '--size' is not set, but '--fold' is set, use this
-              information as the number of folds.
-            - Otherwise, default is '16l'.
 
             # How to
 
@@ -118,6 +108,7 @@ def commandline_parser():
 
     parser.add_argument(
         '--output', '-o',
+        metavar='FILE',
         help=(
             'Destination file. Default is "-impose" appended to first source file.'
             ),
@@ -126,24 +117,17 @@ def commandline_parser():
 
     parser.add_argument(
         '--bind', '-b',
-        help='Binding vertex.', # TODO check vocabulary
-        default="top",
+        help=textwrap.dedent("""
+            Binding vertex. Default is right or top, depending on argument
+            '--fold'. If '--fold' is not set, default is 'right'.
+            """), # TODO check vocabulary
+        default=None,
         choices=["top", "left", "right", "left"],
         )
 
     parser.add_argument(
-        '--fold', '-f',
-        help=textwrap.dedent("""
-            Sequence of fold orientations, as letters 'v' and 'h'. If it is too
-            short regarding to option "--bind", this sequence is repeated; if
-            it is too long, it is truncated.
-        """),
-        default="",
-        type=fold_type,
-        )
-
-    parser.add_argument(
         '--last', '-l',
+        metavar='N',
         help=textwrap.dedent("""
             Number of pages to keep as last pages. Useful, for instance, to
             keep the back cover as a back cover.
@@ -152,11 +136,27 @@ def commandline_parser():
         default=0,
         )
 
-    parser.add_argument(
-        '--size', '-s',
+    group = parser.add_mutually_exclusive_group()
+
+    group.add_argument(
+        '--fold', '-f',
         help=textwrap.dedent("""
-            Size of sections. Must be a number followed by 'l', 'f' or 's'. See
-            section "Section size" for more information.
+            Sequence of fold orientations, as letters 'v' and 'h'. Default is
+            alternating, as much as possible, horizontal and vertical folds, to
+            match the argument of '--size'.
+        """),
+        default=None,
+        metavar='SEQUENCE',
+        type=fold_type,
+        )
+
+    group.add_argument(
+        '--size', '-s',
+        metavar="WIDTHxHEIGHT",
+        help=textwrap.dedent("""
+            Size of sections. Both width and height must be powers of two (1,
+            2, 4, 8, 16...). If neither this nor '--fold' is set, '--size' is
+            '4x4'.
         """),
         type=size_type,
         default=None,
@@ -183,55 +183,55 @@ def process_options(argv):
     for name in [
             'file',
             'last',
-            'bind',
             'output',
             ]:
         processed.update(dict([(name, getattr(options, name))]))
 
-    # TODO options.size options.fold
-    processed["size"] = Coordinates(2,2)
-    processed["fold"] = [imposition.VH("V"), imposition.VH("V"), imposition.VH("H"), imposition.VH("H")]
-    #if options.size is not None:
-    #    match = re.compile(SIZE_RE).match(options.size).groupdict()
-    #    if match['unit'] == 's':
-    #        match['number'] = math.ceil(
-    #            options.file[0].numPages / (2**math.ceil(math.log2(int(match['number']))))
-    #            )
-    #        match['unit'] = 'l'
-    #        print(match)
-    #    if match['unit'] == 'l':
-    #        number = math.ceil(math.log2(int(match['number'])))
-    #        processed['size'] = Coordinates(
-    #            number // 2,
-    #            math.ceil(number/2),
-    #            )
-    #    else: # match['unit'] == 'f':
-    #        processed['size'] = Coordinates(
-    #                TODO
-    #                )
-    #elif options.fold:
-    #    processed['size'] = Coordinates(
-    #            2**options.fold.count(HORIZONTAL),
-    #            2**options.fold.count(VERTICAL),
-    #            )
-    #else:
-    #    processed['size'] = Coordinates(
-    #            2**2,
-    #            2**2,
-    #            )
-    #print(options.fold)
-
-    # TODO fold
-
-#- format : 
-#  4l : nombre de feuilles par cahier (défaut : 16)
-#  5f : nombre de pliages
-#  6s : nombre de cahiers
-#  défaut : si --fold : on prend le nombre de pliages
-#            sinon, 16l
-
-
-
-
+    if options.size:
+        processed["bind"] = options.bind
+        processed["size"] = Coordinates(options.size[0], options.size[1])
+        if (
+                options.bind in ["left", "right"] and options.size[0] == 1
+                ) or (
+                options.bind in ["top", "bottom"] and options.size[1] == 1
+            ):
+            raise errors.IncompatibleBindSize(options.bind, options.size)
+        width, height = options.bind
+        processed["fold"] = []
+        while width != 1 and height != 1:
+            if width > height:
+                processed["fold"].append(imposition.VH("H"))
+                width //= 2
+            else:
+                processed["fold"].append(imposition.VH("V"))
+                height //= 2
+    elif options.fold:
+        processed["size"] = Coordinates(
+                2**options.fold.count(imposition.VH("H")),
+                2**options.fold.count(imposition.VH("F")),
+                )
+        processed["fold"] = options.fold
+        if options.bind is None:
+            if processed["fold"][-1] == imposition.VH("V"):
+                processed["bind"] = "top"
+            else:
+                processed["bind"] = "right"
+        else:
+            processed["bind"] = options.bind
+            if (
+                processed["fold"][-1] == imposition.VH("V") and options.bind not in ["top", "bottom"]
+                ) or (
+                processed["fold"][-1] == imposition.VH("H") and options.bind not in ["left", "right"]
+            ):
+                raise errors.IncompatibleBindFold(options.bind, options.fold)
+    else:
+        processed["size"] = Coordinates(4, 4)
+        if options.bind is None:
+            options.bind = "left"
+        processed["bind"] = options.bind
+        if processed["bind"] in ["top", "bottom"]:
+            processed["fold"] = [imposition.VH("H"), imposition.VH("V"), imposition.VH("H"), imposition.VH("V")]
+        else:
+            processed["fold"] = [imposition.VH("V"), imposition.VH("H"), imposition.VH("V"), imposition.VH("H")]
 
     return processed

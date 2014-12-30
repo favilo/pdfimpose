@@ -144,17 +144,18 @@ class ImpositionMatrix:
     """Matrix of an imposition: array of numbered, oriented pages."""
     folds = []
 
-    def __init__(self, size):
+    def __init__(self, size, bind):
         self.matrix = [
             [
                 None
                 for y
-                in range(2**size.y)
+                in range(size.y)
                 ]
             for x
-            in range(2**(size.x+1))
+            in range(2*size.x)
             ]
-        self.matrix[self.size.x-1][0] = ImpositionPage(0, NORTH) TODO
+        # TODO Take bind into account
+        self.matrix[self.size.x-1][0] = ImpositionPage(0, NORTH)
         self.fold(HORIZONTAL)
 
     @property
