@@ -16,17 +16,16 @@
 
 """Main function for the command."""
 
-import PyPDF2
 import logging
-import os
 import sys
 
 from pdfimpose import errors, options, imposition
 
 LOGGER = logging.getLogger(__name__)
 
-def callback(x, m):
-    print("{}/{}".format(x, m)) # TODO
+def print_progress(progress, maximum):
+    """Display progress to user"""
+    print("{}/{}".format(progress, maximum)) # TODO
 
 def main():
     """Main function"""
@@ -40,7 +39,7 @@ def main():
                 ),
             arguments['file'],
             arguments['last'],
-            callback,
+            print_progress,
             ).write(arguments['output'])
     except KeyboardInterrupt:
         print()

@@ -16,26 +16,39 @@
 
 """Imposition utilities."""
 
-import math
-import PyPDF2
 from enum import Enum
+import PyPDF2
+import math
 
 class Direction(Enum):
+    """Direction (horizontal or vertical)"""
+    # pylint: disable=too-few-public-methods
+
     vertical = False
     horizontal = True
+
+    def __str__(self):
+        return self.name[0].upper()
 
 VERTICAL = Direction.vertical
 HORIZONTAL = Direction.horizontal
 
 def direction(letter):
+    """Return the :class:`Direction` object corresponding to ``letter``."""
     if letter.lower() == 'h':
         return HORIZONTAL
     if letter.lower() == 'v':
         return VERTICAL
-    raise ValueError() # TODO
+    raise ValueError()
+
+def get_orientation(angle):
+    """Return the :class:`Orientation` object corresponding to ``angle``."""
+    return Orientation(angle % 360)
 
 class Orientation(Enum):
     """Two dimensions orientation"""
+    # pylint: disable=too-few-public-methods
+
     north = 90
     south = 270
 
@@ -48,23 +61,21 @@ class Orientation(Enum):
         :param bool fold: Orientation of fold.
         """
         if fold == VERTICAL:
-            return orientation(-self.value)
+            return get_orientation(-self.value)
         else:
-            return orientation(180 - self.value)
+            return get_orientation(180 - self.value)
 
 NORTH = Orientation.north
 SOUTH = Orientation.south
 ORIENTATION_MATRIX = {
-        NORTH.value: [1, 0, 0, 1],
-        SOUTH.value: [-1, 0, 0, -1],
-        }
-
-def orientation(angle):
-    return Orientation(angle % 360)
-
+    NORTH.value: [1, 0, 0, 1],
+    SOUTH.value: [-1, 0, 0, -1],
+    }
 
 class Coordinates:
     """Two-dimensions coordinates."""
+    # pylint: disable=too-few-public-methods
+
     x = 0
     y = 0
 
@@ -96,6 +107,8 @@ class Coordinates:
 
 class ImpositionPage:
     """Page, on an imposition matrix: a page number, and an orientation."""
+    # pylint: disable=too-few-public-methods
+
     def __init__(self, number, orientation):
         self.orientation = orientation
         self.number = number
@@ -182,7 +195,7 @@ class ImpositionMatrix:
         if len(item) == 1:
             item = item[0]
             if isinstance(item, Coordinates):
-                return self.matrix[item.x][item.y]
+                return self.matrix[item.x][item.y] # pylint: disable=no-member
         elif len(item) == 2:
             if isinstance(item[0], int) and isinstance(item[1], int):
                 return self.matrix[item[0]][item[1]]
@@ -246,48 +259,56 @@ class ImpositionMatrix:
                 in row
                 ])
             for row
-            in reversed(list(zip(*self.matrix)))
+            in reversed(list(zip(*self.matrix))) # pylint: disable=star-args
             ])
 
     @property
     def recto(self):
+        """Return the recto of matrix."""
         return self.matrix[len(self.matrix)//2:]
 
     @property
     def verso(self):
+        """Return the verso of matrix."""
         return self.matrix[:len(self.matrix)//2]
 
 def imposition_matrix(folds, bind):
+    """Return the imposition matrix."""
     matrix = ImpositionMatrix(
-            Coordinates(
-                2**folds.count(HORIZONTAL),
-                2**folds.count(VERTICAL),
-                ),
-            bind,
-            )
+        Coordinates(
+            2**folds.count(HORIZONTAL),
+            2**folds.count(VERTICAL),
+            ),
+        bind,
+        )
     for i in folds:
         matrix.fold(i)
-        print(matrix); print()
     return matrix
 
 def get_input_pages(pdfsize, sectionsize, section_number, last):
+    """Return the input pages, with `None` added to fit `sectionsize`."""
     return (
-            [i for i in range(pdfsize - last)] +
-            [None for i in range(pdfsize, section_number * sectionsize)] +
-            [i for i in range(pdfsize - last, pdfsize)]
-            )
+        [i for i in range(pdfsize - last)] +
+        [None for i in range(pdfsize, section_number * sectionsize)] +
+        [i for i in range(pdfsize - last, pdfsize)]
+        )
 
 def get_pdf_size(page):
+    """Return the size (width x height) of page."""
     return (
         page.mediaBox.lowerRight[0] - page.mediaBox.lowerLeft[0],
         page.mediaBox.upperRight[1] - page.mediaBox.lowerRight[1],
         )
 
 def impose(matrix, pdf, last, callback=None):
+    """Return the pdf object corresponding to imposition of ``pdf``."""
+    # pylint: disable=too-many-locals
+
     if callback is None:
-        callback = lambda x,y:None
+        callback = lambda x, y: None
     width, height = get_pdf_size(pdf.getPage(0))
     output = PyPDF2.PdfFileWriter()
+
     sectionsize = matrix.size.x * matrix.size.y
     section_number = math.ceil(pdf.numPages / sectionsize)
     inputpages = get_input_pages(pdf.numPages, sectionsize, section_number, last)
@@ -295,12 +316,15 @@ def impose(matrix, pdf, last, callback=None):
     pagecount = 0
     for outpagenumber in range(2 * section_number):
         currentoutputpage = output.addBlankPage(
-                matrix.size.x * width // 2,
-                matrix.size.y * height,
-                )
+            matrix.size.x * width // 2,
+            matrix.size.y * height,
+            )
         for x in range(len(rectoverso[outpagenumber%2])):
             for y in range(len(rectoverso[outpagenumber%2][x])):
-                pagenumber = (outpagenumber//2)*sectionsize + rectoverso[outpagenumber%2][x][y].number
+                pagenumber = (
+                    (outpagenumber//2)*sectionsize
+                    + rectoverso[outpagenumber%2][x][y].number
+                    )
                 if inputpages[pagenumber] is not None:
                     if rectoverso[outpagenumber%2][x][y].orientation == NORTH:
                         currentoutputpage.mergeTransformedPage(
@@ -312,7 +336,6 @@ def impose(matrix, pdf, last, callback=None):
                             pdf.getPage(inputpages[pagenumber]),
                             ORIENTATION_MATRIX[SOUTH.value] + [(x+1)*width, (y+1)*height],
                             )
-                        page = rectoverso[outpagenumber%2][x][y]
                     pagecount += 1
                     callback(pagecount, pdf.numPages)
     return output

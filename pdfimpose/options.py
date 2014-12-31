@@ -18,17 +18,20 @@
 
 import PyPDF2
 import argparse
+import logging
 import math
 import re
 import sys
 import textwrap
 
 from pdfimpose import VERSION
-from pdfimpose import imposition
-from pdfimpose.imposition import Coordinates
+from pdfimpose import errors
 from pdfimpose.imposition import direction, HORIZONTAL, VERTICAL
 
-def positive_int(text):
+LOGGER = logging.getLogger(__name__)
+
+def _positive_int(text):
+    """Return ``True`` iff ``text`` represents a positive integer."""
     try:
         if int(text) >= 0:
             return int(text)
@@ -39,34 +42,86 @@ def positive_int(text):
 
 SIZE_RE = r"^(?P<width>\w+)x(?P<height>\w+)$"
 
-def is_power_of_two(number):
-    return math.trunc(math.log2(int(number)))==math.log2(int(number))
+def _is_power_of_two(number):
+    """Return ``True`` iff `number` is a power of two."""
+    return math.trunc(math.log2(int(number))) == math.log2(int(number))
 
-def size_type(text):
+def _size_type(text):
+    """Check type of '--size' argument."""
     if text is None:
         return None
     if re.compile(SIZE_RE).match(text):
         match = re.compile(SIZE_RE).match(text).groupdict()
-        if is_power_of_two(match['width']) and is_power_of_two(match['height']):
+        if _is_power_of_two(match['width']) and _is_power_of_two(match['height']):
             return [match['width'], match['height']]
     raise argparse.ArgumentTypeError(textwrap.dedent("""
         Argument must be "WIDTHxHEIGHT", where both WIDTH and HEIGHT are powers of two.
     """))
 
-def fold_type(text):
+def _fold_type(text):
+    """Check type of '--fold' argument."""
     if re.compile(r"^[vh]*$").match(text):
         return [
-                direction(char)
-                for char
-                in text
-                ]
+            direction(char)
+            for char
+            in text
+            ]
     raise argparse.ArgumentTypeError(textwrap.dedent("""
         Argument must be a sequence of letters 'v' and 'h'.
         """))
 
-def process_output(text, source):
-    if text == "-":
-        return sys.stdout # TODO: sys.stdout expects str, get bytes
+def _process_size_fold_bind(options):
+    """Process arguments '--size', '--fold', '--bind'."""
+    # pylint: disable=too-many-branches
+    processed = {}
+
+    if options.size:
+        processed["bind"] = options.bind
+        width, height = [int(num) for num in options.size]
+        if (
+                options.bind in ["left", "right"] and width == 1
+            ) or (
+                options.bind in ["top", "bottom"] and height == 1
+            ):
+            raise errors.IncompatibleBindSize(options.bind, options.size)
+        processed["fold"] = []
+        while width != 1 or height != 1:
+            if width > height:
+                processed["fold"].append(HORIZONTAL)
+                width //= 2
+            else:
+                processed["fold"].append(VERTICAL)
+                height //= 2
+    elif options.fold:
+        processed["fold"] = options.fold
+        if options.bind is None:
+            if processed["fold"][-1] == VERTICAL:
+                processed["bind"] = "top"
+            else:
+                processed["bind"] = "right"
+        else:
+            processed["bind"] = options.bind
+            if (
+                    processed["fold"][-1] == VERTICAL
+                    and options.bind not in ["top", "bottom"]
+                ) or (
+                    processed["fold"][-1] == HORIZONTAL
+                    and options.bind not in ["left", "right"]
+                ):
+                raise errors.IncompatibleBindFold(options.bind, options.fold)
+    else:
+        if options.bind is None:
+            options.bind = "left"
+        processed["bind"] = options.bind
+        if processed["bind"] in ["top", "bottom"]:
+            processed["fold"] = [HORIZONTAL, VERTICAL, HORIZONTAL, VERTICAL]
+        else:
+            processed["fold"] = [VERTICAL, HORIZONTAL, VERTICAL, HORIZONTAL]
+
+    return processed
+
+def _process_output(text, source):
+    """Process the `output` argument."""
     if text is None:
         text = "{}-impose.pdf".format(".".join(source.split('.')[:-1]))
     return open(text, 'wb')
@@ -126,9 +181,9 @@ def commandline_parser():
     parser.add_argument(
         '--bind', '-b',
         help=textwrap.dedent("""
-            Binding vertex. Default is right or top, depending on argument
+            Binding edge. Default is right or top, depending on argument
             '--fold'. If '--fold' is not set, default is 'right'.
-            """), # TODO check vocabulary
+            """),
         default=None,
         choices=["top", "left", "right", "bottom"],
         )
@@ -140,7 +195,7 @@ def commandline_parser():
             Number of pages to keep as last pages. Useful, for instance, to
             keep the back cover as a back cover.
             """),
-        type=positive_int,
+        type=_positive_int,
         default=0,
         )
 
@@ -155,7 +210,7 @@ def commandline_parser():
         """),
         default=None,
         metavar='SEQUENCE',
-        type=fold_type,
+        type=_fold_type,
         )
 
     group.add_argument(
@@ -166,7 +221,7 @@ def commandline_parser():
             2, 4, 8, 16...). If neither this nor '--fold' is set, '--size' is
             '4x4'.
         """),
-        type=size_type,
+        type=_size_type,
         default=None,
         )
 
@@ -174,52 +229,18 @@ def commandline_parser():
 
 def process_options(argv):
     """Make some more checks on options."""
+
     processed = {}
     options = commandline_parser().parse_args(argv)
 
-    processed['last'] = options.last
-    processed['output'] = process_output(options.output, options.file[0])
-    processed["file"] = PyPDF2.PdfFileReader(options.file[0])
+    try:
+        processed['last'] = options.last
+        processed['output'] = _process_output(options.output, options.file[0])
+        processed["file"] = PyPDF2.PdfFileReader(options.file[0])
 
-    if options.size:
-        processed["bind"] = options.bind
-        if (
-                options.bind in ["left", "right"] and options.size[0] == 1
-                ) or (
-                options.bind in ["top", "bottom"] and options.size[1] == 1
-            ):
-            raise errors.IncompatibleBindSize(options.bind, options.size)
-        width, height = [int(num) for num in options.size]
-        processed["fold"] = []
-        while width != 1 or height != 1:
-            if width > height:
-                processed["fold"].append(HORIZONTAL)
-                width //= 2
-            else:
-                processed["fold"].append(VERTICAL)
-                height //= 2
-    elif options.fold:
-        processed["fold"] = options.fold
-        if options.bind is None:
-            if processed["fold"][-1] == VERTICAL:
-                processed["bind"] = "top"
-            else:
-                processed["bind"] = "right"
-        else:
-            processed["bind"] = options.bind
-            if (
-                processed["fold"][-1] == VERTICAL and options.bind not in ["top", "bottom"]
-                ) or (
-                processed["fold"][-1] == HORIZONTAL and options.bind not in ["left", "right"]
-            ):
-                raise errors.IncompatibleBindFold(options.bind, options.fold)
-    else:
-        if options.bind is None:
-            options.bind = "left"
-        processed["bind"] = options.bind
-        if processed["bind"] in ["top", "bottom"]:
-            processed["fold"] = [HORIZONTAL, VERTICAL, HORIZONTAL, VERTICAL]
-        else:
-            processed["fold"] = [VERTICAL, HORIZONTAL, VERTICAL, HORIZONTAL]
+        processed.update(_process_size_fold_bind(options))
+    except (FileNotFoundError, errors.ArgumentError) as error:
+        LOGGER.error(error)
+        sys.exit(1)
 
     return processed
