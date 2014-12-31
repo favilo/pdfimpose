@@ -36,7 +36,15 @@ setup(
         entry_points={
             'console_scripts': ['pdfimpose = pdfimpose.main:main']
             },
-        #classifiers=[], # TODO
+        classifiers=[
+            "Development Status :: 2 - Pre-Alpha",
+            "Environment :: Console",
+            "Intended Audience :: Manufacturing",
+            "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+            "Operating System :: OS Independent",
+            "Programming Language :: Python :: 3.4",
+            "Topic :: Printing",
+            ],
         long_description="""
             Imposition consists in the arrangement of the printed product’s
             pages on the printer’s sheet, in order to obtain faster printing,
