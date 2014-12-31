@@ -15,9 +15,9 @@
 # You should have received a copy of the GNU Affero Public License
 # along with pdfimpose.  If not, see <http://www.gnu.org/licenses/>.
 
-"""TODO"""
+"""Perform imposition of a PDF file."""
 
-# Ajout du répertoire de développement au PATH
+# Adding development directory to python path
 import sys
 import os
 
@@ -26,7 +26,6 @@ sys.path.append(os.path.abspath(os.path.join(
     '..',
     )))
 
-# Lancement du programme
-
+# Running program
 from pdfimpose.main import main
 main()

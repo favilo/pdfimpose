@@ -29,7 +29,7 @@ setup(
         include_package_data=True,
         author='Louis Paternault',
         author_email='spalax@gresille.org',
-        description='TODO',
+        description='Perform imposition of a PDF file.',
         #url='http://paternault.fr/informatique/prof', # TODO
         license="GPLv3 or any later version",
         #test_suite="jouets.test:suite",
@@ -37,5 +37,12 @@ setup(
             'console_scripts': ['pdfimpose = pdfimpose.main:main']
             },
         #classifiers=[], # TODO
-        #long_description="" # TODO
+        long_description="""
+            Imposition consists in the arrangement of the printed product’s
+            pages on the printer’s sheet, in order to obtain faster printing,
+            simplify binding and reduce paper waste (source:
+            http://en.wikipedia.org/wiki/Imposition).
+
+            This program performs imposition on PDF files.
+            """
 )

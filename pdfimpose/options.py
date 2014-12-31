@@ -137,7 +137,10 @@ def commandline_parser():
         epilog=textwrap.dedent("""
             # Imposition
 
-            TODO
+            Imposition consists in the arrangement of the printed product’s
+            pages on the printer’s sheet, in order to obtain faster printing,
+            simplify binding and reduce paper waste (source:
+            http://en.wikipedia.org/wiki/Imposition).
 
             # How to
 
@@ -149,8 +152,8 @@ def commandline_parser():
             ## Fold
 
             Place the printed paper, such that you see the first page of the
-            document. Then, fold it following the order you gave (TODO by
-            default), always keeping the first page at sight.
+            document. Then, fold it following the order you gave, always
+            keeping the first page at sight.
             """),
         )
 
