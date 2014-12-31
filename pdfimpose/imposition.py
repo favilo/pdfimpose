@@ -136,6 +136,14 @@ class ImpositionMatrix:
         else: # bind in ["bottom", "left"]:
             self.matrix[-1][-1] = ImpositionPage(0, NORTH)
         self.fold(HORIZONTAL)
+        if bind == "top":
+            self.matrix[-1][0] = ImpositionPage(1, SOUTH)
+        elif bind == "right":
+            self.matrix[-1][0] = ImpositionPage(1, NORTH)
+        elif bind == "bottom":
+            self.matrix[0][-1] = ImpositionPage(1, SOUTH)
+        else: # bind == "left":
+            self.matrix[0][-1] = ImpositionPage(1, NORTH)
 
     @property
     def vfolds(self):
@@ -243,11 +251,11 @@ class ImpositionMatrix:
 
     @property
     def recto(self):
-        return self.matrix[:len(self.matrix)//2]
+        return self.matrix[len(self.matrix)//2:]
 
     @property
     def verso(self):
-        return self.matrix[len(self.matrix)//2:]
+        return self.matrix[:len(self.matrix)//2]
 
 def imposition_matrix(folds, bind):
     matrix = ImpositionMatrix(
@@ -259,6 +267,7 @@ def imposition_matrix(folds, bind):
             )
     for i in folds:
         matrix.fold(i)
+        print(matrix); print()
     return matrix
 
 def get_input_pages(pdfsize, sectionsize, section_number, last):
