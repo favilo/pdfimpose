@@ -242,8 +242,7 @@ def process_options(argv):
         processed["file"] = PyPDF2.PdfFileReader(options.file[0])
 
         processed.update(_process_size_fold_bind(options))
-    except (FileNotFoundError, errors.ArgumentError) as error:
-        LOGGER.error(error)
-        sys.exit(1)
+    except FileNotFoundError as error:
+        raise errors.ArgumentError(str(error))
 
     return processed

@@ -29,9 +29,9 @@ def print_progress(progress, maximum):
 
 def main():
     """Main function"""
-    arguments = options.process_options(sys.argv[1:])
-
     try:
+        arguments = options.process_options(sys.argv[1:])
+
         imposition.impose(
             imposition.imposition_matrix(
                 arguments['fold'],
