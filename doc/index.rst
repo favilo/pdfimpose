@@ -16,7 +16,20 @@ TODO, and why did I write it?
 Download and install
 --------------------
 
-TODO
+* Download: http://TODO/pdfimpose-TODO.tar.gz.
+* Install (in a `virtualenv`, not to mess with your distribution installation system):
+
+    * With `pip`:
+
+        .. code-block:: shell
+
+            pip install TODO/pdfimpose-TODO.tar.gz
+
+    * Without `pip`: Download and unpack package, and run:
+
+        .. code-block:: shell
+
+            python3 setup.py install
 
 Usage
 -----
