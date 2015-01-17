@@ -1,2 +1,0 @@
-include AUTHORS CHANGELOG COPYING README TODO
-recursive-include doc *

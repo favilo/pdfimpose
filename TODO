@@ -1,8 +1,6 @@
 - Take a sheet of paper and try it, with different binding sides. There are errors right now.
 - Documentation
 - Find TODOs
-- Write requirements.txt
 - unittest
-- Test installation
 - Change date in CHANGELOG
 - Publish version 0.1.0

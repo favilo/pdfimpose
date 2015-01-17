@@ -18,14 +18,25 @@
 """Installateur"""
 
 from setuptools import setup, find_packages
+import os
 
 from pdfimpose import VERSION
+
+def readme():
+    directory = os.path.dirname(os.path.join(
+        os.getcwd(),
+        __file__,
+        ))
+    return open(os.path.join(directory, "README"), "r").read()
 
 setup(
         name='PdfImpose',
         version=VERSION,
         packages=find_packages(),
-        install_requires=[], # TODO
+        setup_requires=["hgtools"],
+        install_requires=[
+            "PyPDF2",
+            ],
         include_package_data=True,
         author='Louis Paternault',
         author_email='spalax@gresille.org',
@@ -45,12 +56,5 @@ setup(
             "Programming Language :: Python :: 3.4",
             "Topic :: Printing",
             ],
-        long_description="""
-            Imposition consists in the arrangement of the printed product’s
-            pages on the printer’s sheet, in order to obtain faster printing,
-            simplify binding and reduce paper waste (source:
-            http://en.wikipedia.org/wiki/Imposition).
-
-            This program performs imposition on PDF files.
-            """
+        long_description=readme(),
 )
