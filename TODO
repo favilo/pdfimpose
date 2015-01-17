@@ -1,4 +1,10 @@
+- --bind : allow suffixes (e.g. -b r instead of -b right)
 - Take a sheet of paper and try it, with different binding sides. There are errors right now.
+  - bind left: works
+  - bind right: 
+  - bind top: 
+  - bind below: 
+- Copy meta-information to output pdf, and, maybe, add "created by pdfimpose"
 - Documentation
 - Find TODOs
 - unittest
