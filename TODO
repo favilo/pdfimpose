@@ -1,3 +1,4 @@
+- L'exemple calendrier ne fonctionne pas : le calcul de folds n'est pas bon
 - Documentation
 - Find TODOs
 - unittest
