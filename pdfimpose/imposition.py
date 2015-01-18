@@ -55,12 +55,12 @@ class Orientation(Enum):
     def __str__(self):
         return self.name[0].upper()
 
-    def symmetry(self, fold):
+    def fold(self, rotate):
         """Return the symmetrical orientation.
 
-        :param bool fold: Orientation of fold.
+        :param bool rotate: Should page be rotated?
         """
-        if fold == VERTICAL:
+        if rotate:
             return get_orientation(-self.value)
         else:
             return get_orientation(180 - self.value)
@@ -119,7 +119,7 @@ class ImpositionPage:
             self.orientation,
             )
 
-    def symmetry(self, orientation, page_max):
+    def fold(self, page_max, rotate):
         """Return the symmetrical page to `self`.
 
         :arg bool orientation: Fold orientation.
@@ -127,7 +127,7 @@ class ImpositionPage:
         """
         return ImpositionPage(
             page_max - self.number,
-            self.orientation.symmetry(orientation),
+            self.orientation.fold(rotate),
             )
 
 class ImpositionMatrix:
@@ -144,19 +144,12 @@ class ImpositionMatrix:
             for x
             in range(2*size.x)
             ]
+        self.bind = bind
         if bind in ["top", "right"]:
             self.matrix[0][0] = ImpositionPage(0, NORTH)
         else: # bind in ["bottom", "left"]:
             self.matrix[-1][-1] = ImpositionPage(0, NORTH)
-        self.fold(HORIZONTAL)
-        if bind == "top":
-            self.matrix[-1][0] = ImpositionPage(1, SOUTH)
-        elif bind == "right":
-            self.matrix[-1][0] = ImpositionPage(1, NORTH)
-        elif bind == "bottom":
-            self.matrix[0][-1] = ImpositionPage(1, SOUTH)
-        else: # bind == "left":
-            self.matrix[0][-1] = ImpositionPage(1, NORTH)
+        self.fold(HORIZONTAL, rotate=(bind in ["top", "bottom"]))
 
     @property
     def vfolds(self):
@@ -176,8 +169,13 @@ class ImpositionMatrix:
             len(self.matrix[0]),
             )
 
-    def fold(self, orientation):
+    def fold(self, orientation, rotate=None):
         """Perform a fold according to `orientation`."""
+        if rotate is None:
+            if orientation == HORIZONTAL:
+                rotate = (self.bind in ["top", "bottom"])
+            else:
+                rotate = (self.bind in ["left", "right"])
         metapage_size = Coordinates(
             self.size.x//2**self.hfolds,
             self.size.y//2**self.vfolds,
@@ -188,6 +186,7 @@ class ImpositionMatrix:
                     Coordinates(x, y),
                     metapage_size,
                     orientation,
+                    rotate,
                     )
         self.folds.append(orientation)
 
@@ -232,24 +231,25 @@ class ImpositionMatrix:
             if self[coordinates] is not None:
                 return coordinates
 
-    def _metapage_fold(self, corner, size, orientation):
+    def _metapage_fold(self, corner, size, orientation, rotate):
         """Fold a metapage
 
         :arg Coordinates corner: Low left corner of the metapage.
         :arg Coordinates size: Size of the metapage.
         :arg bool orientation: Fold orientation.
+        :arg bool rotate: Should pages be rotated?
         """
         page = self._metapage_find_page(corner, size)
         if orientation == HORIZONTAL:
             self[
                 2 * corner.x + size.x - page.x - 1, # Vertical symmetrical
                 page.y,
-                ] = self[page].symmetry(orientation, 2**(len(self.folds)+1)-1)
+                ] = self[page].fold(2**(len(self.folds)+1)-1, rotate)
         else:
             self[
                 page.x,
                 2 * corner.y + size.y - page.y - 1, # Horizontal symmetrical
-                ] = self[page].symmetry(orientation, 2**(len(self.folds)+1)-1)
+                ] = self[page].fold(2**(len(self.folds)+1)-1, rotate)
 
     def __str__(self):
         return "\n".join([

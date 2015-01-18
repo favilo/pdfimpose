@@ -21,7 +21,6 @@ import argparse
 import logging
 import math
 import re
-import sys
 import textwrap
 
 from pdfimpose import VERSION
