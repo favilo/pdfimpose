@@ -45,6 +45,29 @@ def _is_power_of_two(number):
     """Return ``True`` iff `number` is a power of two."""
     return math.trunc(math.log2(int(number))) == math.log2(int(number))
 
+BIND = [
+    'top',
+    'bottom',
+    'left',
+    'right',
+    ]
+
+def _bind_type(text):
+    """Check type of '--bind' argument."""
+    if not text:
+        raise argparse.ArgumentTypeError(
+            """Non-empty argument required."""
+            )
+    for bind in BIND:
+        if bind.startswith(text):
+            return bind
+    raise argparse.ArgumentTypeError(
+        """Argument must be one of {} (or one of their prefixes).""".format(
+            ",".join(["'{}'".format(bind) for bind in BIND])
+            )
+        )
+
+
 def _size_type(text):
     """Check type of '--size' argument."""
     if text is None:
@@ -75,7 +98,6 @@ def _process_size_fold_bind(options):
     processed = {}
 
     if options.size:
-        processed["bind"] = options.bind
         width, height = [int(num) for num in options.size]
         if (
                 options.bind in ["left", "right"] and width == 1
@@ -91,6 +113,13 @@ def _process_size_fold_bind(options):
             else:
                 processed["fold"].append(VERTICAL)
                 height //= 2
+        if options.bind is None:
+            if processed["fold"][-1] == VERTICAL:
+                processed["bind"] = "top"
+            else:
+                processed["bind"] = "left"
+        else:
+            processed["bind"] = options.bind
     elif options.fold:
         processed["fold"] = options.fold
         if options.bind is None:
@@ -183,11 +212,14 @@ def commandline_parser():
     parser.add_argument(
         '--bind', '-b',
         help=textwrap.dedent("""
-            Binding edge. Default is right or top, depending on argument
-            '--fold'. If '--fold' is not set, default is 'right'.
+            Binding edge. Default is left or top, depending on arguments
+            '--fold' and '--size'. If neither '--size' nor '--fold' is set,
+            default is 'left'. Note that any prefix of accepted choices is also
+            accepted.
             """),
+        metavar="{{{}}}".format(",".join(BIND)),
         default=None,
-        choices=["top", "left", "right", "bottom"],
+        type=_bind_type,
         )
 
     parser.add_argument(
