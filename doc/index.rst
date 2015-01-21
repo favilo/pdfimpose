@@ -6,7 +6,8 @@ TODO
 Examples
 --------
 
-TODO add examples
+* :download:`2015 calendar <../examples/calendar2015-impose.pdf>` (:download:`source <../examples/calendar2015.pdf>`, see LaTeX source file in sources repository).
+* :download:`64 pages file <../examples/dummy64-impose.pdf>` (:download:`source <../examples/dummy64.pdf>`, generated using `dummypdf <TODO>`_).
 
 See also
 --------
