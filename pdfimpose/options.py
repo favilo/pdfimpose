@@ -75,9 +75,10 @@ def _size_type(text):
     if re.compile(SIZE_RE).match(text):
         match = re.compile(SIZE_RE).match(text).groupdict()
         if _is_power_of_two(match['width']) and _is_power_of_two(match['height']):
-            return [match['width'], match['height']]
+            if int(match['width']) != 1 or int(match['height']) != 1:
+                return [match['width'], match['height']]
     raise argparse.ArgumentTypeError(textwrap.dedent("""
-        Argument must be "WIDTHxHEIGHT", where both WIDTH and HEIGHT are powers of two.
+        Argument must be "WIDTHxHEIGHT", where both WIDTH and HEIGHT are powers of two, and at least one of them is not 1.
     """))
 
 def _fold_type(text):
@@ -105,7 +106,21 @@ def _process_size_fold_bind(options):
                 options.bind in ["top", "bottom"] and height == 1
             ):
             raise errors.IncompatibleBindSize(options.bind, options.size)
+        if options.bind is None:
+            if width >= height:
+                processed["bind"] = "left"
+            else:
+                processed["bind"] = "top"
+        else:
+            processed["bind"] = options.bind
+
         processed["fold"] = []
+        if processed["bind"] in ["left", "right"]:
+            processed["fold"].append(HORIZONTAL)
+            width //= 2
+        else:
+            processed["fold"].append(VERTICAL)
+            height //= 2
         while width != 1 or height != 1:
             if width > height:
                 processed["fold"].append(HORIZONTAL)
@@ -113,13 +128,7 @@ def _process_size_fold_bind(options):
             else:
                 processed["fold"].append(VERTICAL)
                 height //= 2
-        if options.bind is None:
-            if processed["fold"][-1] == VERTICAL:
-                processed["bind"] = "top"
-            else:
-                processed["bind"] = "left"
-        else:
-            processed["bind"] = options.bind
+        processed["fold"].reverse()
     elif options.fold:
         processed["fold"] = options.fold
         if options.bind is None:
