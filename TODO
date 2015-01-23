@@ -1,5 +1,8 @@
 - Documentation
+- Document alsa as a module
 - Find TODOs
 - unittest
 - Change date in CHANGELOG
 - Publish version 0.1.0
+  - publish on pypi
+  - publish on readthedocs
