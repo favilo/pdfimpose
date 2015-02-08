@@ -188,9 +188,8 @@ def commandline_parser():
 
             ## Fold
 
-            Place the printed paper, such that you see the first page of the
-            document. Then, fold it following the order you gave, always
-            keeping the first page at sight.
+            Fold the document such that each page is placed against the
+            previous one, beginning with the first page.
             """),
         )
 
@@ -199,6 +198,12 @@ def commandline_parser():
         help='Show version',
         action='version',
         version='%(prog)s ' + VERSION
+        )
+
+    parser.add_argument(
+        '-v', '--verbose',
+        help='Verbose mode.',
+        action='store_true',
         )
 
     parser.add_argument(
@@ -275,6 +280,9 @@ def process_options(argv):
 
     processed = {}
     options = commandline_parser().parse_args(argv)
+
+    if options.verbose:
+        LOGGER.setLevel(logging.INFO)
 
     try:
         processed['last'] = options.last

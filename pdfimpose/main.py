@@ -25,7 +25,7 @@ LOGGER = logging.getLogger(__name__)
 
 def print_progress(progress, maximum):
     """Display progress to user"""
-    print("{}/{}".format(progress, maximum)) # TODO
+    LOGGER.info("{}/{}".format(progress, maximum))
 
 def main():
     """Main function"""

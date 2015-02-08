@@ -1,7 +1,8 @@
+- Make option -v work
 - Documentation
-- Document alsa as a module
+- Document also as a module
 - Find TODOs
-- unittest
+- unittest (test, at least, the imposition matrix)
 - Change date in CHANGELOG
 - Publish version 0.1.0
   - publish on pypi
