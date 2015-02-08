@@ -1,7 +1,22 @@
 Welcome to `PdfImpose`'s documentation!
 =======================================
 
-TODO
+`PdfImpose` is a library and a command line program to impose a Pdf document.
+According to `Wikipedia <TODO>`_, "imposition consists in the arrangement
+of the printed product's pages on the printer's sheet, in order to obtain
+faster printing, simplify binding and reduce paper waste".
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 1
+
+   impose
+   usage
+   folding
+   algorithm
+
 
 Examples
 --------
@@ -12,7 +27,15 @@ Examples
 See also
 --------
 
-TODO, and why did I write it?
+I am far from being the first person to implement such an algorithm. I am fond
+of everything about pre-computer-era printing (roughly, from Gutemberg to the
+Linotype). Being also a geek, I wondered how to compute how the pages would be
+arranged on the printer's sheet, and here is the result.
+
+Other implementation of imposition are:
+
+- TODO
+
 
 Download and install
 --------------------
@@ -31,16 +54,6 @@ Download and install
         .. code-block:: shell
 
             python3 setup.py install
-
-Usage
------
-
-Here are the command line options for `pdfimpose`.
-
-.. argparse::
-    :module: pdfimpose.options
-    :func: commandline_parser
-    :prog: pdfimpose
 
 Indices and tables
 ------------------

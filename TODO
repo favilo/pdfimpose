@@ -1,6 +1,6 @@
 - Make option -v work
-- Documentation
-- Document also as a module
+- Documentation (started)
+- Document also as a module (started)
 - Find TODOs
 - unittest (test, at least, the imposition matrix)
 - Change date in CHANGELOG

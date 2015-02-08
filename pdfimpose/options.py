@@ -16,7 +16,6 @@
 
 """Manage options"""
 
-import PyPDF2
 import argparse
 import logging
 import math
@@ -25,7 +24,7 @@ import textwrap
 
 from pdfimpose import VERSION
 from pdfimpose import errors
-from pdfimpose.imposition import direction, HORIZONTAL, VERTICAL
+from pdfimpose import direction, HORIZONTAL, VERTICAL
 
 LOGGER = logging.getLogger(__name__)
 
@@ -287,7 +286,7 @@ def process_options(argv):
     try:
         processed['last'] = options.last
         processed['output'] = _process_output(options.output, options.file[0])
-        processed["file"] = PyPDF2.PdfFileReader(options.file[0])
+        processed["file"] = options.file[0]
 
         processed.update(_process_size_fold_bind(options))
     except FileNotFoundError as error:

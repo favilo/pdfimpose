@@ -19,7 +19,8 @@
 import logging
 import sys
 
-from pdfimpose import errors, options, imposition
+from pdfimpose import errors, options
+import pdfimpose
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,15 +33,14 @@ def main():
     try:
         arguments = options.process_options(sys.argv[1:])
 
-        imposition.impose(
-            imposition.imposition_matrix(
-                arguments['fold'],
-                arguments['bind'],
-                ),
-            arguments['file'],
-            arguments['last'],
-            print_progress,
-            ).write(arguments['output'])
+        pdfimpose.impose(
+            inname=arguments['file'],
+            outname=arguments['output'],
+            fold=arguments['fold'],
+            bind=arguments['bind'],
+            last=arguments['last'],
+            callback=print_progress,
+            )
     except KeyboardInterrupt:
         print()
         sys.exit(1)
