@@ -22,11 +22,12 @@ import math
 import re
 import textwrap
 
+from pdfimpose import DIRECTION, HORIZONTAL, VERTICAL
 from pdfimpose import VERSION
 from pdfimpose import errors
-from pdfimpose import DIRECTION, HORIZONTAL, VERTICAL
+import pdfimpose
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger(pdfimpose.__name__)
 
 def _positive_int(text):
     """Return ``True`` iff ``text`` represents a positive integer."""

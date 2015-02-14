@@ -97,6 +97,7 @@ __AUTHOR__ = "Louis Paternault (spalax@gresille.org)"
 __COPYRIGHT__ = "(C) 2014 Louis Paternault. GNU GPL 3 or later."
 
 LOGGER = logging.getLogger(__name__)
+LOGGER.addHandler(logging.StreamHandler())
 
 class Direction(Enum):
     """Direction (horizontal or vertical)"""
