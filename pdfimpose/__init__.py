@@ -89,13 +89,17 @@ TODO
 
 """
 
+from PyPDF2.generic import NameObject, createStringObject
 from enum import Enum
 import PyPDF2
+import logging
 import math
 
 VERSION = "0.1.0"
 __AUTHOR__ = "Louis Paternault (spalax@gresille.org)"
 __COPYRIGHT__ = "(C) 2014 Louis Paternault. GNU GPL 3 or later."
+
+LOGGER = logging.getLogger(__name__)
 
 class Direction(Enum):
     """Direction (horizontal or vertical)"""
@@ -383,6 +387,25 @@ def _get_pdf_size(page):
         page.mediaBox.upperRight[1] - page.mediaBox.lowerRight[1],
         )
 
+def _set_metadata(inpdf, outpdf):
+    """Copy and set metadata from inpdf to outpdf.
+    """
+    #Source:
+    #    http://two.pairlist.net/pipermail/reportlab-users/2009-November/009033.html
+    try:
+        # pylint: disable=protected-access
+        # Since we are accessing to a protected membre, which can no longer exist
+        # in a future version of PyPDF2, we prevent errors.
+        infodict = outpdf._info.getObject()
+    except AttributeError:
+        LOGGER.warning("Could not copy metadata from source document.")
+    infodict.update(inpdf.getDocumentInfo())
+    infodict.update({
+        NameObject('/Creator'): createStringObject(
+            'PdfImpose, using the PyPDF2 library — http://TODO'
+            )
+    })
+
 def pypdf_impose(matrix, pdf, last, callback=None):
     """Return the pdf object corresponding to imposition of ``pdf``.
 
@@ -424,6 +447,8 @@ def pypdf_impose(matrix, pdf, last, callback=None):
                             )
                     pagecount += 1
                     callback(pagecount, pdf.numPages)
+
+    _set_metadata(pdf, output)
     return output
 
 def impose(inname, outname, fold, bind, last, callback=None):

@@ -1,3 +1,5 @@
+% I claim no copyright on this file (I do not consider it original enough to
+% claim anything on it).
 \documentclass[12pt]{article}
 
 \usepackage{calc}
@@ -5,6 +7,14 @@
 
 \usepackage{tikz}
 \usetikzlibrary{calendar}
+
+\IfFileExists{hyperref.sty}{
+  \usepackage[
+      pdftitle={2015 Calendar},
+      pageanchor=false,
+  ]{hyperref}
+}{
+}
 
 \newfont{\HUGE}{cmr10 at 100pt}
 
