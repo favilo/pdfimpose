@@ -24,7 +24,7 @@ import textwrap
 
 from pdfimpose import VERSION
 from pdfimpose import errors
-from pdfimpose import direction, HORIZONTAL, VERTICAL
+from pdfimpose import DIRECTION, HORIZONTAL, VERTICAL
 
 LOGGER = logging.getLogger(__name__)
 
@@ -84,7 +84,7 @@ def _fold_type(text):
     """Check type of '--fold' argument."""
     if re.compile(r"^[vh]*$").match(text):
         return [
-            direction(char)
+            DIRECTION[char]
             for char
             in text
             ]

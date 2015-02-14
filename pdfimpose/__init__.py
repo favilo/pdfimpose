@@ -42,10 +42,9 @@ Direction
 
 TODO
 
-.. autofunction:: direction
-
 .. autodata:: VERTICAL
 .. autodata:: HORIZONTAL
+.. autodata:: DIRECTION
 .. autoclass:: Direction
 
 
@@ -59,8 +58,6 @@ Orientation
 ^^^^^^^^^^^
 
 TODO
-
-.. autofunction:: get_orientation
 
 .. autoclass:: Orientation
 
@@ -114,17 +111,12 @@ class Direction(Enum):
 VERTICAL = Direction.vertical
 HORIZONTAL = Direction.horizontal
 
-def direction(letter):
-    """Return the :class:`Direction` object corresponding to ``letter``."""
-    if letter.lower() == 'h':
-        return HORIZONTAL
-    if letter.lower() == 'v':
-        return VERTICAL
-    raise ValueError()
-
-def get_orientation(angle):
-    """Return the :class:`Orientation` object corresponding to ``angle``."""
-    return Orientation(angle % 360)
+DIRECTION = {
+    'h': HORIZONTAL,
+    'H': HORIZONTAL,
+    'v': VERTICAL,
+    'V': VERTICAL,
+    }
 
 class Orientation(Enum):
     """Two dimensions orientation"""
@@ -142,9 +134,9 @@ class Orientation(Enum):
         :param bool rotate: Should page be rotated?
         """
         if rotate:
-            return get_orientation(-self.value)
+            return Orientation((-self.value) % 360)
         else:
-            return get_orientation(180 - self.value)
+            return Orientation((180 - self.value) % 360)
 
 NORTH = Orientation.north
 SOUTH = Orientation.south
