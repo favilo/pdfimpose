@@ -390,14 +390,14 @@ def _set_metadata(inpdf, outpdf):
         # Since we are accessing to a protected membre, which can no longer exist
         # in a future version of PyPDF2, we prevent errors.
         infodict = outpdf._info.getObject()
+        infodict.update(inpdf.getDocumentInfo())
+        infodict.update({
+            NameObject('/Creator'): createStringObject(
+                'PdfImpose, using the PyPDF2 library — http://TODO'
+                )
+        })
     except AttributeError:
         LOGGER.warning("Could not copy metadata from source document.")
-    infodict.update(inpdf.getDocumentInfo())
-    infodict.update({
-        NameObject('/Creator'): createStringObject(
-            'PdfImpose, using the PyPDF2 library — http://TODO'
-            )
-    })
 
 def pypdf_impose(matrix, pdf, last, callback=None):
     """Return the pdf object corresponding to imposition of ``pdf``.
