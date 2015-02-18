@@ -22,7 +22,8 @@ import sys
 from pdfimpose import errors, options
 import pdfimpose
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger(pdfimpose.__name__)
+LOGGER.addHandler(logging.StreamHandler())
 
 def print_progress(progress, maximum):
     """Display progress to user"""
