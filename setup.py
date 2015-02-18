@@ -27,7 +27,7 @@ def readme():
         os.getcwd(),
         __file__,
         ))
-    return open(os.path.join(directory, "README"), "r").read()
+    return open(os.path.join(directory, "README.rst"), "r").read()
 
 setup(
         name='PdfImpose',
