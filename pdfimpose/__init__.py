@@ -111,6 +111,7 @@ class Direction(Enum):
 VERTICAL = Direction.vertical
 HORIZONTAL = Direction.horizontal
 
+# TODO Turn this into a factory method (a class method returning cls(FOO))
 DIRECTION = {
     'h': HORIZONTAL,
     'H': HORIZONTAL,
