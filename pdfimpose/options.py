@@ -22,7 +22,7 @@ import math
 import re
 import textwrap
 
-from pdfimpose import DIRECTION, HORIZONTAL, VERTICAL
+from pdfimpose import Direction, HORIZONTAL, VERTICAL
 from pdfimpose import VERSION
 from pdfimpose import errors
 import pdfimpose
@@ -85,7 +85,7 @@ def _fold_type(text):
     """Check type of '--fold' argument."""
     if re.compile(r"^[vh]*$").match(text):
         return [
-            DIRECTION[char]
+            Direction.from_char(char)
             for char
             in text
             ]

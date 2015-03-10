@@ -44,7 +44,6 @@ TODO
 
 .. autodata:: VERTICAL
 .. autodata:: HORIZONTAL
-.. autodata:: DIRECTION
 .. autoclass:: Direction
 
 
@@ -108,16 +107,22 @@ class Direction(Enum):
     def __str__(self):
         return self.name[0].upper()
 
+    @classmethod
+    def from_char(cls, char):
+        if char.lower() == 'h':
+            return cls.horizontal
+        elif char.lower() == 'v':
+            return cls.vertical
+        else:
+            raise ValueError(
+                "{}: Argument '{}' is not recognised as a direction.".format(
+                    cls.__name__,
+                    char
+                    )
+                )
+
 VERTICAL = Direction.vertical
 HORIZONTAL = Direction.horizontal
-
-# TODO Turn this into a factory method (a class method returning cls(FOO))
-DIRECTION = {
-    'h': HORIZONTAL,
-    'H': HORIZONTAL,
-    'v': VERTICAL,
-    'V': VERTICAL,
-    }
 
 class Orientation(Enum):
     """Two dimensions orientation"""
