@@ -1,9 +1,0 @@
-- Make setup.py runnable without pypdf2 being installed
-- Documentation (started)
-- Document also as a module (started)
-- Find TODOs
-- unittest (test, at least, the imposition matrix)
-- Change date in CHANGELOG
-- Publish version 0.1.0
-  - publish on pypi
-  - publish on readthedocs
