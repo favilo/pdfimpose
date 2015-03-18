@@ -109,6 +109,10 @@ class Direction(Enum):
 
     @classmethod
     def from_char(cls, char):
+        """Return :class:`Direction` object corresponding to `char`.
+
+        Character can be one of `h` or `v`, ignoring case.
+        """
         if char.lower() == 'h':
             return cls.horizontal
         elif char.lower() == 'v':
