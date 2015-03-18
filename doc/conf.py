@@ -13,13 +13,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import pkg_resources
 import sys
 import os
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -61,8 +61,13 @@ copyright = '2014, Louis Paternault'
 # built documents.
 #
 # The short X.Y version.
-from pdfimpose import VERSION
-version = VERSION
+
+try:
+    version = pkg_resources.get_distribution('pdfimpose').version
+except pkg_resources.DistributionNotFound:
+    raise ImportError(
+        "'pdfimpose' could not be imported. Either install it in your development environment, or run 'python3 setup.py develop'."
+        )
 # The full version, including alpha/beta/rc tags.
 release = version
 
