@@ -47,7 +47,7 @@ setup(
             'console_scripts': ['pdfimpose = pdfimpose.main:main']
             },
         classifiers=[
-            "Development Status :: 2 - Pre-Alpha",
+            "Development Status :: 3 - Alpha",
             "Environment :: Console",
             "Intended Audience :: Manufacturing",
             "Intended Audience :: Developers",
