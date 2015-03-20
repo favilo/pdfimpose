@@ -2,9 +2,10 @@ Welcome to `PdfImpose`'s documentation!
 =======================================
 
 `PdfImpose` is a library and a command line program to impose a Pdf document.
-According to `Wikipedia <TODO>`_, "imposition consists in the arrangement
-of the printed product's pages on the printer's sheet, in order to obtain
-faster printing, simplify binding and reduce paper waste".
+According to `Wikipedia <http://en.wikipedia.org/wiki/Imposition>`_,
+"imposition consists in the arrangement of the printed product's pages on the
+printer's sheet, in order to obtain faster printing, simplify binding and
+reduce paper waste".
 
 Contents
 --------
@@ -21,8 +22,8 @@ Contents
 Examples
 --------
 
-* :download:`2015 calendar <../examples/calendar2015-impose.pdf>` (:download:`source <../examples/calendar2015.pdf>`, see LaTeX source file in sources repository).
-* :download:`64 pages file <../examples/dummy64-impose.pdf>` (:download:`source <../examples/dummy64.pdf>`, generated using `dummypdf <TODO>`_).
+* :download:`2015 calendar <examples/calendar2015-impose.pdf>` (:download:`source <examples/calendar2015.pdf>`, see LaTeX source file in sources repository).
+* :download:`64 pages file <examples/dummy64-impose.pdf>` (:download:`source <examples/dummy64.pdf>`, generated using `dummypdf <TODO>`_).
 
 See also
 --------
@@ -32,28 +33,28 @@ of everything about pre-computer-era printing (roughly, from Gutemberg to the
 Linotype). Being also a geek, I wondered how to compute how the pages would be
 arranged on the printer's sheet, and here is the result.
 
-Other implementation of imposition are:
+Some (free) other implementation of imposition are:
 
-- TODO
+- Scribus have `a list <http://wiki.scribus.net/canvas/PDF,_PostScript_and_Imposition_tools>`_ of some of those tools
+- `BookletImposer <http://kjo.herbesfolles.org/bookletimposer/>`_
+- `Impose <http://multivalent.sourceforge.net/Tools/pdf/Impose.html>`_
 
 
 Download and install
 --------------------
 
-* Download: http://TODO/pdfimpose-TODO.tar.gz.
-* Install (in a `virtualenv`, not to mess with your distribution installation system):
+See the `main project page <http://git.framasoft.org/spalax/pdfimpose>`_ for
+instructions.
 
-    * With `pip`:
+Usage
+-----
 
-        .. code-block:: shell
+Here are the command line options for `pdfimpose`.
 
-            pip install TODO/pdfimpose-TODO.tar.gz
-
-    * Without `pip`: Download and unpack package, and run:
-
-        .. code-block:: shell
-
-            python3 setup.py install
+.. argparse::
+    :module: pdfimpose.options
+    :func: commandline_parser
+    :prog: pdfimpose
 
 Indices and tables
 ------------------
