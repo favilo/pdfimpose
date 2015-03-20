@@ -91,7 +91,7 @@ import PyPDF2
 import logging
 import math
 
-VERSION = "0.1.0"
+VERSION = "0.1.0-alpha1"
 __AUTHOR__ = "Louis Paternault (spalax@gresille.org)"
 __COPYRIGHT__ = "(C) 2014 Louis Paternault. GNU GPL 3 or later."
 
