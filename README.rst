@@ -11,8 +11,8 @@ pdfimpose — Perform imposition of a PDF file
 Examples
 --------
 
-* `2015 calendar <http://pdfimpose.readthedocs.org/en/latest/_downloads/calendar2015-impose.pdf>` (`source <http://pdfimpose.readthedocs.org/en/latest/_downloads/calendar2015.pdf>`, see LaTeX source file in sources repository).
-* `64 pages file <http://pdfimpose.readthedocs.org/en/latest/_downloads/dummy64-impose.pdf>` (`source <http://pdfimpose.readthedocs.org/en/latest/_downloads/dummy64.pdf>`, generated using `dummypdf <http://git.framasoft.org/spalax/dummypdf>`_).
+* `2015 calendar <http://pdfimpose.readthedocs.org/en/latest/_downloads/calendar2015-impose.pdf>`_ (`source <http://pdfimpose.readthedocs.org/en/latest/_downloads/calendar2015.pdf>`__, see LaTeX source file in sources repository).
+* `64 pages file <http://pdfimpose.readthedocs.org/en/latest/_downloads/dummy64-impose.pdf>`_ (`source <http://pdfimpose.readthedocs.org/en/latest/_downloads/dummy64.pdf>`__, generated using `dummypdf <http://git.framasoft.org/spalax/dummypdf>`_).
 
 Download and install
 --------------------
