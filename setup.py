@@ -20,8 +20,6 @@
 from setuptools import setup, find_packages
 import os
 
-from pdfimpose import VERSION
-
 def readme():
     directory = os.path.dirname(os.path.join(
         os.getcwd(),
@@ -31,7 +29,7 @@ def readme():
 
 setup(
         name='PdfImpose',
-        version=VERSION,
+        version="0.1.0-alpha1",
         packages=find_packages(),
         setup_requires=["hgtools"],
         install_requires=[
@@ -41,7 +39,7 @@ setup(
         author='Louis Paternault',
         author_email='spalax@gresille.org',
         description='Perform imposition of a PDF file.',
-        #url='http://paternault.fr/informatique/prof', # TODO
+        url='https://git.framasoft.org/spalax/pdfimpose',
         license="GPLv3 or any later version",
         #test_suite="jouets.test:suite",
         entry_points={
