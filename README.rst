@@ -17,6 +17,8 @@ Examples
 Download and install
 --------------------
 
+See the end of list for a (quick and dirty) Debian package.
+
 * From sources:
 
   * Download: https://pypi.python.org/pypi/pdfimpose
@@ -27,6 +29,13 @@ Download and install
 * From pip::
 
     pip install pdfimpose
+
+* Quick and dirty Debian (and Ubuntu?) package
+
+  This requires `stdeb <https://github.com/astraw/stdeb>`_ to be installed::
+
+      python3 setup.py --command-packages=stdeb.command bdist_deb
+      sudo dpkg -i deb_dist/python3-<VERSION>_all.deb
 
 Documentation
 -------------
