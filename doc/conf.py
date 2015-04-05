@@ -13,13 +13,26 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import pkg_resources
 import sys
 import os
+from unittest.mock import MagicMock
+
+# Mocking libraries not needed to build the documentation
+# See:
+# http://read-the-docs.readthedocs.org/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['PyPDF2', 'PyPDF2.generic']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -61,13 +74,7 @@ copyright = '2014, Louis Paternault'
 # built documents.
 #
 # The short X.Y version.
-
-try:
-    version = pkg_resources.get_distribution('pdfimpose').version
-except pkg_resources.DistributionNotFound:
-    raise ImportError(
-        "'pdfimpose' could not be imported. Either install it in your development environment, or run 'python3 setup.py develop'."
-        )
+version = "0.1.0-alpha1"
 # The full version, including alpha/beta/rc tags.
 release = version
 
