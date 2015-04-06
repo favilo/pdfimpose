@@ -342,7 +342,7 @@ class ImpositionMatrix:
                 in row
                 ])
             for row
-            in reversed(list(zip(*self.matrix))) # pylint: disable=star-args
+            in reversed(list(zip(*self.matrix)))
             ])
 
     @property
