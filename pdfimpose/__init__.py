@@ -16,7 +16,12 @@
 
 """Perform imposition of a PDF file.
 
-TODO explain example
+Basic example
+-------------
+
+The following example opens pdf file :file:`foo.pdf`, and writes as
+:file:`foo-impose.pdf` its imposed version, made to be folded vertically then
+horizontally.
 
 .. code-block:: python
 
@@ -33,40 +38,52 @@ TODO explain example
 High level manipulation
 -----------------------
 
-TODO
+This is the only function you will need to perform imposition. For more
+fine-grained manipulation, see :ref:`low-level`.
 
 .. autofunction:: impose
 
 Direction
 ^^^^^^^^^
 
-TODO
+Fold direction is set using constants :data:`VERTICAL` and :data:`HORIZONTAL`,
+instances of :class:`Direction`.
 
 .. autodata:: VERTICAL
-.. autodata:: HORIZONTAL
-.. autoclass:: Direction
+    :annotation:
 
+.. autodata:: HORIZONTAL
+    :annotation:
+
+.. autoclass:: Direction
+    :members:
+
+.. _low-level:
 
 Low level manipulation
 ----------------------
 
 These objects will usually not be manipulated directly by user. They are used
-internally may be manipulated if finer processing is performed.
+internally may be manipulated if finer processing is performed. However, if you
+do want to have control over what is going on, you can use them.
 
 Orientation
 ^^^^^^^^^^^
 
-TODO
-
-.. autoclass:: Orientation
+:class:`Pages <ImpositionPage>` represented in the :class:`ImpositionMatrix`
+are oriented toward north or south.
 
 .. autodata:: NORTH
 .. autodata:: SOUTH
 
+.. autoclass:: Orientation
+    :members:
+
 Imposition objects
 ^^^^^^^^^^^^^^^^^^
 
-TODO
+Befor performing imposition, the way input pages will be placed on output pages
+is computed and stored in the following objects.
 
 .. autoclass:: Coordinates
 
@@ -77,9 +94,7 @@ TODO
 Performing imposition
 ^^^^^^^^^^^^^^^^^^^^^
 
-TODO
-
-.. autofunction:: imposition_matrix
+At last, imposition can be performed.
 
 .. autofunction:: pypdf_impose
 
@@ -111,7 +126,7 @@ class Direction(Enum):
     def from_char(cls, char):
         """Return :class:`Direction` object corresponding to `char`.
 
-        Character can be one of `h` or `v`, ignoring case.
+        Character can be one of ``h`` or ``v``, ignoring case.
         """
         if char.lower() == 'h':
             return cls.horizontal
@@ -125,7 +140,10 @@ class Direction(Enum):
                     )
                 )
 
+#: Vertical direction
 VERTICAL = Direction.vertical
+
+#: Horizontal direction
 HORIZONTAL = Direction.horizontal
 
 class Orientation(Enum):
@@ -139,17 +157,30 @@ class Orientation(Enum):
         return self.name[0].upper()
 
     def fold(self, rotate):
-        """Return the symmetrical orientation.
+        """Return the symmetrical orientation, according to an horizontal axe.
 
-        :param bool rotate: Should page be rotated?
+        :param bool rotate: If true, object is also applied a 180° rotation.
+
+        >>> Orientation(90).fold(False)
+        <Orientation.north: 90>
+        >>> Orientation(270).fold(False)
+        <Orientation.south: 270>
+        >>> Orientation(90).fold(True)
+        <Orientation.south: 270>
+        >>> Orientation(270).fold(True)
+        <Orientation.north: 90>
         """
         if rotate:
             return Orientation((-self.value) % 360)
         else:
             return Orientation((180 - self.value) % 360)
 
+#: North orientation
 NORTH = Orientation.north
+
+#: South orientation
 SOUTH = Orientation.south
+
 _ORIENTATION_MATRIX = {
     NORTH.value: [1, 0, 0, 1],
     SOUTH.value: [-1, 0, 0, -1],
@@ -214,10 +245,22 @@ class ImpositionPage:
             )
 
 class ImpositionMatrix:
-    """Matrix of an imposition: array of numbered, oriented pages."""
+    """Matrix of an imposition: array of numbered, oriented pages.
+
+        :param list folds: Sorted list of folds, as a list of :class:`Direction`
+            instances.
+        :param str bind: One of ``top``, ``bottom``, ``left``, ``right``: edge on
+            which the final book is to be folded.
+    """
     folds = []
 
-    def __init__(self, size, bind):
+    def __init__(self, folds, bind):
+        size = Coordinates(
+            2**folds.count(HORIZONTAL),
+            2**folds.count(VERTICAL),
+            )
+
+        # Initialisation
         self.matrix = [
             [
                 None
@@ -228,11 +271,17 @@ class ImpositionMatrix:
             in range(2*size.x)
             ]
         self.bind = bind
+
+        # First, fake, fold (corresponding to recto/verso)
         if bind in ["top", "right"]:
             self.matrix[0][0] = ImpositionPage(0, NORTH)
         else: # bind in ["bottom", "left"]:
             self.matrix[-1][-1] = ImpositionPage(0, NORTH)
         self.fold(HORIZONTAL, rotate=(bind in ["top", "bottom"]))
+
+        # Actual folds
+        for i in folds:
+            self.fold(i)
 
     @property
     def vfolds(self):
@@ -355,24 +404,6 @@ class ImpositionMatrix:
         """Return the verso of matrix."""
         return self.matrix[:len(self.matrix)//2]
 
-def imposition_matrix(folds, bind):
-    """Return the imposition matrix.
-
-    :param list folds: Sorted list of folds, as a list of :class:`Direction`
-        instances.
-    :param str bind: One of ``top``, ``bottom``, ``left``, ``right``: edge on
-        which the final book is to be folded.
-    """
-    matrix = ImpositionMatrix(
-        Coordinates(
-            2**folds.count(HORIZONTAL),
-            2**folds.count(VERTICAL),
-            ),
-        bind,
-        )
-    for i in folds:
-        matrix.fold(i)
-    return matrix
 
 def _get_input_pages(pdfsize, sectionsize, section_number, last):
     """Return the input pages, with `None` added to fit `sectionsize`."""
@@ -402,7 +433,7 @@ def _set_metadata(inpdf, outpdf):
         infodict.update(inpdf.getDocumentInfo())
         infodict.update({
             NameObject('/Creator'): createStringObject(
-                'PdfImpose, using the PyPDF2 library — http://TODO'
+                'PdfImpose, using the PyPDF2 library — http://git.framasoft.org/spalax/pdfimpose'
                 )
         })
     except AttributeError:
@@ -411,7 +442,13 @@ def _set_metadata(inpdf, outpdf):
 def pypdf_impose(matrix, pdf, last, callback=None):
     """Return the pdf object corresponding to imposition of ``pdf``.
 
-    TODO param
+    :param ImpositionMatrix matrix: Imposition is performed according to this matrix.
+    :param PyPDF2.PdfFileReader pdf: Input file, to be imposed.
+    :param int last: Number of pages to keep as last pages (same meaning as
+        same argument in :func:`impose`).
+    :param function callback: Callback function (exactly the same meaning as
+        same argument in :func:`impose`).
+    :rtype: PyPDF2.PdfFileWriter
     """
     # pylint: disable=too-many-locals
 
@@ -454,10 +491,26 @@ def pypdf_impose(matrix, pdf, last, callback=None):
     return output
 
 def impose(inname, outname, fold, bind, last, callback=None):
-    """TODO"""
+    """Perform imposition on a pdf file.
+
+    :param str inname: Name of input file.
+    :param str outname: Name of output file.
+    :param list fold: List of folds to perform, as a list of :class:`Direction`
+        constants.
+    :param int last: Number of pages to keep last. If necessary, blank pages
+        are added at the end of the pdf file. If this argument is non zero,
+        those blank pages are added, while keeping some pages at the end. This
+        may be useful to keep the back-cover at the end of the file, for
+        instance.
+    :param function callback: Callback function, to provide user feedback. This
+        functions is called each time one page (of the input file) has been
+        processed, with the page number and total page numbers as arguments. It
+        should return immediatly. This argument can be ``None`` to disable
+        this.
+    """
     # pylint: disable=too-many-arguments
     pypdf_impose(
-        matrix=imposition_matrix(fold, bind),
+        matrix=ImpositionMatrix(fold, bind),
         pdf=PyPDF2.PdfFileReader(inname),
         last=last,
         callback=callback,
