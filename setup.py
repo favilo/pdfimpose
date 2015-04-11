@@ -42,7 +42,7 @@ setup(
         description='Perform imposition of a PDF file.',
         url='https://git.framasoft.org/spalax/pdfimpose',
         license="GPLv3 or any later version",
-        #test_suite="jouets.test:suite",
+        test_suite="pdfimpose.test.suite",
         entry_points={
             'console_scripts': ['pdfimpose = pdfimpose.main:main']
             },
