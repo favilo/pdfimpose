@@ -29,10 +29,13 @@ def print_progress(progress, maximum):
     """Display progress to user"""
     LOGGER.info("{}/{}".format(progress, maximum))
 
-def main():
+def main(arguments=None):
     """Main function"""
+    if arguments is None:
+        arguments = sys.argv[1:]
+    print("ARGUMENTS", arguments)
     try:
-        arguments = options.process_options(sys.argv[1:])
+        arguments = options.process_options(arguments)
 
         pdfimpose.impose(
             inname=arguments['file'],
@@ -43,7 +46,6 @@ def main():
             callback=print_progress,
             )
     except KeyboardInterrupt:
-        print()
         sys.exit(1)
     except errors.PdfImposeError as error:
         LOGGER.error(error)

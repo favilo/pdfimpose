@@ -31,7 +31,7 @@ def readme():
 setup(
         name='PdfImpose',
         version="0.1.0-alpha1",
-        packages=find_packages(),
+        packages=find_packages(exclude=("test",)),
         setup_requires=["hgtools"],
         install_requires=[
             "PyPDF2",
@@ -42,7 +42,7 @@ setup(
         description='Perform imposition of a PDF file.',
         url='https://git.framasoft.org/spalax/pdfimpose',
         license="GPLv3 or any later version",
-        test_suite="pdfimpose.test.suite",
+        test_suite="test.suite",
         entry_points={
             'console_scripts': ['pdfimpose = pdfimpose.main:main']
             },

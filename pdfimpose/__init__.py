@@ -233,6 +233,13 @@ class ImpositionPage:
             self.orientation,
             )
 
+    def __eq__(self, other):
+        return (
+            other.number == self.number
+            and
+            other.orientation == self.orientation
+            )
+
     def fold(self, page_max, rotate):
         """Return the symmetrical page to `self`.
 
@@ -252,7 +259,6 @@ class ImpositionMatrix:
         :param str bind: One of ``top``, ``bottom``, ``left``, ``right``: edge on
             which the final book is to be folded.
     """
-    folds = []
 
     def __init__(self, folds, bind):
         size = Coordinates(
@@ -261,6 +267,7 @@ class ImpositionMatrix:
             )
 
         # Initialisation
+        self.folds = []
         self.matrix = [
             [
                 None
@@ -322,15 +329,24 @@ class ImpositionMatrix:
                     )
         self.folds.append(orientation)
 
-    def __getitem__(self, *item):
-        if len(item) == 1:
-            item = item[0]
-            if isinstance(item, Coordinates):
-                return self.matrix[item.x][item.y] # pylint: disable=no-member
-        elif len(item) == 2:
+    def __getitem__(self, item):
+        if isinstance(item, Coordinates):
+            return self.matrix[item.x][item.y] # pylint: disable=no-member
+        elif isinstance(item, tuple) and len(item) == 2:
             if isinstance(item[0], int) and isinstance(item[1], int):
                 return self.matrix[item[0]][item[1]]
         raise TypeError()
+
+    def as_list(self):
+        """Return ``self``, as a list of lists of :class:`ImpositionPage`."""
+        return [
+            [
+                self[(x, y)]
+                for y in range(self.size.y)
+                ]
+            for x in range(self.size.x)
+            ]
+
 
     def __setitem__(self, item, value):
         if len(item) == 1:

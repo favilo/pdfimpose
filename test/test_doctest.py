@@ -1,5 +1,4 @@
 #!/usr/bin python
-# -*- coding: utf8 -*-
 
 # Copyright 2015 Louis Paternault
 #
@@ -19,25 +18,12 @@
 """Tests"""
 
 import doctest
-import unittest
 
 import pdfimpose
-
-def suite():
-    """Return a :class:`TestSuite` object, testing all module :mod:`pdfimpose`.
-    """
-    test_loader = unittest.defaultTestLoader
-    return test_loader.discover(pdfimpose.__path__[0])
 
 def load_tests(__loader, tests, __pattern):
     """Load tests (unittests and doctests).
     """
     # Loading doctests
     tests.addTests(doctest.DocTestSuite(pdfimpose))
-
-    # Unittests are loaded by default
-
     return tests
-
-if __name__ == "__main__":
-    unittest.TextTestRunner().run(suite())
