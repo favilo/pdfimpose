@@ -33,7 +33,6 @@ def main(arguments=None):
     """Main function"""
     if arguments is None:
         arguments = sys.argv[1:]
-    print("ARGUMENTS", arguments)
     try:
         arguments = options.process_options(arguments)
 
