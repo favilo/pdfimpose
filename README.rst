@@ -24,7 +24,7 @@ See the end of list for a (quick and dirty) Debian package.
   * Download: https://pypi.python.org/pypi/pdfimpose
   * Install (in a `virtualenv`, if you do not want to mess with your distribution installation system)::
 
-        python3 setup.py install
+        python setup.py install
 
 * From pip::
 
@@ -34,8 +34,8 @@ See the end of list for a (quick and dirty) Debian package.
 
   This requires `stdeb <https://github.com/astraw/stdeb>`_ to be installed::
 
-      python3 setup.py --command-packages=stdeb.command bdist_deb
-      sudo dpkg -i deb_dist/python3-pdfimpose_<VERSION>_all.deb
+      python setup.py --command-packages=stdeb.command bdist_deb
+      sudo dpkg -i deb_dist/python<PYVERSION>-pdfimpose_<VERSION>_all.deb
 
 Documentation
 -------------
