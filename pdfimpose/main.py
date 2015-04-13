@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # Copyright Louis Paternault 2011-2014
 # This program is free software: you can redistribute it and/or modify

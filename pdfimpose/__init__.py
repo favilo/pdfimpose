@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # Copyright Louis Paternault 2011-2014
 # This program is free software: you can redistribute it and/or modify
@@ -479,7 +480,7 @@ def pypdf_impose(matrix, pdf, last, callback=None):
     output = PyPDF2.PdfFileWriter()
 
     sectionsize = matrix.size.x * matrix.size.y
-    section_number = math.ceil(pdf.numPages / sectionsize)
+    section_number = int(math.ceil(pdf.numPages / sectionsize))
     inputpages = _get_input_pages(pdf.numPages, sectionsize, section_number, last)
     rectoverso = [matrix.verso, matrix.recto]
     pagecount = 0
