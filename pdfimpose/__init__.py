@@ -101,7 +101,12 @@ At last, imposition can be performed.
 """
 
 from PyPDF2.generic import NameObject, createStringObject
-from enum import Enum
+
+try:
+    from enum import Enum
+except ImportError:
+    from enum34 import Enum
+
 import PyPDF2
 import logging
 import math

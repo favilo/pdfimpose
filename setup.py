@@ -20,6 +20,7 @@
 from setuptools import setup, find_packages
 import codecs
 import os
+import sys
 
 def readme():
     directory = os.path.dirname(os.path.join(
@@ -28,14 +29,19 @@ def readme():
         ))
     return codecs.open(os.path.join(directory, "README.rst"), "r", "utf8").read()
 
+# Requirements
+install_requires = [
+    "PyPDF2",
+    ]
+if sys.version_info < (3, 4, 0):
+    install_requires.append("enum34")
+
 setup(
         name='PdfImpose',
         version="0.1.0-alpha1",
         packages=find_packages(exclude=("test",)),
         setup_requires=["hgtools"],
-        install_requires=[
-            "PyPDF2",
-            ],
+        install_requires=install_requires,
         include_package_data=True,
         author='Louis Paternault',
         author_email='spalax@gresille.org',
@@ -55,6 +61,8 @@ setup(
             "Operating System :: OS Independent",
             "Programming Language :: Python",
             "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.2",
+            "Programming Language :: Python :: 3.4",
             "Topic :: Printing",
             "Topic :: Software Development :: Libraries :: Python Modules",
             ],
