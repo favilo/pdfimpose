@@ -39,7 +39,7 @@ if sys.version_info < (3, 4, 0):
 setup(
         name='PdfImpose',
         version="0.1.0",
-        packages=find_packages(exclude=("test",)),
+        packages=find_packages(exclude=["test*",]),
         setup_requires=["hgtools"],
         install_requires=install_requires,
         include_package_data=True,
