@@ -15,7 +15,7 @@
 
 import sys
 import os
-from unittest.mock import MagicMock
+from mock import Mock as MagicMock
 
 # Mocking libraries not needed to build the documentation
 # See:
@@ -24,7 +24,7 @@ from unittest.mock import MagicMock
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
-            return Mock()
+        return Mock()
 
 MOCK_MODULES = ['PyPDF2', 'PyPDF2.generic']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
