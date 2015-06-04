@@ -106,6 +106,7 @@ from PyPDF2.generic import NameObject, createStringObject
 try:
     from enum import Enum
 except ImportError:
+    # pylint: disable=import-error
     from enum34 import Enum
 
 import PyPDF2
