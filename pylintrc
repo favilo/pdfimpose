@@ -5,4 +5,4 @@ good-names=i,j,x,y,z
 #additional-builtins=_
 
 [MESSAGES CONTROL]
-disable=logging-format-interpolation
+disable=logging-format-interpolation, I
