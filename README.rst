@@ -14,6 +14,12 @@ Examples
 * `2015 calendar <http://pdfimpose.readthedocs.org/en/latest/_downloads/calendar2015-impose.pdf>`_ (`source <http://pdfimpose.readthedocs.org/en/latest/_downloads/calendar2015.pdf>`__, see LaTeX source file in sources repository).
 * `64 pages file <http://pdfimpose.readthedocs.org/en/latest/_downloads/dummy64-impose.pdf>`_ (`source <http://pdfimpose.readthedocs.org/en/latest/_downloads/dummy64.pdf>`__, generated using `dummypdf <http://git.framasoft.org/spalax/dummypdf>`_).
 
+What's new?
+-----------
+
+See `changelog
+<https://git.framasoft.org/spalax/pdfimpose/blob/master/CHANGELOG>`_.
+
 Download and install
 --------------------
 
