@@ -323,15 +323,15 @@ class ImpositionMatrix:
                 rotate = (self.bind in ["top", "bottom"])
             else:
                 rotate = (self.bind in ["left", "right"])
-        metapage_size = Coordinates(
+        virtualpage_size = Coordinates(
             self.size.x//2**self.hfolds,
             self.size.y//2**self.vfolds,
             )
-        for x in range(0, self.size.x, metapage_size.x):
-            for y in range(0, self.size.y, metapage_size.y):
-                self._metapage_fold(
+        for x in range(0, self.size.x, virtualpage_size.x):
+            for y in range(0, self.size.y, virtualpage_size.y):
+                self._virtualpage_fold(
                     Coordinates(x, y),
-                    metapage_size,
+                    virtualpage_size,
                     orientation,
                     rotate,
                     )
@@ -368,15 +368,15 @@ class ImpositionMatrix:
                 return
         raise TypeError()
 
-    def _metapage_find_page(self, corner, size):
-        """Find the actual page on a metapage.
+    def _virtualpage_find_page(self, corner, size):
+        """Find the actual page on a virtual page.
 
-        A metapage should contain only one actual page. Return the coorditanes
+        A virtual page should contain only one actual page. Return the coorditanes
         of this page (relative to the matrix).
 
         :arg Coordinates corner: Coordinates of the low left corner of the
-            metapage.
-        :arg Coordinates size: Size of the metapage.
+            virtual page.
+        :arg Coordinates size: Size of the virtual page.
         """
         for coordinates in [
                 corner,
@@ -387,15 +387,15 @@ class ImpositionMatrix:
             if self[coordinates] is not None:
                 return coordinates
 
-    def _metapage_fold(self, corner, size, orientation, rotate):
-        """Fold a metapage
+    def _virtualpage_fold(self, corner, size, orientation, rotate):
+        """Fold a virtual page
 
-        :arg Coordinates corner: Low left corner of the metapage.
-        :arg Coordinates size: Size of the metapage.
+        :arg Coordinates corner: Low left corner of the virtual page.
+        :arg Coordinates size: Size of the virtual page.
         :arg bool orientation: Fold orientation.
         :arg bool rotate: Should pages be rotated?
         """
-        page = self._metapage_find_page(corner, size)
+        page = self._virtualpage_find_page(corner, size)
         if orientation == HORIZONTAL:
             self[
                 2 * corner.x + size.x - page.x - 1, # Vertical symmetrical
@@ -420,12 +420,12 @@ class ImpositionMatrix:
 
     @property
     def recto(self):
-        """Return the recto of matrix."""
+        """Return the recto of the matrix."""
         return self.matrix[len(self.matrix)//2:]
 
     @property
     def verso(self):
-        """Return the verso of matrix."""
+        """Return the verso of the matrix."""
         return self.matrix[:len(self.matrix)//2]
 
 
