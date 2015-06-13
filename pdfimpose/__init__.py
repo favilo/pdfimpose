@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright Louis Paternault 2011-2015
+# Copyright Louis Paternault 2014-2015
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -114,9 +114,9 @@ import PyPDF2
 import logging
 import math
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 __AUTHOR__ = "Louis Paternault (spalax@gresille.org)"
-__COPYRIGHT__ = "(C) 2014 Louis Paternault. GNU GPL 3 or later."
+__COPYRIGHT__ = "(C) 2014-2015 Louis Paternault. GNU GPL 3 or later."
 
 LOGGER = logging.getLogger(__name__)
 

@@ -67,14 +67,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'PdfImpose'
-copyright = '2014, Louis Paternault'
+copyright = '2014-2015, Louis Paternault'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = "0.1.0"
+version = "0.1.1"
 # The full version, including alpha/beta/rc tags.
 release = version
 
