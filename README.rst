@@ -18,7 +18,7 @@ What's new?
 -----------
 
 See `changelog
-<https://git.framasoft.org/spalax/pdfimpose/blob/master/CHANGELOG>`_.
+<https://git.framasoft.org/spalax/pdfimpose/blob/master/CHANGELOG.md>`_.
 
 Download and install
 --------------------

@@ -45,7 +45,7 @@ Download and install
 
 See the `main project page <http://git.framasoft.org/spalax/pdfimpose>`_ for
 instructions, and `changelog
-<https://git.framasoft.org/spalax/pdfimpose/blob/master/CHANGELOG>`_.
+<https://git.framasoft.org/spalax/pdfimpose/blob/master/CHANGELOG.md>`_.
 
 Indices and tables
 ------------------
