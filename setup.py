@@ -56,7 +56,7 @@ setup(
         license="GPLv3 or any later version",
         test_suite="test.suite",
         entry_points={
-            'console_scripts': ['pdfimpose = pdfimpose.main:main']
+            'console_scripts': ['pdfimpose = pdfimpose.__main__:main']
             },
         classifiers=[
             "Development Status :: 3 - Alpha",

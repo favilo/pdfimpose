@@ -32,7 +32,7 @@ try:
 except ImportError:
     from io import StringIO
 
-from pdfimpose.main import main
+from pdfimpose.__main__ import main
 
 @contextlib.contextmanager
 def capture():

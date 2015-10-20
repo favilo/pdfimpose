@@ -169,6 +169,7 @@ def commandline_parser():
     """Return a command line parser."""
 
     parser = argparse.ArgumentParser(
+        prog="pdfimpose",
         description=textwrap.dedent("""
             Perform an imposition on the PDF file given in argument.
             """),
