@@ -59,7 +59,7 @@ setup(
             'console_scripts': ['pdfimpose = pdfimpose.__main__:main']
             },
         classifiers=[
-            "Development Status :: 3 - Alpha",
+            "Development Status :: 5 - Production/Stable",
             "Environment :: Console",
             "Intended Audience :: Manufacturing",
             "Intended Audience :: Developers",
