@@ -102,17 +102,17 @@ At last, imposition can be performed.
 
 """
 
-from PyPDF2.generic import NameObject, createStringObject
-
 try:
     from enum import Enum
 except ImportError:
     # pylint: disable=import-error
     from enum34 import Enum
 
-import PyPDF2
 import logging
 import math
+
+from PyPDF2.generic import NameObject, createStringObject
+import PyPDF2
 
 VERSION = "0.1.1"
 __AUTHOR__ = "Louis Paternault (spalax@gresille.org)"
@@ -128,6 +128,7 @@ class Direction(Enum):
     horizontal = True
 
     def __str__(self):
+        # pylint: disable=unsubscriptable-object
         return self.name[0].upper()
 
     @classmethod
@@ -162,6 +163,7 @@ class Orientation(Enum):
     south = 270
 
     def __str__(self):
+        # pylint: disable=unsubscriptable-object
         return self.name[0].upper()
 
     def fold(self, rotate):
