@@ -62,5 +62,6 @@ Documentation
   :target: http://www.gnu.org/licenses/gpl-3.0.html
 .. |sources| image:: https://img.shields.io/badge/sources-pdfimpose-brightgreen.svg
   :target: http://git.framasoft.org/spalax/pdfimpose
-.. |build| image:: https://git.framasoft.org/ci/projects/82/status.png?ref=master
-  :target: https://git.framasoft.org/ci/projects/82?ref=master
+.. |build| image:: https://git.framasoft.org/spalax/pdfimpose/badges/master/build.svg
+  :target: https://git.framasoft.org/spalax/pdfimpose/builds
+
