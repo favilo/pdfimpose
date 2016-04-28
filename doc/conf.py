@@ -19,7 +19,7 @@ from mock import Mock as MagicMock
 
 # Mocking libraries not needed to build the documentation
 # See:
-# http://read-the-docs.readthedocs.org/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+# http://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
 
 class Mock(MagicMock):
     @classmethod

@@ -193,7 +193,7 @@ def commandline_parser():
 
             Fold the document such that each page is placed against the
             previous one, beginning with the first page. More information on
-            http://pdfimpose.readthedocs.org/en/latest/folding/
+            http://pdfimpose.readthedocs.io/en/latest/folding/
             """),
         )
 
