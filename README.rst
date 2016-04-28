@@ -54,7 +54,7 @@ Documentation
       cd doc && make html
 
 
-.. |documentation| image:: http://readthedocs.io/projects/pdfimpose/badge
+.. |documentation| image:: http://readthedocs.org/projects/pdfimpose/badge/?version=latest
   :target: http://pdfimpose.readthedocs.io
 .. |pypi| image:: https://img.shields.io/pypi/v/pdfimpose.svg
   :target: http://pypi.python.org/pypi/pdfimpose
