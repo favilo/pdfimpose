@@ -541,4 +541,3 @@ def impose(inname, outname, fold, bind, last, callback=None):
         last=last,
         callback=callback,
         ).write(outname)
-
