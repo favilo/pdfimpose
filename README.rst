@@ -1,7 +1,7 @@
 pdfimpose — Perform imposition of a PDF file
 ============================================
 
-|sources| |pypi| |build| |documentation| |license|
+|sources| |pypi| |build| |coverage| |documentation| |license|
 
     Imposition consists in the arrangement of the printed product’s pages on
     the printer’s sheet, in order to obtain faster printing, simplify binding
@@ -62,6 +62,8 @@ Documentation
   :target: http://www.gnu.org/licenses/gpl-3.0.html
 .. |sources| image:: https://img.shields.io/badge/sources-pdfimpose-brightgreen.svg
   :target: http://git.framasoft.org/spalax/pdfimpose
+.. |coverage| image:: https://git.framasoft.org/spalax/pdfimpose/badges/master/coverage.svg
+  :target: https://git.framasoft.org/spalax/pdfimpose/builds
 .. |build| image:: https://git.framasoft.org/spalax/pdfimpose/badges/master/build.svg
   :target: https://git.framasoft.org/spalax/pdfimpose/builds
 
