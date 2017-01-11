@@ -1,3 +1,9 @@
+* pdfimpose 0.1.2 (unreleased)
+
+    * Add python3.6 support.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 0.1.1 (2015-06-13)
 
     * Python3.5 support
