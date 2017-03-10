@@ -33,6 +33,10 @@ TEST_DATA_DIR = pkg_resources.resource_filename(__name__, "test_commandline-data
 
 FIXTURES = [
     {
+        "command": [],
+        "returncode": 2,
+    },
+    {
         "command": [
             "-f", "hv",
             os.path.join(TEST_DATA_DIR, "eight.pdf"),
@@ -41,6 +45,27 @@ FIXTURES = [
         "diff": ("eight-impose.pdf", "eight-control.pdf")
     },
 ]
+
+def run(arguments):
+    """Kind-of backport of subprocess.run() function from python3.4.
+
+    Run "pdfimpose" with the arguments `arguments['command']` (feeding it
+    `arguments['stdin']` as standard input if it exists).
+
+    Return a dictionary with keys `stdout`, `stderr` (standard output and
+    error, as strings), and `returncode` (as an integer).
+    """
+    completed = {}
+    process = subprocess.Popen(
+        EXECUTABLE + ["-m", "pdfimpose"] + arguments['command'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+        universal_newlines=True,
+        )
+    completed['stdout'], completed['stderr'] = process.communicate(arguments.get('stdin', None))
+    completed['returncode'] = process.returncode
+    return completed
 
 class TestCommandLine(unittest.TestCase):
     """Run binary, and check produced files."""
@@ -74,17 +99,12 @@ class TestCommandLine(unittest.TestCase):
         """Test binary, from command line to produced files."""
         for data in FIXTURES:
             with self.subTest(**data):
-                completed = subprocess.run(
-                    EXECUTABLE + ["-m", "pdfimpose"] + data['command'],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    universal_newlines=True,
-                    )
+                completed = run(data)
 
                 for key in ["returncode", "stderr", "stdout"]:
                     if key in data:
                         self.assertEqual(
-                            getattr(completed, key),
+                            completed.get(key),
                             data.get(key),
                             )
 
