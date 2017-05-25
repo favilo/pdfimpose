@@ -50,7 +50,7 @@ setup(
         install_requires=install_requires,
         include_package_data=True,
         author='Louis Paternault',
-        author_email='spalax@gresille.org',
+        author_email='spalax+pypi@gresille.org',
         description='Perform imposition of a PDF file.',
         url='https://git.framasoft.org/spalax/pdfimpose',
         license="GPLv3 or any later version",
