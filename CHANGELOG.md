@@ -2,7 +2,7 @@
 
     * Add python3.6 support.
 
-    -- Louis Paternault <spalax+pypi@gresille.org>
+    -- Louis Paternault <spalax+python@gresille.org>
 
 * pdfimpose 0.1.1 (2015-06-13)
 
@@ -10,10 +10,10 @@
     * Several minor improvements to setup, test and documentation.
     * [doc] Wrote missing parts
 
-    -- Louis Paternault <spalax+pypi@gresille.org>
+    -- Louis Paternault <spalax+python@gresille.org>
 
 * pdfimpose 0.1.0 (2015-04-15)
 
     * Initial release.
 
-    -- Louis Paternault <spalax+pypi@gresille.org>
+    -- Louis Paternault <spalax+python@gresille.org>
