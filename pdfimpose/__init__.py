@@ -181,7 +181,7 @@ class Orientation(Enum):
         <Orientation.north: 90>
         """
         if rotate:
-            return Orientation((-self.value) % 360)
+            return Orientation((0 - self.value) % 360)
         else:
             return Orientation((180 - self.value) % 360)
 
