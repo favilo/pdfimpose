@@ -73,20 +73,6 @@ FIXTURES = [
             filename=os.path.join(TEST_DATA_DIR, "absent.pdf"),
             ),
     },
-    {
-        "before": [
-            ["rm", os.path.join(TEST_DATA_DIR, "permission.pdf")],
-            ["touch", os.path.join(TEST_DATA_DIR, "permission.pdf")],
-            ["chmod", "-r", os.path.join(TEST_DATA_DIR, "permission.pdf")],
-            ],
-        "command": [
-            os.path.join(TEST_DATA_DIR, "permission.pdf"),
-            ],
-        "returncode": 1,
-        "stderr": "Error: Could not read file '{filename}': [Errno 13] Permission denied: '{filename}'.\n".format( # pylint: disable=line-too-long
-            filename=os.path.join(TEST_DATA_DIR, "permission.pdf"),
-            ),
-    },
 ]
 
 WDEVNULL = open(os.devnull, 'w')
