@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright Louis Paternault 2014-2015
+# Copyright Louis Paternault 2014-2015, 2017
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -113,6 +112,8 @@ import math
 
 from PyPDF2.generic import NameObject, createStringObject
 import PyPDF2
+
+from pdfimpose import errors
 
 VERSION = "0.1.1"
 __AUTHOR__ = "Louis Paternault (spalax+python@gresille.org)"
@@ -478,6 +479,10 @@ def pypdf_impose(matrix, pdf, last, callback=None):
     """
     # pylint: disable=too-many-locals
 
+    try:
+        pdf.getPage(0)
+    except IndexError:
+        raise errors.PdfImposeError("Error: Not a single page to process.")
     if callback is None:
         callback = lambda x, y: None
     width, height = _get_pdf_size(pdf.getPage(0))
@@ -535,9 +540,16 @@ def impose(inname, outname, fold, bind, last, callback=None):
         this.
     """
     # pylint: disable=too-many-arguments
+    try:
+        input_file = PyPDF2.PdfFileReader(inname)
+    except (FileNotFoundError, PyPDF2.utils.PdfReadError, PermissionError) as error:
+        raise errors.PdfImposeError("Error: Could not read file '{}': {}.".format(
+            inname,
+            str(error),
+            ))
     pypdf_impose(
         matrix=ImpositionMatrix(fold, bind),
-        pdf=PyPDF2.PdfFileReader(inname),
+        pdf=input_file,
         last=last,
         callback=callback,
         ).write(outname)

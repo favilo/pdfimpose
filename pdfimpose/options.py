@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright Louis Paternault 2011-2015
+# Copyright Louis Paternault 2011-2015, 2017
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -295,6 +294,6 @@ def process_options(argv):
 
         processed.update(_process_size_fold_bind(options))
     except FileNotFoundError as error:
-        raise errors.ArgumentError(str(error))
+        raise errors.PdfImposeError(str(error))
 
     return processed

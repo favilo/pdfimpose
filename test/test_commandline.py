@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Copyright 2017 Louis Paternault
 #
 # This program is free software: you can redistribute it and/or modify
@@ -44,7 +46,37 @@ FIXTURES = [
         "returncode": 0,
         "diff": ("eight-impose.pdf", "eight-control.pdf")
     },
+    {
+        "command": [
+            os.path.join(TEST_DATA_DIR, "malformed.pdf"),
+            ],
+        "returncode": 1,
+        "stderr": "Error: Could not read file '{}': EOF marker not found.\n".format(os.path.join(TEST_DATA_DIR, "malformed.pdf")), # pylint: disable=line-too-long
+
+    },
+    {
+        "command": [
+            os.path.join(TEST_DATA_DIR, "zero.pdf"),
+            ],
+        "returncode": 1,
+        "stderr": "Error: Not a single page to process.\n",
+    },
+    {
+        "before": [
+            ["rm", os.path.join(TEST_DATA_DIR, "absent.pdf")],
+            ],
+        "command": [
+            os.path.join(TEST_DATA_DIR, "absent.pdf"),
+            ],
+        "returncode": 1,
+        "stderr": "Error: Could not read file '{filename}': [Errno 2] No such file or directory: '{filename}'.\n".format( # pylint: disable=line-too-long
+            filename=os.path.join(TEST_DATA_DIR, "absent.pdf"),
+            ),
+    },
 ]
+
+WDEVNULL = open(os.devnull, 'w')
+RDEVNULL = open(os.devnull, 'r')
 
 def run(arguments):
     """Kind-of backport of subprocess.run() function from python3.4.
@@ -56,6 +88,14 @@ def run(arguments):
     error, as strings), and `returncode` (as an integer).
     """
     completed = {}
+
+    for command in arguments.get('before', []):
+        subprocess.Popen(
+            command,
+            stdout=WDEVNULL,
+            stderr=WDEVNULL,
+            stdin=RDEVNULL,
+            )
     process = subprocess.Popen(
         EXECUTABLE + ["-m", "pdfimpose"] + arguments['command'],
         stdout=subprocess.PIPE,
@@ -69,6 +109,8 @@ def run(arguments):
 
 class TestCommandLine(unittest.TestCase):
     """Run binary, and check produced files."""
+
+    maxDiff = None
 
     def assertPdfEqual(self, filea, fileb):
         """Test whether PDF files given in argument (as file names) are equal.
