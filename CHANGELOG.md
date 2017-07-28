@@ -1,6 +1,7 @@
 * pdfimpose 0.1.2 (unreleased)
 
     * Add python3.6 support.
+    * Display nicer messages with several input-file related errors (absent, unreadable, malformed, etc. file).
 
     -- Louis Paternault <spalax+python@gresille.org>
 
