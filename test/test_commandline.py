@@ -49,14 +49,15 @@ FIXTURES = [
             os.path.join(TEST_DATA_DIR, "malformed.pdf"),
             ],
         "returncode": 1,
-        "stderr": "Error: Could not read file 'malformed.pdf'. Is it a valid PDF file?",
+        "stderr": "Error: Could not read file '{}': EOF marker not found.\n".format(os.path.join(TEST_DATA_DIR, "malformed.pdf")), # pylint: disable=line-too-long
+
     },
     {
         "command": [
             os.path.join(TEST_DATA_DIR, "zero.pdf"),
             ],
         "returncode": 1,
-        "stderr": "Error: Not a single page to process.",
+        "stderr": "Error: Not a single page to process.\n",
     },
     {
         "before": [
@@ -66,7 +67,9 @@ FIXTURES = [
             os.path.join(TEST_DATA_DIR, "absent.pdf"),
             ],
         "returncode": 1,
-        "stderr": 'IO Error: Could not read "absent.pdf". TODO More info?',
+        "stderr": "Error: Could not read file '{filename}': [Errno 2] No such file or directory: '{filename}'.\n".format( # pylint: disable=line-too-long
+            filename=os.path.join(TEST_DATA_DIR, "absent.pdf"),
+            ),
     },
     {
         "before": [
@@ -78,7 +81,9 @@ FIXTURES = [
             os.path.join(TEST_DATA_DIR, "permission.pdf"),
             ],
         "returncode": 1,
-        "stderr": 'IO Error: Could not read "permission.pdf". TODO More info?',
+        "stderr": "Error: Could not read file '{filename}': [Errno 13] Permission denied: '{filename}'.\n".format( # pylint: disable=line-too-long
+            filename=os.path.join(TEST_DATA_DIR, "permission.pdf"),
+            ),
     },
 ]
 
@@ -116,6 +121,8 @@ def run(arguments):
 
 class TestCommandLine(unittest.TestCase):
     """Run binary, and check produced files."""
+
+    maxDiff = None
 
     def assertPdfEqual(self, filea, fileb):
         """Test whether PDF files given in argument (as file names) are equal.

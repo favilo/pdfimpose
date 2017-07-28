@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-# Copyright Louis Paternault 2011-2015
+# Copyright Louis Paternault 2011-2015, 2017
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,10 +17,6 @@
 
 class PdfImposeError(Exception):
     """Generic error"""
-    pass
-
-class ArgumentError(PdfImposeError):
-    """Error in command line arguments."""
 
     def __init__(self, message):
         super().__init__()
@@ -32,7 +25,7 @@ class ArgumentError(PdfImposeError):
     def __str__(self):
         return self.message
 
-class IncompatibleBindSize(ArgumentError):
+class IncompatibleBindSize(PdfImposeError):
     """Bind and size are incompatible."""
 
     def __init__(self, bind, size):
@@ -42,7 +35,7 @@ class IncompatibleBindSize(ArgumentError):
             size[1]
             ))
 
-class IncompatibleBindFold(ArgumentError):
+class IncompatibleBindFold(PdfImposeError):
     """Bind and fold are incompatible."""
 
     def __init__(self, bind, fold):
