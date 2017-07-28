@@ -44,7 +44,46 @@ FIXTURES = [
         "returncode": 0,
         "diff": ("eight-impose.pdf", "eight-control.pdf")
     },
+    {
+        "command": [
+            os.path.join(TEST_DATA_DIR, "malformed.pdf"),
+            ],
+        "returncode": 1,
+        "stderr": "Error: Could not read file 'malformed.pdf'. Is it a valid PDF file?",
+    },
+    {
+        "command": [
+            os.path.join(TEST_DATA_DIR, "zero.pdf"),
+            ],
+        "returncode": 1,
+        "stderr": "Error: Not a single page to process.",
+    },
+    {
+        "before": [
+            ["rm", os.path.join(TEST_DATA_DIR, "absent.pdf")],
+            ],
+        "command": [
+            os.path.join(TEST_DATA_DIR, "absent.pdf"),
+            ],
+        "returncode": 1,
+        "stderr": 'IO Error: Could not read "absent.pdf". TODO More info?',
+    },
+    {
+        "before": [
+            ["rm", os.path.join(TEST_DATA_DIR, "permission.pdf")],
+            ["touch", os.path.join(TEST_DATA_DIR, "permission.pdf")],
+            ["chmod", "-r", os.path.join(TEST_DATA_DIR, "permission.pdf")],
+            ],
+        "command": [
+            os.path.join(TEST_DATA_DIR, "permission.pdf"),
+            ],
+        "returncode": 1,
+        "stderr": 'IO Error: Could not read "permission.pdf". TODO More info?',
+    },
 ]
+
+WDEVNULL = open(os.devnull, 'w')
+RDEVNULL = open(os.devnull, 'r')
 
 def run(arguments):
     """Kind-of backport of subprocess.run() function from python3.4.
@@ -56,6 +95,14 @@ def run(arguments):
     error, as strings), and `returncode` (as an integer).
     """
     completed = {}
+
+    for command in arguments.get('before', []):
+        subprocess.Popen(
+            command,
+            stdout=WDEVNULL,
+            stderr=WDEVNULL,
+            stdin=RDEVNULL,
+            )
     process = subprocess.Popen(
         EXECUTABLE + ["-m", "pdfimpose"] + arguments['command'],
         stdout=subprocess.PIPE,
