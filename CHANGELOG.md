@@ -1,6 +1,7 @@
-* pdfimpose 0.1.2 (unreleased)
+* pdfimpose 0.2.0 (unreleased)
 
     * Add python3.6 support.
+    * Several files can be given in argument. They are concatenated, then imposed. Closes #10.
     * Display nicer messages with several input-file related errors (absent, unreadable, malformed, etc. file).
 
     -- Louis Paternault <spalax+python@gresille.org>
