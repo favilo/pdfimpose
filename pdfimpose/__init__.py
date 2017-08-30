@@ -544,7 +544,6 @@ def pypdf_impose(matrix, pages, last, callback=None):
     if callback is None:
         callback = lambda x, y: None
     try:
-        print(pages[0])
         width, height = _get_pdf_size(pages[0])
     except IndexError:
         raise errors.PdfImposeError("Error: Not a single page to process.")
