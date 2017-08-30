@@ -3,6 +3,7 @@
     * Add python3.6 support.
     * Several files can be given in argument. They are concatenated, then imposed (closes #10).
     * No longer crash when using pdfimpose on file without any metadata (closes #12).
+    * Warn user if all pages do not have the same dimension (closes #11).
     * Display nicer messages with several input-file related errors (absent, unreadable, malformed, etc. file).
 
     -- Louis Paternault <spalax+python@gresille.org>

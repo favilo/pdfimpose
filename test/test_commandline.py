@@ -79,7 +79,13 @@ FIXTURES = [
         ],
         "returncode": 0,
     },
-
+    {
+        "command": [
+            os.path.join(TEST_DATA_DIR, "different-sizes.pdf"),
+        ],
+        "stderr": "Warning: Pages of files given in argument do not have the same size. This might lead to unexpected results.\n", # pylint: disable=line-too-long
+        "returncode": 0,
+    },
 ]
 
 WDEVNULL = open(os.devnull, 'w')

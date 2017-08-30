@@ -606,6 +606,8 @@ def impose(inname, outname, fold, bind, last, callback=None):
     """
     # pylint: disable=too-many-arguments
     pages = PageList(inname)
+    if len(set((_get_pdf_size(page) for page in pages))) > 1:
+        LOGGER.warning("Warning: Pages of files given in argument do not have the same size. This might lead to unexpected results.") # pylint: disable=line-too-long
     with open(outname, "wb") as outfile:
         pypdf_impose(
             matrix=ImpositionMatrix(fold, bind),
