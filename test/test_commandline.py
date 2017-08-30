@@ -73,6 +73,13 @@ FIXTURES = [
             filename=os.path.join(TEST_DATA_DIR, "absent.pdf"),
             ),
     },
+    {
+        "command": [
+            os.path.join(TEST_DATA_DIR, "nometadata.pdf"),
+        ],
+        "returncode": 0,
+    },
+
 ]
 
 WDEVNULL = open(os.devnull, 'w')

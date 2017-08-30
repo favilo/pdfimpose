@@ -519,7 +519,8 @@ def _set_metadata(outpdf, inpdf=None):
         # in a future version of PyPDF2, we prevent errors.
         infodict = outpdf._info.getObject()
         if inpdf is not None:
-            infodict.update(inpdf.getDocumentInfo())
+            if inpdf.getDocumentInfo() is not None:
+                infodict.update(inpdf.getDocumentInfo())
         infodict.update({
             NameObject('/Creator'): createStringObject(
                 'PdfImpose, using the PyPDF2 library — http://git.framasoft.org/spalax/pdfimpose'
