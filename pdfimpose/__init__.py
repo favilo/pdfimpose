@@ -36,6 +36,31 @@ horizontally.
         last=0,
         )
 
+Manipulation of PDF files
+-------------------------
+
+This modules also provides a class to manipulate a list of PDF files as a list
+of their concatenated pages.
+
+.. autoclass:: PageList
+   :members:
+
+Here is an example.
+
+.. code-block:: python
+
+    # "foo.pdf" is a 3-pages PDF files, while "bar.pdf" is a 10-pages PDF files.
+    pdf = PageList(["foo.pdf", "bar.pdf"]) # doctest: +SKIp
+
+    # Print "13"
+    print(len(pdf))
+
+    # Get second page of "foo.pdf"
+    pdf[1]
+    # Get second page of "bar.pdf" (since `pdf[0]`, `pdf[1]` and `pdf[2]` are
+    # pages of "foo.pdf").
+    pdf[5]
+
 High level manipulation
 -----------------------
 
@@ -120,6 +145,42 @@ __AUTHOR__ = "Louis Paternault (spalax+python@gresille.org)"
 __COPYRIGHT__ = "(C) 2014-2015 Louis Paternault. GNU GPL 3 or later."
 
 LOGGER = logging.getLogger(__name__)
+
+class PageList:
+    # pylint: disable=too-few-public-methods
+    """List of PDF pages.
+
+    Using this class, one can access a list of PDF files as if it were a list
+    of pages, being agnostic about the number of underlying files.
+
+    :param list filenames: List of source files.
+
+    It also gives more a pythonic syntax to some of
+    :class:`PyPDF2.PdfFileReader` methods (e.g. ``len(foo)`` instead of
+    ``foo.numPages`` and ``foo[3]`` instead of ``foo.getPage(3)``).
+    """
+
+    def __init__(self, filenames):
+        self.files = []
+        self.cumulative = [0]
+        for name in filenames:
+            try:
+                self.files.append(PyPDF2.PdfFileReader(name))
+            except (FileNotFoundError, PyPDF2.utils.PdfReadError, PermissionError) as error:
+                raise errors.PdfImposeError("Error: Could not read file '{}': {}.".format(
+                    name,
+                    str(error),
+                    ))
+            self.cumulative.append(self.cumulative[-1] + self.files[-1].numPages)
+
+    def __len__(self):
+        return self.cumulative[-1]
+
+    def __getitem__(self, key):
+        for index, num in enumerate(self.cumulative):
+            if key < num:
+                return self.files[index-1].getPage(key-self.cumulative[index-1])
+        raise IndexError()
 
 class Direction(Enum):
     """Direction (horizontal or vertical)"""
@@ -447,7 +508,7 @@ def _get_pdf_size(page):
         page.mediaBox.upperRight[1] - page.mediaBox.lowerRight[1],
         )
 
-def _set_metadata(inpdf, outpdf):
+def _set_metadata(outpdf, inpdf=None):
     """Copy and set metadata from inpdf to outpdf.
     """
     #Source:
@@ -457,7 +518,8 @@ def _set_metadata(inpdf, outpdf):
         # Since we are accessing to a protected membre, which can no longer exist
         # in a future version of PyPDF2, we prevent errors.
         infodict = outpdf._info.getObject()
-        infodict.update(inpdf.getDocumentInfo())
+        if inpdf is not None:
+            infodict.update(inpdf.getDocumentInfo())
         infodict.update({
             NameObject('/Creator'): createStringObject(
                 'PdfImpose, using the PyPDF2 library — http://git.framasoft.org/spalax/pdfimpose'
@@ -466,11 +528,11 @@ def _set_metadata(inpdf, outpdf):
     except AttributeError:
         LOGGER.warning("Could not copy metadata from source document.")
 
-def pypdf_impose(matrix, pdf, last, callback=None):
-    """Return the pdf object corresponding to imposition of ``pdf``.
+def pypdf_impose(matrix, pages, last, callback=None):
+    """Return the pdf object corresponding to imposition of ``pages``.
 
     :param ImpositionMatrix matrix: Imposition is performed according to this matrix.
-    :param PyPDF2.PdfFileReader pdf: Input file, to be imposed.
+    :param PageList pages: Input pages, to be imposed.
     :param int last: Number of pages to keep as last pages (same meaning as
         same argument in :func:`impose`).
     :param function callback: Callback function (exactly the same meaning as
@@ -479,18 +541,18 @@ def pypdf_impose(matrix, pdf, last, callback=None):
     """
     # pylint: disable=too-many-locals
 
-    try:
-        pdf.getPage(0)
-    except IndexError:
-        raise errors.PdfImposeError("Error: Not a single page to process.")
     if callback is None:
         callback = lambda x, y: None
-    width, height = _get_pdf_size(pdf.getPage(0))
+    try:
+        print(pages[0])
+        width, height = _get_pdf_size(pages[0])
+    except IndexError:
+        raise errors.PdfImposeError("Error: Not a single page to process.")
     output = PyPDF2.PdfFileWriter()
 
     sectionsize = matrix.size.x * matrix.size.y
-    section_number = int(math.ceil(pdf.numPages / sectionsize))
-    inputpages = _get_input_pages(pdf.numPages, sectionsize, section_number, last)
+    section_number = int(math.ceil(len(pages) / sectionsize))
+    inputpages = _get_input_pages(len(pages), sectionsize, section_number, last)
     rectoverso = [matrix.verso, matrix.recto]
     pagecount = 0
     for outpagenumber in range(2 * section_number):
@@ -507,24 +569,27 @@ def pypdf_impose(matrix, pdf, last, callback=None):
                 if inputpages[pagenumber] is not None:
                     if rectoverso[outpagenumber%2][x][y].orientation == NORTH:
                         currentoutputpage.mergeTransformedPage(
-                            pdf.getPage(inputpages[pagenumber]),
+                            pages[inputpages[pagenumber]],
                             _ORIENTATION_MATRIX[NORTH.value] + [x*width, y*height],
                             )
                     else:
                         currentoutputpage.mergeTransformedPage(
-                            pdf.getPage(inputpages[pagenumber]),
+                            pages[inputpages[pagenumber]],
                             _ORIENTATION_MATRIX[SOUTH.value] + [(x+1)*width, (y+1)*height],
                             )
                     pagecount += 1
-                    callback(pagecount, pdf.numPages)
+                    callback(pagecount, len(pages))
 
-    _set_metadata(pdf, output)
+    if len(pages.files) == 1:
+        _set_metadata(output, pages.files[0])
+    else:
+        _set_metadata(output)
     return output
 
 def impose(inname, outname, fold, bind, last, callback=None):
     """Perform imposition on a pdf file.
 
-    :param str inname: Name of input file.
+    :param str inname: List of names of input files.
     :param str outname: Name of output file.
     :param list fold: List of folds to perform, as a list of :class:`Direction`
         constants.
@@ -540,16 +605,11 @@ def impose(inname, outname, fold, bind, last, callback=None):
         this.
     """
     # pylint: disable=too-many-arguments
-    try:
-        input_file = PyPDF2.PdfFileReader(inname)
-    except (FileNotFoundError, PyPDF2.utils.PdfReadError, PermissionError) as error:
-        raise errors.PdfImposeError("Error: Could not read file '{}': {}.".format(
-            inname,
-            str(error),
-            ))
-    pypdf_impose(
-        matrix=ImpositionMatrix(fold, bind),
-        pdf=input_file,
-        last=last,
-        callback=callback,
-        ).write(outname)
+    pages = PageList(inname)
+    with open(outname, "wb") as outfile:
+        pypdf_impose(
+            matrix=ImpositionMatrix(fold, bind),
+            pages=pages,
+            last=last,
+            callback=callback,
+            ).write(outfile)

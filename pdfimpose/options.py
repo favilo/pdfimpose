@@ -158,11 +158,11 @@ def _process_size_fold_bind(options):
 
     return processed
 
-def _process_output(text, source):
+def _process_output(outname, source):
     """Process the `output` argument."""
-    if text is None:
-        text = "{}-impose.pdf".format(".".join(source.split('.')[:-1]))
-    return open(text, 'wb')
+    if outname is None:
+        outname = "{}-impose.pdf".format(".".join(source[0].split('.')[:-1]))
+    return outname
 
 def commandline_parser():
     """Return a command line parser."""
@@ -210,10 +210,10 @@ def commandline_parser():
         )
 
     parser.add_argument(
-        'file',
-        metavar="FILE",
-        help='PDF file to process',
-        nargs=1,
+        'files',
+        metavar="FILEs",
+        help='PDF files to process',
+        nargs='+',
         type=str,
         )
 
@@ -289,8 +289,8 @@ def process_options(argv):
 
     try:
         processed['last'] = options.last
-        processed['output'] = _process_output(options.output, options.file[0])
-        processed["file"] = options.file[0]
+        processed['output'] = _process_output(options.output, options.files)
+        processed["files"] = options.files
 
         processed.update(_process_size_fold_bind(options))
     except FileNotFoundError as error:

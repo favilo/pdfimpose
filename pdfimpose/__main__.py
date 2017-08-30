@@ -39,7 +39,7 @@ def main(arguments=None):
         arguments = options.process_options(arguments)
 
         pdfimpose.impose(
-            inname=arguments['file'],
+            inname=arguments['files'],
             outname=arguments['output'],
             fold=arguments['fold'],
             bind=arguments['bind'],
