@@ -1,7 +1,8 @@
 * pdfimpose 0.2.0 (unreleased)
 
     * Add python3.6 support.
-    * Several files can be given in argument. They are concatenated, then imposed. Closes #10.
+    * Several files can be given in argument. They are concatenated, then imposed (closes #10).
+    * No longer crash when using pdfimpose on file without any metadata (closes #12).
     * Display nicer messages with several input-file related errors (absent, unreadable, malformed, etc. file).
 
     -- Louis Paternault <spalax+python@gresille.org>
