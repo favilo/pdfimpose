@@ -58,6 +58,7 @@ setup(
         entry_points={
             'console_scripts': ['pdfimpose = pdfimpose.__main__:main']
             },
+        keywords = "pdf imposition print",
         classifiers=[
             "Development Status :: 5 - Production/Stable",
             "Environment :: Console",
