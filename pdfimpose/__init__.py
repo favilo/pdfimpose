@@ -435,13 +435,14 @@ class ImpositionMatrix:
     def _virtualpage_find_page(self, corner, size):
         """Find the actual page on a virtual page.
 
-        A virtual page should contain only one actual page. Return the coorditanes
+        A virtual page should contain only one actual page. Return the coordinates
         of this page (relative to the matrix).
 
         :arg Coordinates corner: Coordinates of the low left corner of the
             virtual page.
         :arg Coordinates size: Size of the virtual page.
         """
+        # pylint: disable=inconsistent-return-statements
         for coordinates in [
                 corner,
                 corner + Coordinates(size.x-1, 0),
@@ -450,6 +451,7 @@ class ImpositionMatrix:
             ]:
             if self[coordinates] is not None:
                 return coordinates
+        raise ValueError("Page not found in the virtual page.")
 
     def _virtualpage_fold(self, corner, size, orientation, rotate):
         """Fold a virtual page
