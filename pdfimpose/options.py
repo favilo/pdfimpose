@@ -176,23 +176,17 @@ def commandline_parser():
         epilog=textwrap.dedent("""
             # Imposition
 
-            Imposition consists in the arrangement of the printed product’s
-            pages on the printer’s sheet, in order to obtain faster printing,
-            simplify binding and reduce paper waste (source:
-            http://en.wikipedia.org/wiki/Imposition).
+            Imposition consists in the arrangement of the printed product’s pages on the printer’s sheet, in order to obtain faster printing, simplify binding and reduce paper waste (source: http://en.wikipedia.org/wiki/Imposition).
 
             # How to
 
             ## Print
 
-            The resulting document should be printed on both sides, binding
-            left (or right).
+            The resulting document should be printed on both sides, binding left (or right).
 
             ## Fold
 
-            Fold the document such that each page is placed against the
-            previous one, beginning with the first page. More information on
-            http://pdfimpose.readthedocs.io/en/latest/folding/
+            Fold the document such that each page is placed against the previous one, beginning with the first page. More information on http://pdfimpose.readthedocs.io/en/latest/folding/
             """),
         )
 
@@ -228,12 +222,9 @@ def commandline_parser():
 
     parser.add_argument(
         '--bind', '-b',
-        help=textwrap.dedent("""
-            Binding edge. Default is left or top, depending on arguments
-            '--fold' and '--size'. If neither '--size' nor '--fold' is set,
-            default is 'left'. Note that any prefix of accepted choices is also
-            accepted.
-            """),
+        help=(
+            """Binding edge. Default is left or top, depending on arguments '--fold' and '--size'. If neither '--size' nor '--fold' is set, default is 'left'. Note that any prefix of accepted choices is also accepted."""
+        ),
         metavar="{{{}}}".format(",".join(BIND)),
         default=None,
         type=_bind_type,
@@ -242,10 +233,9 @@ def commandline_parser():
     parser.add_argument(
         '--last', '-l',
         metavar='N',
-        help=textwrap.dedent("""
-            Number of pages to keep as last pages. Useful, for instance, to
-            keep the back cover as a back cover.
-            """),
+        help=(
+            """Number of pages to keep as last pages. Useful, for instance, to keep the back cover as a back cover."""
+        ),
         type=_positive_int,
         default=0,
         )
@@ -254,11 +244,9 @@ def commandline_parser():
 
     group.add_argument(
         '--fold', '-f',
-        help=textwrap.dedent("""
-            Sequence of fold orientations, as letters 'v' and 'h'. Default is
-            alternating, as much as possible, horizontal and vertical folds, to
-            match the argument of '--size'.
-        """),
+        help=(
+            """Sequence of fold orientations, as letters 'v' (vertical) and 'h' (horizontal)."""
+        ),
         default=None,
         metavar='SEQUENCE',
         type=_fold_type,
@@ -267,11 +255,9 @@ def commandline_parser():
     group.add_argument(
         '--size', '-s',
         metavar="WIDTHxHEIGHT",
-        help=textwrap.dedent("""
-            Size of sections. Both width and height must be powers of two (1,
-            2, 4, 8, 16...). If neither this nor '--fold' is set, '--size' is
-            '4x4'.
-        """),
+        help=(
+            """Size of sections. Both width and height must be powers of two (1, 2, 4, 8, 16...)."""
+        ),
         type=_size_type,
         default=None,
         )
