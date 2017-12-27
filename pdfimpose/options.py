@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright Louis Paternault 2011-2015, 2017
+# Copyright Louis Paternault 2011-2017
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ import logging
 import math
 import re
 import textwrap
+
+import papersize
 
 from pdfimpose import Direction, HORIZONTAL, VERTICAL
 from pdfimpose import VERSION
@@ -68,6 +70,12 @@ def _bind_type(text):
             )
         )
 
+def _papersize(text):
+    """Parse the argument, and return the dimensions."""
+    try:
+        return papersize.parse_papersize(text)
+    except papersize.CouldNotParse as error:
+        raise argparse.ArgumentTypeError(error)
 
 def _size_type(text):
     """Check type of '--size' argument."""
@@ -94,43 +102,19 @@ def _fold_type(text):
         Argument must be a sequence of letters 'v' and 'h'.
         """))
 
-def _process_size_fold_bind(options):
+def _process_size_fold_bind(options, pages):
     """Process arguments '--size', '--fold', '--bind'."""
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches, too-many-statements
     processed = {}
 
-    if options.size:
-        width, height = [int(num) for num in options.size]
-        if (
-                options.bind in ["left", "right"] and width == 1
-            ) or (
-                options.bind in ["top", "bottom"] and height == 1
-            ):
-            raise errors.IncompatibleBindSize(options.bind, options.size)
-        if options.bind is None:
-            if width >= height:
-                processed["bind"] = "left"
-            else:
-                processed["bind"] = "top"
-        else:
-            processed["bind"] = options.bind
-
-        processed["fold"] = []
-        if processed["bind"] in ["left", "right"]:
-            processed["fold"].append(HORIZONTAL)
-            width //= 2
-        else:
-            processed["fold"].append(VERTICAL)
-            height //= 2
-        while width != 1 or height != 1:
-            if width > height:
-                processed["fold"].append(HORIZONTAL)
-                width //= 2
-            else:
-                processed["fold"].append(VERTICAL)
-                height //= 2
-        processed["fold"].reverse()
-    elif options.fold:
+    if (
+            options.fold is None
+            and options.size is None
+            and options.sheets is None
+            and options.paper is None
+        ):
+        options.paper = papersize.parse_papersize("A4")
+    if options.fold:
         processed["fold"] = options.fold
         if options.bind is None:
             if processed["fold"][-1] == VERTICAL:
@@ -148,13 +132,92 @@ def _process_size_fold_bind(options):
                 ):
                 raise errors.IncompatibleBindFold(options.bind, options.fold)
     else:
+        if options.size is not None:
+            horizontal, vertical = [int(math.log2(int(num))) for num in options.size]
+            if (
+                    options.bind in ["left", "right"] and horizontal == 0
+                ) or (
+                    options.bind in ["top", "bottom"] and vertical == 0
+                ):
+                raise errors.IncompatibleBindSize(options.bind, options.size)
+        elif options.sheets is not None:
+            try:
+                source = pdfimpose.pdf_page_size(pages[0])
+            except IndexError:
+                raise errors.PdfImposeError("Error: Not a single page to process.")
+            fold_number = max(0, math.ceil(math.log2(len(pages) / (2*options.sheets))))
+            horizontal = fold_number // 2
+            vertical = fold_number - horizontal
+            if source[0] > source[1]:
+                horizontal, vertical = vertical, horizontal
+        else: # options.paper is not None:
+            dest = options.paper
+            try:
+                source = pdfimpose.pdf_page_size(pages[0])
+            except IndexError:
+                raise errors.PdfImposeError("Error: Not a single page to process.")
+
+            try:
+                horizontal, vertical = max(
+                    (
+                        # The more folds, the better
+                        sum(candidate),
+                        # We want the number of horizontal and vertical folds as close as possible
+                        -abs(candidate[0] - candidate[1]),
+                        candidate,
+                        )
+                    for candidate
+                    in (
+                        ( # Not rotated
+                            max(-1, math.floor(math.log2(dest[0]/source[0]))),
+                            max(-1, math.floor(math.log2(dest[1]/source[1]))),
+                            ),
+                        ( # Rotated
+                            max(-1, math.floor(math.log2(dest[1]/source[0]))),
+                            max(-1, math.floor(math.log2(dest[0]/source[1]))),
+                            ),
+                        )
+                    if -1 not in candidate # Source page is too big for paper format
+                    )[2]
+            except ValueError:
+                raise errors.PdfImposeError(
+                    "Error: Source file is too big for requested paper format."
+                    )
+
         if options.bind is None:
-            options.bind = "left"
-        processed["bind"] = options.bind
-        if processed["bind"] in ["top", "bottom"]:
-            processed["fold"] = [HORIZONTAL, VERTICAL, HORIZONTAL, VERTICAL]
+            if horizontal >= vertical:
+                processed["bind"] = "left"
+            else:
+                processed["bind"] = "top"
         else:
-            processed["fold"] = [VERTICAL, HORIZONTAL, VERTICAL, HORIZONTAL]
+            processed["bind"] = options.bind
+
+        processed["fold"] = []
+
+        # First fold (corresponding to two-side printing)
+        if horizontal > 0 and vertical > 0:
+            if processed["bind"] in ["left", "right"]:
+                processed["fold"].append(HORIZONTAL)
+                horizontal -= 1
+            else:
+                processed["fold"].append(VERTICAL)
+                vertical -= 1
+
+        # Alternating folds
+        if horizontal > 0 and vertical > 0:
+            alternate = min(horizontal, vertical)
+            if processed["fold"][0] == HORIZONTAL:
+                processed["fold"].extend([VERTICAL, HORIZONTAL]*alternate)
+            else:
+                processed["fold"].extend([HORIZONTAL, VERTICAL]*alternate)
+            horizontal -= alternate
+            vertical -= alternate
+
+        # Remaning, identical, folds. One of vertical or horizontal is zero.
+        processed["fold"].extend([HORIZONTAL] * horizontal)
+        processed["fold"].extend([VERTICAL] * vertical)
+
+        processed["fold"].reverse()
 
     return processed
 
@@ -223,7 +286,9 @@ def commandline_parser():
     parser.add_argument(
         '--bind', '-b',
         help=(
-            """Binding edge. Default is left or top, depending on arguments '--fold' and '--size'. If neither '--size' nor '--fold' is set, default is 'left'. Note that any prefix of accepted choices is also accepted."""
+            "Binding edge. Default is left or top, depending on arguments "
+            "'--fold' and '--size'. Note that any prefix of accepted "
+            "choices is also accepted."
         ),
         metavar="{{{}}}".format(",".join(BIND)),
         default=None,
@@ -234,7 +299,8 @@ def commandline_parser():
         '--last', '-l',
         metavar='N',
         help=(
-            """Number of pages to keep as last pages. Useful, for instance, to keep the back cover as a back cover."""
+            "Number of pages to keep as last pages. Useful, for instance, "
+            "to keep the back cover as a back cover."
         ),
         type=_positive_int,
         default=0,
@@ -255,9 +321,32 @@ def commandline_parser():
         '--size', '-s',
         metavar="WIDTHxHEIGHT",
         help=(
-            """Size of sections. Both width and height must be powers of two (1, 2, 4, 8, 16...)."""
+            "Size of destination pages (relative to source pages). Both "
+            "width and height must be powers of two (1, 2, 4, 8, 16...)."
         ),
         type=_size_type,
+        default=None,
+        )
+
+    group.add_argument(
+        '--paper', '-p',
+        help=(
+            """Paper format of destination pages: fold the original """
+            """document so that it can be printed on this paper format. Can """
+            """be either a couple of length (e.g. "21cmx29.7cm") or a named """
+            """format (e.g. "letter")."""
+        ),
+        type=_papersize,
+        default=None,
+        )
+
+    group.add_argument(
+        '--sheets', '-S',
+        help=(
+            "Number of final paper sheets: fold the original document so "
+            "that it can be printed on this number of paper sheets."
+        ),
+        type=_positive_int,
         default=None,
         )
 
@@ -275,9 +364,12 @@ def process_options(argv):
     try:
         processed['last'] = options.last
         processed['output'] = _process_output(options.output, options.files)
-        processed["files"] = options.files
+        processed['pages'] = pdfimpose.PageList(options.files)
 
-        processed.update(_process_size_fold_bind(options))
+        processed.update(_process_size_fold_bind(
+            options=options,
+            pages=processed['pages'],
+            ))
     except FileNotFoundError as error:
         raise errors.PdfImposeError(str(error))
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright Louis Paternault 2011-2015
+# Copyright Louis Paternault 2011-2017
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,14 +38,16 @@ def main(arguments=None):
     try:
         arguments = options.process_options(arguments)
 
-        pdfimpose.impose(
-            inname=arguments['files'],
-            outname=arguments['output'],
-            fold=arguments['fold'],
-            bind=arguments['bind'],
-            last=arguments['last'],
-            callback=print_progress,
-            )
+        with open(arguments['output'], "wb") as outfile:
+            pdfimpose.pypdf_impose(
+                matrix=pdfimpose.ImpositionMatrix(
+                    arguments['fold'],
+                    arguments['bind'],
+                    ),
+                pages=arguments['pages'],
+                last=arguments['last'],
+                callback=print_progress,
+                ).write(outfile)
     except KeyboardInterrupt:
         sys.exit(1)
     except errors.PdfImposeError as error:

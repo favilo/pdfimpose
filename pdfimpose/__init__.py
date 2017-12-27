@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright Louis Paternault 2014-2015, 2017
+# Copyright Louis Paternault 2014-2017
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -503,7 +503,7 @@ def _get_input_pages(pdfsize, sectionsize, section_number, last):
         [i for i in range(pdfsize - last, pdfsize)]
         )
 
-def _get_pdf_size(page):
+def pdf_page_size(page):
     """Return the size (width x height) of page."""
     return (
         page.mediaBox.lowerRight[0] - page.mediaBox.lowerLeft[0],
@@ -543,11 +543,16 @@ def pypdf_impose(matrix, pages, last, callback=None):
     :rtype: PyPDF2.PdfFileWriter
     """
     # pylint: disable=too-many-locals
+    if len(set((pdf_page_size(page) for page in pages))) > 1:
+        LOGGER.warning(
+            "Warning: Pages of files given in argument do not have the "
+            "same size. This might lead to unexpected results."
+        )
 
     if callback is None:
         callback = lambda x, y: None
     try:
-        width, height = _get_pdf_size(pages[0])
+        width, height = pdf_page_size(pages[0])
     except IndexError:
         raise errors.PdfImposeError("Error: Not a single page to process.")
     output = PyPDF2.PdfFileWriter()
@@ -607,13 +612,10 @@ def impose(inname, outname, fold, bind, last, callback=None):
         this.
     """
     # pylint: disable=too-many-arguments
-    pages = PageList(inname)
-    if len(set((_get_pdf_size(page) for page in pages))) > 1:
-        LOGGER.warning("Warning: Pages of files given in argument do not have the same size. This might lead to unexpected results.") # pylint: disable=line-too-long
     with open(outname, "wb") as outfile:
         pypdf_impose(
             matrix=ImpositionMatrix(fold, bind),
-            pages=pages,
+            pages=PageList(inname),
             last=last,
             callback=callback,
             ).write(outfile)

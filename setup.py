@@ -38,6 +38,7 @@ def readme():
 # Requirements
 install_requires = [
     "PyPDF2",
+    "papersize",
     ]
 if sys.version_info < (3, 4, 0):
     install_requires.append("enum34")
