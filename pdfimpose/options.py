@@ -248,7 +248,6 @@ def commandline_parser():
             """Sequence of fold orientations, as letters 'v' (vertical) and 'h' (horizontal)."""
         ),
         default=None,
-        metavar='SEQUENCE',
         type=_fold_type,
         )
 
