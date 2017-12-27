@@ -29,7 +29,7 @@ horizontally.
     from pdfimpose import impose, VERTICAL, HORIZONTAL
 
     impose(
-        inname="foo.pdf",
+        inname=["foo.pdf"],
         outname="foo-impose.pdf",
         fold=[VERTICAL, HORIZONTAL],
         bind="left",
@@ -589,7 +589,7 @@ def pypdf_impose(matrix, pages, last, callback=None):
     return output
 
 def impose(inname, outname, fold, bind, last, callback=None):
-    """Perform imposition on a pdf file.
+    """Perform imposition on a list of pdf files.
 
     :param str inname: List of names of input files.
     :param str outname: Name of output file.
