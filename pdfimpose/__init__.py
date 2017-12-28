@@ -142,7 +142,7 @@ from pdfimpose import errors
 
 VERSION = "0.1.1"
 __AUTHOR__ = "Louis Paternault (spalax+python@gresille.org)"
-__COPYRIGHT__ = "(C) 2014-2015 Louis Paternault. GNU GPL 3 or later."
+__COPYRIGHT__ = "(C) 2014-2017 Louis Paternault. GNU GPL 3 or later."
 
 LOGGER = logging.getLogger(__name__)
 
