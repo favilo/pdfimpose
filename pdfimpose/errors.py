@@ -26,22 +26,3 @@ class PdfImposeError(Exception):
 
     def __str__(self):
         return self.message
-
-class IncompatibleBindSize(PdfImposeError):
-    """Bind and size are incompatible."""
-
-    def __init__(self, bind, size):
-        super().__init__("Cannot bind on '{}' with size '{}x{}'".format(
-            bind,
-            size[0],
-            size[1]
-            ))
-
-class IncompatibleBindFold(PdfImposeError):
-    """Bind and fold are incompatible."""
-
-    def __init__(self, bind, fold):
-        super().__init__("Cannot bind on '{}' with fold '{}'".format(
-            bind,
-            "".join([str(item) for item in fold]),
-            ))

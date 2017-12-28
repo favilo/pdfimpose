@@ -27,7 +27,7 @@ import papersize
 
 from pdfimpose import Direction, HORIZONTAL, VERTICAL
 from pdfimpose import VERSION
-from pdfimpose import errors
+from pdfimpose.errors import PdfImposeError
 import pdfimpose
 
 LOGGER = logging.getLogger(pdfimpose.__name__)
@@ -130,7 +130,11 @@ def _process_size_fold_bind(options, pages):
                     processed["fold"][-1] == HORIZONTAL
                     and options.bind not in ["left", "right"]
                 ):
-                raise errors.IncompatibleBindFold(options.bind, options.fold)
+                raise PdfImposeError("Cannot bind on '{}' with fold '{}'".format(
+                    options.bind,
+                    "".join([str(item) for item in options.fold]),
+                    ))
+
     else:
         if options.size is not None:
             horizontal, vertical = [int(math.log2(int(num))) for num in options.size]
@@ -139,12 +143,16 @@ def _process_size_fold_bind(options, pages):
                 ) or (
                     options.bind in ["top", "bottom"] and vertical == 0
                 ):
-                raise errors.IncompatibleBindSize(options.bind, options.size)
+                raise PdfImposeError("Cannot bind on '{}' with size '{}x{}'".format(
+                    options.bind,
+                    options.size[0],
+                    options.size[1]
+                    ))
         elif options.sheets is not None:
             try:
                 source = pdfimpose.pdf_page_size(pages[0])
             except IndexError:
-                raise errors.PdfImposeError("Error: Not a single page to process.")
+                raise PdfImposeError("Error: Not a single page to process.")
             fold_number = max(0, math.ceil(math.log2(len(pages) / (2*options.sheets))))
             horizontal = fold_number // 2
             vertical = fold_number - horizontal
@@ -155,7 +163,7 @@ def _process_size_fold_bind(options, pages):
             try:
                 source = pdfimpose.pdf_page_size(pages[0])
             except IndexError:
-                raise errors.PdfImposeError("Error: Not a single page to process.")
+                raise PdfImposeError("Error: Not a single page to process.")
 
             try:
                 horizontal, vertical = max(
@@ -180,7 +188,7 @@ def _process_size_fold_bind(options, pages):
                     if -1 not in candidate # Source page is too big for paper format
                     )[2]
             except ValueError:
-                raise errors.PdfImposeError(
+                raise PdfImposeError(
                     "Error: Source file is too big for requested paper format."
                     )
 
@@ -371,6 +379,6 @@ def process_options(argv):
             pages=processed['pages'],
             ))
     except FileNotFoundError as error:
-        raise errors.PdfImposeError(str(error))
+        raise PdfImposeError(str(error))
 
     return processed
