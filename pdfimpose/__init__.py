@@ -525,7 +525,7 @@ def _set_metadata(outpdf, inpdf=None):
                 infodict.update(inpdf.getDocumentInfo())
         infodict.update({
             NameObject('/Creator'): createStringObject(
-                'PdfImpose, using the PyPDF2 library — http://git.framasoft.org/spalax/pdfimpose'
+                'pdfimpose, using the PyPDF2 library — http://git.framasoft.org/spalax/pdfimpose'
                 )
         })
     except AttributeError:

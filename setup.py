@@ -44,7 +44,7 @@ if sys.version_info < (3, 4, 0):
     install_requires.append("enum34")
 
 setup(
-        name='PdfImpose',
+        name='pdfimpose',
         version="0.1.1",
         packages=find_packages(exclude=["test*",]),
         setup_requires=["hgtools"],

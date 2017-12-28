@@ -1,7 +1,7 @@
-Welcome to `PdfImpose`'s documentation!
+Welcome to `Pdfimpose`'s documentation!
 =======================================
 
-`PdfImpose` is a library and a command line program to impose a Pdf document.
+`pdfimpose` is a library and a command line program to impose a Pdf document.
 According to `Wikipedia <http://en.wikipedia.org/wiki/Imposition>`_,
 "imposition consists in the arrangement of the printed product's pages on the
 printer's sheet, in order to obtain faster printing, simplify binding and
