@@ -22,7 +22,7 @@ Contents
 Examples
 --------
 
-* :download:`2015 calendar <examples/calendar2015-impose.pdf>` (:download:`source <examples/calendar2015.pdf>`, see LaTeX source file in sources repository).
+* :download:`2018 calendar <examples/calendar2018-impose.pdf>` (:download:`source <examples/calendar2018.pdf>`, see LaTeX source file in sources repository).
 * :download:`64 pages file <examples/dummy64-impose.pdf>` (:download:`source <examples/dummy64.pdf>`, generated using `dummypdf <http://git.framasoft.org/spalax/dummypdf>`_).
 
 See also
