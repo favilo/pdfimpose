@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2014-2015 Louis Paternault
+# Copyright 2014-2017 Louis Paternault
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ if sys.version_info < (3, 4, 0):
 
 setup(
         name='pdfimpose',
-        version="0.1.1",
+        version="1.0.0",
         packages=find_packages(exclude=["test*",]),
         setup_requires=["hgtools"],
         install_requires=install_requires,

@@ -1,4 +1,4 @@
-* pdfimpose 0.2.0 (unreleased)
+* pdfimpose 1.0.0 (2017-12-28)
 
     * Add python3.6 support.
     * Several files can be given in argument. They are concatenated, then imposed (closes #10).

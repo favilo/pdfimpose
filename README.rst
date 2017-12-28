@@ -1,5 +1,5 @@
 pdfimpose 📕 Perform imposition of a PDF file
-============================================
+=============================================
 
 |sources| |pypi| |build| |coverage| |documentation| |license|
 
