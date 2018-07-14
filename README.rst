@@ -5,9 +5,12 @@ pdfimpose 📕 Perform imposition of a PDF file
 
     **Note:** It's 2018, and this project is still maintained: I has very few updates, because it *just works*.
 
-    Imposition consists in the arrangement of the printed product’s pages on
-    the printer’s sheet, in order to obtain faster printing, simplify binding
-    and reduce paper waste (source: http://en.wikipedia.org/wiki/Imposition).
+What is imposition?
+-------------------
+
+Imposition consists in the arrangement of the printed product’s pages on
+the printer’s sheet, in order to obtain faster printing, simplify binding
+and reduce paper waste (source: http://en.wikipedia.org/wiki/Imposition).
 
 
 Examples
