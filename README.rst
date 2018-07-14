@@ -1,8 +1,6 @@
 pdfimpose 📕 Perform imposition of a PDF file
 =============================================
 
-|sources| |pypi| |build| |coverage| |documentation| |license|
-
     **Note:** It's 2018, and this project is still maintained: I has very few updates, because it *just works*.
 
 What is imposition?
@@ -55,18 +53,3 @@ Documentation
 * To compile it from source, download and run::
 
       cd doc && make html
-
-
-.. |documentation| image:: http://readthedocs.org/projects/pdfimpose/badge/?version=latest
-  :target: http://pdfimpose.readthedocs.io
-.. |pypi| image:: https://img.shields.io/pypi/v/pdfimpose.svg
-  :target: http://pypi.python.org/pypi/pdfimpose
-.. |license| image:: https://img.shields.io/pypi/l/pdfimpose.svg
-  :target: http://www.gnu.org/licenses/gpl-3.0.html
-.. |sources| image:: https://img.shields.io/badge/sources-pdfimpose-brightgreen.svg
-  :target: http://git.framasoft.org/spalax/pdfimpose
-.. |coverage| image:: https://git.framasoft.org/spalax/pdfimpose/badges/master/coverage.svg
-  :target: https://git.framasoft.org/spalax/pdfimpose/builds
-.. |build| image:: https://git.framasoft.org/spalax/pdfimpose/badges/master/build.svg
-  :target: https://git.framasoft.org/spalax/pdfimpose/builds
-
