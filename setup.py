@@ -50,6 +50,11 @@ setup(
     author_email="spalax+python@gresille.org",
     description="Perform imposition of a PDF file.",
     url="https://git.framasoft.org/spalax/pdfimpose",
+    project_urls={
+        "Documentation": "http://pdfimpose.readthedocs.io",
+        "Source": "https://framagit.org/spalax/pdfimpose",
+        "Tracker": "https://framagit.org/spalax/pdfimpose/issues",
+    },
     license="GPLv3 or any later version",
     test_suite="test.suite",
     entry_points={"console_scripts": ["pdfimpose = pdfimpose.__main__:main"]},
