@@ -23,12 +23,14 @@ import unittest
 
 import pdfimpose
 
+
 def suite():
     """Return a :class:`TestSuite` object, testing all module :mod:`pdfimpose`.
     """
     return unittest.defaultTestLoader.discover(
         os.path.abspath(os.path.join(pdfimpose.__path__[0], ".."))
-        )
+    )
+
 
 if __name__ == "__main__":
     unittest.TextTestRunner().run(suite())

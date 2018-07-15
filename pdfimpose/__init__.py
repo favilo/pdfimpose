@@ -146,6 +146,7 @@ __COPYRIGHT__ = "(C) 2014-2017 Louis Paternault. GNU GPL 3 or later."
 
 LOGGER = logging.getLogger(__name__)
 
+
 class PageList:
     # pylint: disable=too-few-public-methods
     """List of PDF pages.
@@ -166,11 +167,14 @@ class PageList:
         for name in filenames:
             try:
                 self.files.append(PyPDF2.PdfFileReader(name))
-            except (FileNotFoundError, PyPDF2.utils.PdfReadError, PermissionError) as error:
-                raise errors.PdfImposeError("Error: Could not read file '{}': {}.".format(
-                    name,
-                    str(error),
-                    ))
+            except (
+                FileNotFoundError,
+                PyPDF2.utils.PdfReadError,
+                PermissionError,
+            ) as error:
+                raise errors.PdfImposeError(
+                    "Error: Could not read file '{}': {}.".format(name, str(error))
+                )
             self.cumulative.append(self.cumulative[-1] + self.files[-1].numPages)
 
     def __len__(self):
@@ -179,11 +183,13 @@ class PageList:
     def __getitem__(self, key):
         for index, num in enumerate(self.cumulative):
             if key < num:
-                return self.files[index-1].getPage(key-self.cumulative[index-1])
+                return self.files[index - 1].getPage(key - self.cumulative[index - 1])
         raise IndexError()
+
 
 class Direction(Enum):
     """Direction (horizontal or vertical)"""
+
     # pylint: disable=too-few-public-methods
 
     vertical = False
@@ -199,17 +205,17 @@ class Direction(Enum):
 
         Character can be one of ``h`` or ``v``, ignoring case.
         """
-        if char.lower() == 'h':
+        if char.lower() == "h":
             return cls.horizontal
-        elif char.lower() == 'v':
+        elif char.lower() == "v":
             return cls.vertical
         else:
             raise ValueError(
                 "{}: Argument '{}' is not recognised as a direction.".format(
-                    cls.__name__,
-                    char
-                    )
+                    cls.__name__, char
                 )
+            )
+
 
 #: Vertical direction
 VERTICAL = Direction.vertical
@@ -217,8 +223,10 @@ VERTICAL = Direction.vertical
 #: Horizontal direction
 HORIZONTAL = Direction.horizontal
 
+
 class Orientation(Enum):
     """Two dimensions orientation"""
+
     # pylint: disable=too-few-public-methods
 
     north = 90
@@ -247,19 +255,19 @@ class Orientation(Enum):
         else:
             return Orientation((180 - self.value) % 360)
 
+
 #: North orientation
 NORTH = Orientation.north
 
 #: South orientation
 SOUTH = Orientation.south
 
-_ORIENTATION_MATRIX = {
-    NORTH.value: [1, 0, 0, 1],
-    SOUTH.value: [-1, 0, 0, -1],
-    }
+_ORIENTATION_MATRIX = {NORTH.value: [1, 0, 0, 1], SOUTH.value: [-1, 0, 0, -1]}
+
 
 class Coordinates:
     """Two-dimensions coordinates."""
+
     # pylint: disable=too-few-public-methods
 
     x = 0
@@ -270,29 +278,21 @@ class Coordinates:
         self.y = y
 
     def __add__(self, other):
-        return Coordinates(
-            self.x + other.x,
-            self.y + other.y,
-            )
+        return Coordinates(self.x + other.x, self.y + other.y)
 
     def __sub__(self, other):
-        return Coordinates(
-            self.x - other.x,
-            self.y - other.y,
-            )
+        return Coordinates(self.x - other.x, self.y - other.y)
 
     def __str__(self):
         return "({}, {})".format(self.x, self.y)
 
     def __repr__(self):
-        return "{}({}, {})".format(
-            self.__class__.__name__,
-            self.x,
-            self.y,
-            )
+        return "{}({}, {})".format(self.__class__.__name__, self.x, self.y)
+
 
 class ImpositionPage:
     """Page, on an imposition matrix: a page number, and an orientation."""
+
     # pylint: disable=too-few-public-methods
 
     def __init__(self, number, orientation):
@@ -300,17 +300,10 @@ class ImpositionPage:
         self.number = number
 
     def __str__(self):
-        return "{: 3}{}".format(
-            self.number,
-            self.orientation,
-            )
+        return "{: 3}{}".format(self.number, self.orientation)
 
     def __eq__(self, other):
-        return (
-            other.number == self.number
-            and
-            other.orientation == self.orientation
-            )
+        return other.number == self.number and other.orientation == self.orientation
 
     def fold(self, page_max, rotate):
         """Return the symmetrical page to `self`.
@@ -318,10 +311,8 @@ class ImpositionPage:
         :arg bool orientation: Fold orientation.
         :arg int page_max: Maximum page number.
         """
-        return ImpositionPage(
-            page_max - self.number,
-            self.orientation.fold(rotate),
-            )
+        return ImpositionPage(page_max - self.number, self.orientation.fold(rotate))
+
 
 class ImpositionMatrix:
     """Matrix of an imposition: array of numbered, oriented pages.
@@ -333,28 +324,17 @@ class ImpositionMatrix:
     """
 
     def __init__(self, folds, bind):
-        size = Coordinates(
-            2**folds.count(HORIZONTAL),
-            2**folds.count(VERTICAL),
-            )
+        size = Coordinates(2 ** folds.count(HORIZONTAL), 2 ** folds.count(VERTICAL))
 
         # Initialisation
         self.folds = []
-        self.matrix = [
-            [
-                None
-                for y
-                in range(size.y)
-                ]
-            for x
-            in range(2*size.x)
-            ]
+        self.matrix = [[None for y in range(size.y)] for x in range(2 * size.x)]
         self.bind = bind
 
         # First, fake, fold (corresponding to recto/verso)
         if bind in ["top", "right"]:
             self.matrix[0][0] = ImpositionPage(0, NORTH)
-        else: # bind in ["bottom", "left"]:
+        else:  # bind in ["bottom", "left"]:
             self.matrix[-1][-1] = ImpositionPage(0, NORTH)
         self.fold(HORIZONTAL, rotate=(bind in ["top", "bottom"]))
 
@@ -375,35 +355,28 @@ class ImpositionMatrix:
     @property
     def size(self):
         """Return the size of the matrix, as a :class:`Coordinates`."""
-        return Coordinates(
-            len(self.matrix),
-            len(self.matrix[0]),
-            )
+        return Coordinates(len(self.matrix), len(self.matrix[0]))
 
     def fold(self, orientation, rotate=None):
         """Perform a fold according to `orientation`."""
         if rotate is None:
             if orientation == HORIZONTAL:
-                rotate = (self.bind in ["top", "bottom"])
+                rotate = self.bind in ["top", "bottom"]
             else:
-                rotate = (self.bind in ["left", "right"])
+                rotate = self.bind in ["left", "right"]
         virtualpage_size = Coordinates(
-            self.size.x//2**self.hfolds,
-            self.size.y//2**self.vfolds,
-            )
+            self.size.x // 2 ** self.hfolds, self.size.y // 2 ** self.vfolds
+        )
         for x in range(0, self.size.x, virtualpage_size.x):
             for y in range(0, self.size.y, virtualpage_size.y):
                 self._virtualpage_fold(
-                    Coordinates(x, y),
-                    virtualpage_size,
-                    orientation,
-                    rotate,
-                    )
+                    Coordinates(x, y), virtualpage_size, orientation, rotate
+                )
         self.folds.append(orientation)
 
     def __getitem__(self, item):
         if isinstance(item, Coordinates):
-            return self.matrix[item.x][item.y] # pylint: disable=no-member
+            return self.matrix[item.x][item.y]  # pylint: disable=no-member
         elif isinstance(item, tuple) and len(item) == 2:
             if isinstance(item[0], int) and isinstance(item[1], int):
                 return self.matrix[item[0]][item[1]]
@@ -411,14 +384,7 @@ class ImpositionMatrix:
 
     def as_list(self):
         """Return ``self``, as a list of lists of :class:`ImpositionPage`."""
-        return [
-            [
-                self[(x, y)]
-                for y in range(self.size.y)
-                ]
-            for x in range(self.size.x)
-            ]
-
+        return [[self[(x, y)] for y in range(self.size.y)] for x in range(self.size.x)]
 
     def __setitem__(self, item, value):
         if len(item) == 1:
@@ -444,11 +410,11 @@ class ImpositionMatrix:
         """
         # pylint: disable=inconsistent-return-statements
         for coordinates in [
-                corner,
-                corner + Coordinates(size.x-1, 0),
-                corner + Coordinates(0, size.y-1),
-                corner + size - Coordinates(1, 1),
-            ]:
+            corner,
+            corner + Coordinates(size.x - 1, 0),
+            corner + Coordinates(0, size.y - 1),
+            corner + size - Coordinates(1, 1),
+        ]:
             if self[coordinates] is not None:
                 return coordinates
         raise ValueError("Page not found in the virtual page.")
@@ -464,56 +430,53 @@ class ImpositionMatrix:
         page = self._virtualpage_find_page(corner, size)
         if orientation == HORIZONTAL:
             self[
-                2 * corner.x + size.x - page.x - 1, # Vertical symmetrical
-                page.y,
-                ] = self[page].fold(2**(len(self.folds)+1)-1, rotate)
+                2 * corner.x + size.x - page.x - 1, page.y  # Vertical symmetrical
+            ] = self[page].fold(2 ** (len(self.folds) + 1) - 1, rotate)
         else:
             self[
-                page.x,
-                2 * corner.y + size.y - page.y - 1, # Horizontal symmetrical
-                ] = self[page].fold(2**(len(self.folds)+1)-1, rotate)
+                page.x, 2 * corner.y + size.y - page.y - 1  # Horizontal symmetrical
+            ] = self[page].fold(2 ** (len(self.folds) + 1) - 1, rotate)
 
     def __str__(self):
-        return "\n".join([
-            " ".join([
-                str(page)
-                for page
-                in row
-                ])
-            for row
-            in reversed(list(zip(*self.matrix)))
-            ])
+        return "\n".join(
+            [
+                " ".join([str(page) for page in row])
+                for row in reversed(list(zip(*self.matrix)))
+            ]
+        )
 
     @property
     def recto(self):
         """Return the recto of the matrix."""
-        return self.matrix[len(self.matrix)//2:]
+        return self.matrix[len(self.matrix) // 2 :]
 
     @property
     def verso(self):
         """Return the verso of the matrix."""
-        return self.matrix[:len(self.matrix)//2]
+        return self.matrix[: len(self.matrix) // 2]
 
 
 def _get_input_pages(pdfsize, sectionsize, section_number, last):
     """Return the input pages, with `None` added to fit `sectionsize`."""
     return (
-        [i for i in range(pdfsize - last)] +
-        [None for i in range(pdfsize, section_number * sectionsize)] +
-        [i for i in range(pdfsize - last, pdfsize)]
-        )
+        [i for i in range(pdfsize - last)]
+        + [None for i in range(pdfsize, section_number * sectionsize)]
+        + [i for i in range(pdfsize - last, pdfsize)]
+    )
+
 
 def pdf_page_size(page):
     """Return the size (width x height) of page."""
     return (
         page.mediaBox.lowerRight[0] - page.mediaBox.lowerLeft[0],
         page.mediaBox.upperRight[1] - page.mediaBox.lowerRight[1],
-        )
+    )
+
 
 def _set_metadata(outpdf, inpdf=None):
     """Copy and set metadata from inpdf to outpdf.
     """
-    #Source:
+    # Source:
     #    http://two.pairlist.net/pipermail/reportlab-users/2009-November/009033.html
     try:
         # pylint: disable=protected-access
@@ -523,13 +486,16 @@ def _set_metadata(outpdf, inpdf=None):
         if inpdf is not None:
             if inpdf.getDocumentInfo() is not None:
                 infodict.update(inpdf.getDocumentInfo())
-        infodict.update({
-            NameObject('/Creator'): createStringObject(
-                'pdfimpose, using the PyPDF2 library — http://git.framasoft.org/spalax/pdfimpose'
+        infodict.update(
+            {
+                NameObject("/Creator"): createStringObject(
+                    "pdfimpose, using the PyPDF2 library — http://git.framasoft.org/spalax/pdfimpose"  # pylint: disable=line-too-long
                 )
-        })
+            }
+        )
     except AttributeError:
         LOGGER.warning("Could not copy metadata from source document.")
+
 
 def pypdf_impose(matrix, pages, last, callback=None):
     """Return the pdf object corresponding to imposition of ``pages``.
@@ -564,26 +530,25 @@ def pypdf_impose(matrix, pages, last, callback=None):
     pagecount = 0
     for outpagenumber in range(2 * section_number):
         currentoutputpage = output.addBlankPage(
-            matrix.size.x * width // 2,
-            matrix.size.y * height,
-            )
-        for x in range(len(rectoverso[outpagenumber%2])):
-            for y in range(len(rectoverso[outpagenumber%2][x])):
-                pagenumber = (
-                    (outpagenumber//2)*sectionsize
-                    + rectoverso[outpagenumber%2][x][y].number
-                    )
+            matrix.size.x * width // 2, matrix.size.y * height
+        )
+        for x in range(len(rectoverso[outpagenumber % 2])):
+            for y in range(len(rectoverso[outpagenumber % 2][x])):
+                pagenumber = (outpagenumber // 2) * sectionsize + rectoverso[
+                    outpagenumber % 2
+                ][x][y].number
                 if inputpages[pagenumber] is not None:
-                    if rectoverso[outpagenumber%2][x][y].orientation == NORTH:
+                    if rectoverso[outpagenumber % 2][x][y].orientation == NORTH:
                         currentoutputpage.mergeTransformedPage(
                             pages[inputpages[pagenumber]],
-                            _ORIENTATION_MATRIX[NORTH.value] + [x*width, y*height],
-                            )
+                            _ORIENTATION_MATRIX[NORTH.value] + [x * width, y * height],
+                        )
                     else:
                         currentoutputpage.mergeTransformedPage(
                             pages[inputpages[pagenumber]],
-                            _ORIENTATION_MATRIX[SOUTH.value] + [(x+1)*width, (y+1)*height],
-                            )
+                            _ORIENTATION_MATRIX[SOUTH.value]
+                            + [(x + 1) * width, (y + 1) * height],
+                        )
                     pagecount += 1
                     callback(pagecount, len(pages))
 
@@ -592,6 +557,7 @@ def pypdf_impose(matrix, pages, last, callback=None):
     else:
         _set_metadata(output)
     return output
+
 
 def impose(inname, outname, fold, bind, last, callback=None):
     """Perform imposition on a list of pdf files.
@@ -618,4 +584,4 @@ def impose(inname, outname, fold, bind, last, callback=None):
             pages=PageList(inname),
             last=last,
             callback=callback,
-            ).write(outfile)
+        ).write(outfile)

@@ -23,6 +23,7 @@ import unittest
 from pdfimpose import ImpositionMatrix, ImpositionPage
 from pdfimpose import NORTH, SOUTH, HORIZONTAL, VERTICAL
 
+
 class ImpositionMatrixTest(unittest.TestCase):
     """Tests of imposition matrix"""
 
@@ -31,7 +32,7 @@ class ImpositionMatrixTest(unittest.TestCase):
         self.assertListEqual(
             ImpositionMatrix([], "left").as_list(),
             [[ImpositionPage(1, NORTH)], [ImpositionPage(0, NORTH)]],
-            )
+        )
 
     def test_horizontal(self):
         """A single horizontal fold"""
@@ -42,8 +43,8 @@ class ImpositionMatrixTest(unittest.TestCase):
                 [ImpositionPage(2, NORTH)],
                 [ImpositionPage(3, NORTH)],
                 [ImpositionPage(0, NORTH)],
-                ],
-            )
+            ],
+        )
 
     def test_vertical(self):
         """A single vertical fold"""
@@ -52,8 +53,8 @@ class ImpositionMatrixTest(unittest.TestCase):
             [
                 [ImpositionPage(2, SOUTH), ImpositionPage(1, NORTH)],
                 [ImpositionPage(3, SOUTH), ImpositionPage(0, NORTH)],
-                ],
-            )
+            ],
+        )
 
     def test_mixed(self):
         """Mixed horizontal and vertical folds."""
@@ -64,8 +65,8 @@ class ImpositionMatrixTest(unittest.TestCase):
                 [ImpositionPage(5, SOUTH), ImpositionPage(2, NORTH)],
                 [ImpositionPage(4, SOUTH), ImpositionPage(3, NORTH)],
                 [ImpositionPage(7, SOUTH), ImpositionPage(0, NORTH)],
-                ],
-            )
+            ],
+        )
 
     def test_mixed_bind(self):
         """Mixed horizontal and vertical folds, with a different bind edge."""
@@ -76,5 +77,5 @@ class ImpositionMatrixTest(unittest.TestCase):
                 [ImpositionPage(3, SOUTH), ImpositionPage(4, SOUTH)],
                 [ImpositionPage(2, NORTH), ImpositionPage(5, NORTH)],
                 [ImpositionPage(1, SOUTH), ImpositionPage(6, SOUTH)],
-                ],
-            )
+            ],
+        )

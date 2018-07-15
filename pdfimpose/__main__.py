@@ -27,9 +27,11 @@ import pdfimpose
 LOGGER = logging.getLogger(pdfimpose.__name__)
 LOGGER.addHandler(logging.StreamHandler())
 
+
 def print_progress(progress, maximum):
     """Display progress to user"""
     LOGGER.info("{}/{}".format(progress, maximum))
+
 
 def main(arguments=None):
     """Main function"""
@@ -38,16 +40,13 @@ def main(arguments=None):
     try:
         arguments = options.process_options(arguments)
 
-        with open(arguments['output'], "wb") as outfile:
+        with open(arguments["output"], "wb") as outfile:
             pdfimpose.pypdf_impose(
-                matrix=pdfimpose.ImpositionMatrix(
-                    arguments['fold'],
-                    arguments['bind'],
-                    ),
-                pages=arguments['pages'],
-                last=arguments['last'],
+                matrix=pdfimpose.ImpositionMatrix(arguments["fold"], arguments["bind"]),
+                pages=arguments["pages"],
+                last=arguments["last"],
                 callback=print_progress,
-                ).write(outfile)
+            ).write(outfile)
     except KeyboardInterrupt:
         sys.exit(1)
     except errors.PdfImposeError as error:
@@ -55,6 +54,7 @@ def main(arguments=None):
         sys.exit(1)
 
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

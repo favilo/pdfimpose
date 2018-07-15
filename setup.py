@@ -22,60 +22,54 @@ import codecs
 import os
 import sys
 
+
 def readme():
-    directory = os.path.dirname(os.path.join(
-        os.getcwd(),
-        __file__,
-        ))
+    directory = os.path.dirname(os.path.join(os.getcwd(), __file__))
     with codecs.open(
         os.path.join(directory, "README.rst"),
         encoding="utf8",
         mode="r",
         errors="replace",
-        ) as file:
+    ) as file:
         return file.read()
 
+
 # Requirements
-install_requires = [
-    "PyPDF2",
-    "papersize",
-    ]
+install_requires = ["PyPDF2", "papersize"]
 if sys.version_info < (3, 4, 0):
     install_requires.append("enum34")
 
 setup(
-        name='pdfimpose',
-        version="1.0.0",
-        packages=find_packages(exclude=["test*",]),
-        setup_requires=["hgtools"],
-        install_requires=install_requires,
-        include_package_data=True,
-        author='Louis Paternault',
-        author_email='spalax+python@gresille.org',
-        description='Perform imposition of a PDF file.',
-        url='https://git.framasoft.org/spalax/pdfimpose',
-        license="GPLv3 or any later version",
-        test_suite="test.suite",
-        entry_points={
-            'console_scripts': ['pdfimpose = pdfimpose.__main__:main']
-            },
-        keywords = "pdf imposition print",
-        classifiers=[
-            "Development Status :: 5 - Production/Stable",
-            "Environment :: Console",
-            "Intended Audience :: Manufacturing",
-            "Intended Audience :: Developers",
-            "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-            "Operating System :: OS Independent",
-            "Programming Language :: Python",
-            "Programming Language :: Python :: 2",
-            "Programming Language :: Python :: 2.7",
-            "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.5",
-            "Programming Language :: Python :: 3.6",
-            "Topic :: Printing",
-            "Topic :: Software Development :: Libraries :: Python Modules",
-            ],
-        long_description=readme(),
-        zip_safe = True,
+    name="pdfimpose",
+    version="1.0.0",
+    packages=find_packages(exclude=["test*"]),
+    setup_requires=["hgtools"],
+    install_requires=install_requires,
+    include_package_data=True,
+    author="Louis Paternault",
+    author_email="spalax+python@gresille.org",
+    description="Perform imposition of a PDF file.",
+    url="https://git.framasoft.org/spalax/pdfimpose",
+    license="GPLv3 or any later version",
+    test_suite="test.suite",
+    entry_points={"console_scripts": ["pdfimpose = pdfimpose.__main__:main"]},
+    keywords="pdf imposition print",
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Console",
+        "Intended Audience :: Manufacturing",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Topic :: Printing",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
+    long_description=readme(),
+    zip_safe=True,
 )

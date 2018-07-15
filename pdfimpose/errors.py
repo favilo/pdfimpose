@@ -17,6 +17,7 @@
 
 """Errors and exceptions"""
 
+
 class PdfImposeError(Exception):
     """Generic error"""
 

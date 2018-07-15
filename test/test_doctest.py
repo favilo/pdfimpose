@@ -22,6 +22,7 @@ import doctest
 
 import pdfimpose
 
+
 def load_tests(__loader, tests, __pattern):
     """Load tests (unittests and doctests).
     """

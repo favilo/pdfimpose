@@ -8,4 +8,5 @@ good-names=i,j,x,y,z
 disable=
     logging-format-interpolation,
     no-else-return,
-    I
+    # Let black handle formatting
+    bad-continuation,
