@@ -1,8 +1,6 @@
 pdfimpose 📕 Perform imposition of a PDF file
 =============================================
 
-    **Note:** It's 2018, and this project is still maintained: I has very few updates, because it *just works*.
-
 What is imposition?
 -------------------
 
