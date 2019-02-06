@@ -1,5 +1,6 @@
 * pdfimpose 1.1.0 (unreleased)
 
+    * Add python3.7 support.
     * Drop python3.4 support.
     * Fix a bug in `--paper` option, which, with ``--paper=A3``, would make a A5 paper be imposed on A4 paper instead of A3 paper (closes #15).
 
