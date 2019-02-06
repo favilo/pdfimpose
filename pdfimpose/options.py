@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright Louis Paternault 2011-2017
+# Copyright Louis Paternault 2011-2019
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ SIZE_RE = r"^(?P<width>\w+)x(?P<height>\w+)$"
 
 def _is_power_of_two(number):
     """Return ``True`` iff `number` is a power of two."""
-    return math.trunc(math.log2(int(number))) == math.log2(int(number))
+    return math.trunc(math.log(int(number), 2)) == math.log(int(number), 2)
 
 
 BIND = ["top", "bottom", "left", "right"]
@@ -140,7 +140,7 @@ def _process_size_fold_bind(options, pages):
 
     else:
         if options.size is not None:
-            horizontal, vertical = [int(math.log2(int(num))) for num in options.size]
+            horizontal, vertical = [int(math.log(int(num), 2)) for num in options.size]
             if (options.bind in ["left", "right"] and horizontal == 0) or (
                 options.bind in ["top", "bottom"] and vertical == 0
             ):
@@ -155,7 +155,7 @@ def _process_size_fold_bind(options, pages):
             except IndexError:
                 raise PdfImposeError("Error: Not a single page to process.")
             fold_number = max(
-                0, math.ceil(math.log2(len(pages) / (2 * options.sheets)))
+                0, math.ceil(math.log(len(pages) / (2 * options.sheets), 2))
             )
             horizontal = fold_number // 2
             vertical = fold_number - horizontal
@@ -169,6 +169,22 @@ def _process_size_fold_bind(options, pages):
                 raise PdfImposeError("Error: Not a single page to process.")
 
             try:
+                # We are rounding the ratio of (dest/source) to
+                # 0.000001, so that 0.999999 is rounded to 1:
+                # in some cases, we *should* get 1, but due to
+                # floating point arithmetic, we get 0.999999
+                # instead. We want it to be 1.
+                #
+                # Let's compute the error: how long is such an error?
+                #
+                # log2(ratio)=10^(-6) => ratio=2^(10^(-6))=1.000000693
+                #
+                # The ratio error is about 1.000000693.
+                # What does this represent on the big side of an A4 sheet of paper?
+                #
+                # 0.000000693×29.7cm = 0.000020582cm = 0.20582 nm
+                #
+                # We are talking about a 0.2 nanometers error. We do not care.
                 horizontal, vertical = max(
                     (
                         # The more folds, the better
@@ -179,12 +195,24 @@ def _process_size_fold_bind(options, pages):
                     )
                     for candidate in (
                         (  # Not rotated
-                            max(-1, math.floor(math.log2(dest[0] / source[0]))),
-                            max(-1, math.floor(math.log2(dest[1] / source[1]))),
+                            max(
+                                -1,
+                                math.floor(round(math.log(dest[0] / source[0], 2), 6)),
+                            ),
+                            max(
+                                -1,
+                                math.floor(round(math.log(dest[1] / source[1], 2), 6)),
+                            ),
                         ),
                         (  # Rotated
-                            max(-1, math.floor(math.log2(dest[1] / source[0]))),
-                            max(-1, math.floor(math.log2(dest[0] / source[1]))),
+                            max(
+                                -1,
+                                math.floor(round(math.log(dest[1] / source[0], 2), 6)),
+                            ),
+                            max(
+                                -1,
+                                math.floor(round(math.log(dest[0] / source[1], 2), 6)),
+                            ),
                         ),
                     )
                     if -1 not in candidate  # Source page is too big for paper format

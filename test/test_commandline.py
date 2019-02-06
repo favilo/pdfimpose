@@ -66,6 +66,11 @@ FIXTURES = [
         "stderr": "Warning: Pages of files given in argument do not have the same size. This might lead to unexpected results.\n",  # pylint: disable=line-too-long
         "returncode": 0,
     },
+    {
+        "command": ["--paper", "A3", os.path.join(TEST_DATA_DIR, "A5toA3.pdf")],
+        "returncode": 0,
+        "diff": ("A5toA3-impose.pdf", "A5toA3-control.pdf"),
+    },
 ]
 
 WDEVNULL = open(os.devnull, "w")
