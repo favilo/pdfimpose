@@ -281,6 +281,30 @@ def commandline_parser():
         epilog=textwrap.dedent(
             # pylint: disable=line-too-long
             """
+            # Layout
+
+            The [--fold FOLD | --size WIDTHxHEIGHT | --paper PAPER | --sheets SHEETS] are used to define the layout of the output pages. They are exclusive.
+
+            Let's say I have a PDF file of 32 A6 pages, that I want to impose on A3 paper.
+            The resulting file is to be printed on two A3 sheets of paper, the first one being:
+
+            - Recto:
+
+                2  | 15  | 14  | 3
+                7* | 10* | 11* | 6*
+
+            - Verso:
+
+                4  | 13  | 16 | 1
+                5* | 12* | 9* | 8*
+
+            To generate this, I could use any of those commands.
+
+            - `pdfimpose --fold hvh file.pdf` means "Impose 'file.pdf' so that I will have to fold the resulting paper sheets horizontally, then vertically, then horizontally again."
+            - `pdfimpose --size 4x2 file.pdf` means "Impose 'file.pdf' so that on the resulting paper sheets, I will have 4 columns and 2 rows of source pages."
+            - `pdfimpose --paper A3 file.pdf` means "Impose 'file.pdf' so that it can be printed on A3 paper."
+            - `pdfimpose --sheets 2 file.pdf` means "Impose 'file.pdf' so that it can be printed on two paper sheets."
+
             # Imposition
 
             Imposition consists in the arrangement of the printed product’s pages on the printer’s sheet, in order to obtain faster printing, simplify binding and reduce paper waste (source: http://en.wikipedia.org/wiki/Imposition).
@@ -350,7 +374,8 @@ def commandline_parser():
         "--fold",
         "-f",
         help=(
-            """Sequence of fold orientations, as letters 'v' (vertical) and 'h' (horizontal)."""
+            "Sequence of fold orientations, as letters 'v' (vertical) and 'h' (horizontal). "
+            "See section 'Layout' below."
         ),
         default=None,
         type=_fold_type,
@@ -362,7 +387,8 @@ def commandline_parser():
         metavar="WIDTHxHEIGHT",
         help=(
             "Size of destination pages (relative to source pages). Both "
-            "width and height must be powers of two (1, 2, 4, 8, 16...)."
+            "width and height must be powers of two (1, 2, 4, 8, 16...). "
+            "See section 'Layout' below."
         ),
         type=_size_type,
         default=None,
@@ -375,7 +401,8 @@ def commandline_parser():
             """Paper format of destination pages: fold the original """
             """document so that it can be printed on this paper format. Can """
             """be either a couple of length (e.g. "21cmx29.7cm") or a named """
-            """format (e.g. "letter")."""
+            """format (e.g. "letter"). """
+            "See section 'Layout' below."
         ),
         type=_papersize,
         default=None,
@@ -386,7 +413,8 @@ def commandline_parser():
         "-S",
         help=(
             "Number of final paper sheets: fold the original document so "
-            "that it can be printed on this number of paper sheets."
+            "that it can be printed on this number of paper sheets. "
+            "See section 'Layout' below."
         ),
         type=_positive_int,
         default=None,

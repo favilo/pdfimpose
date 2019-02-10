@@ -4,6 +4,7 @@
     * Drop python3.4 support.
     * Fix an orientation error with option --sheets.
     * Fix a bug in `--paper` option, which, with ``--paper=A3``, would make a A5 paper be imposed on A4 paper instead of A3 paper (closes #16).
+    * Minor documentation improvements.
 
     -- Louis Paternault <spalax+python@gresille.org>
 
