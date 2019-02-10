@@ -159,7 +159,7 @@ def _process_size_fold_bind(options, pages):
             )
             horizontal = fold_number // 2
             vertical = fold_number - horizontal
-            if source[0] > source[1]:
+            if source[0] < source[1]:
                 horizontal, vertical = vertical, horizontal
         else:  # options.paper is not None:
             dest = options.paper
