@@ -1,10 +1,21 @@
 * pdfimpose 1.1.0 (unreleased)
 
-    * Add python3.7 support.
-    * Drop python3.4 support.
-    * Fix an orientation error with option --sheets.
-    * Fix a bug in `--paper` option, which, with ``--paper=A3``, would make a A5 paper be imposed on A4 paper instead of A3 paper (closes #16).
-    * Minor documentation improvements.
+    * Python support
+
+      * Add python3.7 support.
+      * Drop python3.4 support.
+
+    * Features and Bugs
+
+      * Fix an orientation error with option --sheets.
+      * Fix a bug in `--paper` option, which, with ``--paper=A3``, would make a A5 paper be imposed on A4 paper instead of A3 paper (closes #16).
+
+    * Minor improvements to:
+
+      * documentation;
+      * setup;
+      * continuous integration;
+      * examples.
 
     -- Louis Paternault <spalax+python@gresille.org>
 
