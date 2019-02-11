@@ -122,7 +122,7 @@ def _process_size_fold_bind(options, pages):
             if processed["fold"][-1] == VERTICAL:
                 processed["bind"] = "top"
             else:
-                processed["bind"] = "right"
+                processed["bind"] = "left"
         else:
             processed["bind"] = options.bind
             if (
