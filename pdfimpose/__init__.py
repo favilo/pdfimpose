@@ -134,6 +134,7 @@ except ImportError:
 
 import logging
 import math
+import warnings
 
 from PyPDF2.generic import NameObject, createStringObject
 import PyPDF2
@@ -145,6 +146,8 @@ __AUTHOR__ = "Louis Paternault (spalax+python@gresille.org)"
 __COPYRIGHT__ = "(C) 2014-2017 Louis Paternault. GNU GPL 3 or later."
 
 LOGGER = logging.getLogger(__name__)
+
+warnings.filterwarnings("default", category=PendingDeprecationWarning)
 
 
 class PageList:
@@ -497,17 +500,8 @@ def _set_metadata(outpdf, inpdf=None):
         LOGGER.warning("Could not copy metadata from source document.")
 
 
-def pypdf_impose(matrix, pages, last, callback=None):
-    """Return the pdf object corresponding to imposition of ``pages``.
-
-    :param ImpositionMatrix matrix: Imposition is performed according to this matrix.
-    :param PageList pages: Input pages, to be imposed.
-    :param int last: Number of pages to keep as last pages (same meaning as
-        same argument in :func:`impose`).
-    :param function callback: Callback function (exactly the same meaning as
-        same argument in :func:`impose`).
-    :rtype: PyPDF2.PdfFileWriter
-    """
+def _legacy_pypdf_impose(matrix, pages, last, callback=None):
+    """Wrapped version of :func:`pypdf_impose`."""
     # pylint: disable=too-many-locals
     if len(set((pdf_page_size(page) for page in pages))) > 1:
         LOGGER.warning(
@@ -559,6 +553,29 @@ def pypdf_impose(matrix, pages, last, callback=None):
     return output
 
 
+def pypdf_impose(matrix, pages, last, callback=None):
+    """Return the pdf object corresponding to imposition of ``pages``.
+
+    :param ImpositionMatrix matrix: Imposition is performed according to this matrix.
+    :param PageList pages: Input pages, to be imposed.
+    :param int last: Number of pages to keep as last pages (same meaning as
+        same argument in :func:`impose`).
+    :param function callback: Callback function (exactly the same meaning as
+        same argument in :func:`impose`).
+    :rtype: PyPDF2.PdfFileWriter
+
+    .. deprecated:: 2
+
+       This function will be deprecated in pdfimpose version 2.
+    """
+    warnings.warn(
+        "Function pypdf_impose() will be deprecated in pdfimpose version 2.",
+        PendingDeprecationWarning,
+        stacklevel=5,
+    )
+    return _legacy_pypdf_impose(matrix, pages, last, callback)
+
+
 def impose(inname, outname, fold, bind, last, callback=None):
     """Perform imposition on a list of pdf files.
 
@@ -579,7 +596,7 @@ def impose(inname, outname, fold, bind, last, callback=None):
     """
     # pylint: disable=too-many-arguments
     with open(outname, "wb") as outfile:
-        pypdf_impose(
+        _legacy_pypdf_impose(
             matrix=ImpositionMatrix(fold, bind),
             pages=PageList(inname),
             last=last,

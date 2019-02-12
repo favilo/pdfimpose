@@ -41,7 +41,7 @@ def main(arguments=None):
         arguments = options.process_options(arguments)
 
         with open(arguments["output"], "wb") as outfile:
-            pdfimpose.pypdf_impose(
+            pdfimpose._legacy_pypdf_impose(  # pylint: disable=protected-access
                 matrix=pdfimpose.ImpositionMatrix(arguments["fold"], arguments["bind"]),
                 pages=arguments["pages"],
                 last=arguments["last"],
