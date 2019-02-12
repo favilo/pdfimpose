@@ -1,4 +1,4 @@
-* pdfimpose 1.1.0 (unreleased)
+* pdfimpose 1.1.0 (2019-02-12)
 
     * Python support
 

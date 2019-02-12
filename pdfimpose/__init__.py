@@ -141,9 +141,9 @@ import PyPDF2
 
 from pdfimpose import errors
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 __AUTHOR__ = "Louis Paternault (spalax+python@gresille.org)"
-__COPYRIGHT__ = "(C) 2014-2017 Louis Paternault. GNU GPL 3 or later."
+__COPYRIGHT__ = "(C) 2014-2019 Louis Paternault. GNU GPL 3 or later."
 
 LOGGER = logging.getLogger(__name__)
 

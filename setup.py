@@ -41,7 +41,7 @@ if sys.version_info < (3, 4, 0):
 
 setup(
     name="pdfimpose",
-    version="1.0.0",
+    version="1.1.0",
     packages=find_packages(exclude=["test*"]),
     setup_requires=["hgtools"],
     install_requires=install_requires,
