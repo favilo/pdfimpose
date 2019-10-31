@@ -462,9 +462,9 @@ class ImpositionMatrix:
 def _get_input_pages(pdfsize, sectionsize, section_number, last):
     """Return the input pages, with `None` added to fit `sectionsize`."""
     return (
-        [i for i in range(pdfsize - last)]
+        list(range(pdfsize - last))
         + [None for i in range(pdfsize, section_number * sectionsize)]
-        + [i for i in range(pdfsize - last, pdfsize)]
+        + list(range(pdfsize - last, pdfsize))
     )
 
 
