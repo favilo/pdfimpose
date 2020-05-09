@@ -1,0 +1,7 @@
+- [ ] Drop python2 support?
+- [ ] Drop python3.4 support (remove references to enum34)
+- [ ] Replace hgtools by setuptools_scm
+- [ ] Replace setup.py by setup.cfg and pyproject.toml
+- [ ] Set `python_requires`
+- [ ] Use stable debian in `.gitlab-ci.yaml`
+- [ ] [black] Replace `py36 = True` by `target-version = ["py37", "py38"]` in `pyprojects.toml`.
