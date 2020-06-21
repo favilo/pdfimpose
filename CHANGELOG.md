@@ -2,7 +2,7 @@
 
     * Drop python3.6 support.
 
-    -- Louis Paternault <spalax+python@gresille.org>
+    -- Louis Paternault <spalax@gresille.org>
 
 * pdfimpose 1.1.0 (2019-02-12)
 
@@ -23,7 +23,7 @@
       * continuous integration;
       * examples.
 
-    -- Louis Paternault <spalax+python@gresille.org>
+    -- Louis Paternault <spalax@gresille.org>
 
 * pdfimpose 1.0.0 (2017-12-28)
 
@@ -35,7 +35,7 @@
     * Add options `--paper` and `--sheets`, to define how document is folded more easily (closes #7).
     * Horizontal and vertical folds are alternated as much as possible (closes #8).
 
-    -- Louis Paternault <spalax+python@gresille.org>
+    -- Louis Paternault <spalax@gresille.org>
 
 * pdfimpose 0.1.1 (2015-06-13)
 
@@ -43,10 +43,10 @@
     * Several minor improvements to setup, test and documentation.
     * [doc] Wrote missing parts
 
-    -- Louis Paternault <spalax+python@gresille.org>
+    -- Louis Paternault <spalax@gresille.org>
 
 * pdfimpose 0.1.0 (2015-04-15)
 
     * Initial release.
 
-    -- Louis Paternault <spalax+python@gresille.org>
+    -- Louis Paternault <spalax@gresille.org>
