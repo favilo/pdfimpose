@@ -18,7 +18,7 @@ Examples
 What's new?
 -----------
 
-See `changelog <https://git.framasoft.org/spalax/pdfimpose/blob/master/CHANGELOG.md>`_.
+See `changelog <https://git.framasoft.org/spalax/pdfimpose/blob/main/CHANGELOG.md>`_.
 
 Download and install
 --------------------
