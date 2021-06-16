@@ -1,2 +1,0 @@
-- [ ] Use stable debian in `.gitlab-ci.yaml`
-- [ ] [black] Replace `py36 = True` by `target-version = ["py37", "py38"]` in `pyprojects.toml`.
