@@ -126,12 +126,8 @@ At last, imposition can be performed.
 
 """
 
-try:
-    from enum import Enum
-except ImportError:
-    # pylint: disable=import-error
-    from enum34 import Enum
 
+from enum import Enum
 import logging
 import math
 import warnings

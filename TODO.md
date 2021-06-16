@@ -1,5 +1,4 @@
 - [ ] Drop python2 support?
-- [ ] Drop python3.4 support (remove references to enum34)
 - [ ] Replace hgtools by setuptools_scm
 - [ ] Replace setup.py by setup.cfg and pyproject.toml
 - [ ] Set `python_requires`
