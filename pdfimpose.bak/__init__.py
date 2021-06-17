@@ -316,10 +316,10 @@ class ImpositionPage:
 class ImpositionMatrix:
     """Matrix of an imposition: array of numbered, oriented pages.
 
-        :param list folds: Sorted list of folds, as a list of :class:`Direction`
-            instances.
-        :param str bind: One of ``top``, ``bottom``, ``left``, ``right``: edge on
-            which the final book is to be folded.
+    :param list folds: Sorted list of folds, as a list of :class:`Direction`
+        instances.
+    :param str bind: One of ``top``, ``bottom``, ``left``, ``right``: edge on
+        which the final book is to be folded.
     """
 
     def __init__(self, folds, bind):
@@ -473,8 +473,7 @@ def pdf_page_size(page):
 
 
 def _set_metadata(outpdf, inpdf=None):
-    """Copy and set metadata from inpdf to outpdf.
-    """
+    """Copy and set metadata from inpdf to outpdf."""
     # Source:
     #    http://two.pairlist.net/pipermail/reportlab-users/2009-November/009033.html
     try:
