@@ -27,14 +27,21 @@ class Impositor(common.Impositor):
 
     imargin: float = 0
     omargin: float = 0
+    last: int = 0
+    mark: list[str] = dataclasses.field(default_factory=list)
     creep: collections.abc.Callable[[int], float] = lambda x: 0
 
     def __post_init__(self):
+        print(self)
         print("TODO post_init")
 
     def impose(self, files, output):
         print(f"TODO impose {files} {output}")
 
 
-def impose(files, output, *, creep=0, imargin=0, omargin=0):
-    Impositor(imargin, omargin, creep).impose(files, output)
+def impose(files, output, *, creep=0, imargin=0, omargin=0, last=0, mark=None):
+    if mark is None:
+        mark = []
+    Impositor(
+        imargin=imargin, omargin=omargin, creep=creep, last=last, mark=mark
+    ).impose(files, output)

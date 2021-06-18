@@ -25,7 +25,7 @@ def main():
 
     parser = schema.ArgumentParser(
         subcommand="onepagezine",
-        options=["creep", "imargin", "omargin"],
+        options=["creep", "imargin", "omargin", "mark", "last"],
         description=DESCRIPTION,
         epilog="This command only perform imposition of the front of your fanzine. It is your job to print the poster on the back.",
     )

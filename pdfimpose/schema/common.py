@@ -14,15 +14,61 @@
 # along with pdfimpose.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import decimal
 import pathlib
 import os
+import re
 
 import papersize
 
 
-def _creep_function(text):
-    # TODO: Make it a function
+RE_CREEP = re.compile(
+    r"(?P<slope>-?\d+(.\d+)?)x(?P<yintercept>[+-]\d+(.\d+)?)?(?P<unit>[^\d]+)?"
+)
+
+
+def _type_creep(text):
+    """Turn a linear function (as a string) into a linear Python function.
+
+    >>> _type_creep("-2x+3")(5)
+    Decimal('-7')
+    >>> _type_creep("2.5x")(2)
+    Decimal('5.0')
+    >>> _type_creep("7")(9)
+    Decimal('7')
+    >>> _type_creep("2x-5pc")(3)
+    Decimal('12')
+    """
+    if "x" in text:
+        if match := RE_CREEP.match(text):
+            try:
+                groups = match.groupdict()
+                slope = decimal.Decimal(groups["slope"])
+                if groups["yintercept"]:
+                    yintercept = decimal.Decimal(groups["yintercept"])
+                else:
+                    yintercept = 0
+                if groups["unit"]:
+                    unit = papersize.UNITS[groups["unit"]]
+                else:
+                    unit = 1
+                return lambda x: (slope * x + yintercept) * unit
+            except KeyError:
+                raise argparse.ArgumentTypeError(
+                    "Invalid creep function (must be a linear function, with an optional unit, e.g. '2.3x-1mm')."
+                )
     return lambda x: papersize.parse_length(text)
+
+
+def _type_positive_int(text):
+    """Return ``int(text)`` iff ``text`` represents a positive integer."""
+    try:
+        if int(text) >= 0:
+            return int(text)
+        else:
+            raise ValueError()
+    except ValueError:
+        raise argparse.ArgumentTypeError("Argument must be a positive integer.")
 
 
 class ArgumentParser(argparse.ArgumentParser):
@@ -70,8 +116,27 @@ class ArgumentParser(argparse.ArgumentParser):
                 "--creep",
                 "-c",
                 help="Set creep (space added at each fold). This is a linear fonction of 'x', the number of folds.",
-                type=_creep_function,
+                type=_type_creep,
                 default=lambda x: 0,
+            )
+
+        if "last" in options:
+            self.add_argument(
+                "--last",
+                "-l",
+                help="Number of pages to keep as last pages. Useful to keep the back cover as a back cover.",
+                type=_type_positive_int,
+                default=0,
+            )
+
+        if "mark" in options:
+            self.add_argument(
+                "--mark",
+                "-k",
+                help="List of marks to add (crop or bind). Can be given multiple times.",
+                choices=["bind", "crop"],
+                action="append",
+                default=[],
             )
 
     def parse_args(self, *args, **kwargs):
