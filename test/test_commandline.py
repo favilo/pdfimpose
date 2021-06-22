@@ -34,43 +34,91 @@ else:
 TEST_DATA_DIR = pkg_resources.resource_filename(__name__, "test_commandline-data")
 
 FIXTURES = [
-    {"command": [], "returncode": 2},
+    {"command": [], "returncode": 1},
     {
-        "command": ["-f", "hv", os.path.join(TEST_DATA_DIR, "eight.pdf")],
+        "command": [
+            "onepagezine",
+            "8a6-portrait.pdf",
+            "-o",
+            "8a6-onepagezine-right.pdf",
+            "-b",
+            "right",
+        ],
         "returncode": 0,
-        "diff": ("eight-impose.pdf", "eight-control.pdf"),
+        "diff": ("8a6-onepagezine-right.pdf", "8a6-onepagezine-right-control.pdf"),
     },
     {
-        "command": [os.path.join(TEST_DATA_DIR, "malformed.pdf")],
-        "returncode": 1,
-        "stderr": "Error: Could not read file '{}': EOF marker not found.\n".format(
-            os.path.join(TEST_DATA_DIR, "malformed.pdf")
-        ),  # pylint: disable=line-too-long
-    },
-    {
-        "command": [os.path.join(TEST_DATA_DIR, "zero.pdf")],
-        "returncode": 1,
-        "stderr": "Error: Not a single page to process.\n",
-    },
-    {
-        "before": [["rm", os.path.join(TEST_DATA_DIR, "absent.pdf")]],
-        "command": [os.path.join(TEST_DATA_DIR, "absent.pdf")],
-        "returncode": 1,
-        "stderr": "Error: Could not read file '{filename}': [Errno 2] No such file or directory: '{filename}'.\n".format(  # pylint: disable=line-too-long
-            filename=os.path.join(TEST_DATA_DIR, "absent.pdf")
-        ),
-    },
-    {"command": [os.path.join(TEST_DATA_DIR, "nometadata.pdf")], "returncode": 0},
-    {
-        "command": [os.path.join(TEST_DATA_DIR, "different-sizes.pdf")],
-        "stderr": "Warning: Pages of files given in argument do not have the same size. This might lead to unexpected results.\n",  # pylint: disable=line-too-long
+        "command": [
+            "onepagezine",
+            "8a6-portrait.pdf",
+            "-o",
+            "8a6-onepagezine-top.pdf",
+            "-b",
+            "top",
+        ],
         "returncode": 0,
+        "diff": ("8a6-onepagezine-top.pdf", "8a6-onepagezine-top-control.pdf"),
     },
     {
-        "command": ["--paper", "A3", os.path.join(TEST_DATA_DIR, "A5toA3.pdf")],
+        "command": [
+            "onepagezine",
+            "8a6-portrait.pdf",
+            "-o",
+            "8a6-onepagezine-bottom.pdf",
+            "-b",
+            "bottom",
+        ],
         "returncode": 0,
-        "diff": ("A5toA3-impose.pdf", "A5toA3-control.pdf"),
+        "diff": ("8a6-onepagezine-bottom.pdf", "8a6-onepagezine-bottom-control.pdf"),
     },
+    {
+        "command": [
+            "onepagezine",
+            "8a6-portrait.pdf",
+            "-o",
+            "8a6-onepagezine-left.pdf",
+            "-b",
+            "left",
+        ],
+        "returncode": 0,
+        "diff": ("8a6-onepagezine-left.pdf", "8a6-onepagezine-left-control.pdf"),
+    },
+    {
+        "command": [
+            "onepagezine",
+            "onepagesize-8a6",
+            "onepagesize-5a6.pdf",
+            "--last",
+            "1",
+            "--imargin",
+            "10mm",
+            "--omargin",
+            "20mm",
+        ],
+        "returncode": 0,
+        "diff": ("onepagesize-8a6-impose.pdf", "onepagesize-8a6-impose-control.pdf"),
+    },
+    # {
+    #    "command": [os.path.join(TEST_DATA_DIR, "malformed.pdf")],
+    #    "returncode": 1,
+    #    "stderr": "Error: Could not read file '{}': EOF marker not found.\n".format(
+    #        os.path.join(TEST_DATA_DIR, "malformed.pdf")
+    #    ),  # pylint: disable=line-too-long
+    # },
+    # {
+    #    "command": [os.path.join(TEST_DATA_DIR, "zero.pdf")],
+    #    "returncode": 1,
+    #    "stderr": "Error: Not a single page to process.\n",
+    # },
+    # {
+    #    "before": [["rm", os.path.join(TEST_DATA_DIR, "absent.pdf")]],
+    #    "command": [os.path.join(TEST_DATA_DIR, "absent.pdf")],
+    #    "returncode": 1,
+    #    "stderr": "Error: Could not read file '{filename}': [Errno 2] No such file or directory: '{filename}'.\n".format(  # pylint: disable=line-too-long
+    #        filename=os.path.join(TEST_DATA_DIR, "absent.pdf")
+    #    ),
+    # },
+    # {"command": [os.path.join(TEST_DATA_DIR, "nometadata.pdf")], "returncode": 0},
 ]
 
 WDEVNULL = open(os.devnull, "w")
@@ -85,17 +133,22 @@ def run(arguments):
 
     Return a dictionary with keys `stdout`, `stderr` (standard output and
     error, as strings), and `returncode` (as an integer).
+
+    # TODO: Update to python3.8
     """
     completed = {}
 
     for command in arguments.get("before", []):
-        subprocess.Popen(command, stdout=WDEVNULL, stderr=WDEVNULL, stdin=RDEVNULL)
+        subprocess.Popen(
+            command, stdout=WDEVNULL, stderr=WDEVNULL, stdin=RDEVNULL, cwd=TEST_DATA_DIR
+        )
     process = subprocess.Popen(
         EXECUTABLE + ["-m", "pdfimpose"] + arguments["command"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         stdin=subprocess.PIPE,
         universal_newlines=True,
+        cwd=TEST_DATA_DIR,
     )
     completed["stdout"], completed["stderr"] = process.communicate(
         arguments.get("stdin", None)
@@ -124,9 +177,6 @@ class TestCommandLine(unittest.TestCase):
         for (pagea, pageb) in zip(images[0].sequence, images[1].sequence):
             self.assertEqual(pagea.compare(pageb, metric="absolute")[1], 0)
 
-    @unittest.skipIf(
-        sys.version_info < (3, 5), "Tests require python version 3.5 or higher."
-    )
     def test_commandline(self):
         """Test binary, from command line to produced files."""
         for data in FIXTURES:
