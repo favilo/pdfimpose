@@ -15,9 +15,13 @@
 
 """Parse arguments for the schema "one-page zine"."""
 
+import logging
+import sys
+
 from . import __doc__ as DESCRIPTION
 from . import impose
 from .. import common as schema
+from ... import UserError
 
 
 def main():
@@ -25,14 +29,18 @@ def main():
 
     parser = schema.ArgumentParser(
         subcommand="onepagezine",
-        options=["creep", "imargin", "omargin", "mark", "last"],
+        options=["imargin", "omargin", "mark", "last", "bind"],
         description=DESCRIPTION,
         epilog="This command only perform imposition of the front of your fanzine. It is your job to print the poster on the back.",
     )
 
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
 
-    return impose(**vars(args))
+        return impose(**vars(args))
+    except UserError as error:
+        logging.error(error)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

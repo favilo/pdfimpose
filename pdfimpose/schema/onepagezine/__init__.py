@@ -20,28 +20,61 @@ import dataclasses
 import decimal
 
 from .. import common
+from ..common import Page, Matrix
 
 
 @dataclasses.dataclass
-class Impositor(common.Impositor):
+class OnePageZineImpositor(common.AbstractImpositor):
 
     imargin: float = 0
-    omargin: float = 0
-    last: int = 0
+    bind: str = "left"
     mark: list[str] = dataclasses.field(default_factory=list)
-    creep: collections.abc.Callable[[int], float] = lambda x: 0
 
-    def __post_init__(self):
-        print(self)
-        print("TODO post_init")
+    def blank_page_number(self, source):
+        if source % 8 == 0:
+            return 0
+        return 8 - (source % 8)
 
-    def impose(self, files, output):
-        print(f"TODO impose {files} {output}")
+    def base_matrix(self):
+        yield Matrix(
+            [
+                [
+                    Page(4, bottom=self.imargin / 2, rotate=180),
+                    Page(5, top=self.imargin / 2),
+                ],
+                [
+                    Page(
+                        3, right=self.imargin / 2, bottom=self.imargin / 2, rotate=180
+                    ),
+                    Page(6, right=self.imargin / 2, top=self.imargin / 2),
+                ],
+                [
+                    Page(2, left=self.imargin / 2, bottom=self.imargin / 2, rotate=180),
+                    Page(7, left=self.imargin / 2, top=self.imargin / 2),
+                ],
+                [
+                    Page(1, bottom=self.imargin / 2, rotate=180),
+                    Page(0, top=self.imargin / 2),
+                ],
+            ],
+            rotate=common.BIND2ANGLE[self.bind],
+        )
+
+    def matrixes(self, pages: int):
+        assert pages % 8 == 0
+        yield from self.stack_matrixes(
+            list(self.base_matrix()),
+            pages // 8,
+        )
 
 
-def impose(files, output, *, creep=0, imargin=0, omargin=0, last=0, mark=None):
+def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, bind="left"):
     if mark is None:
         mark = []
-    Impositor(
-        imargin=imargin, omargin=omargin, creep=creep, last=last, mark=mark
+    OnePageZineImpositor(
+        imargin=imargin,
+        omargin=omargin,
+        last=last,
+        mark=mark,
+        bind=bind,
     ).impose(files, output)
