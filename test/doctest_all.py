@@ -25,8 +25,7 @@ import pdfimpose
 
 
 def load_tests(__loader, tests, __pattern):
-    """Load tests (doctests).
-    """
+    """Load tests (doctests)."""
     # Loading doctests
     tests.addTests(doctest.DocTestSuite(pdfimpose))
     for module_finder, name, __is_pkg in pkgutil.walk_packages(

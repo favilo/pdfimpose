@@ -32,56 +32,63 @@ else:
     EXECUTABLE = [sys.executable]
 
 TEST_DATA_DIR = pkg_resources.resource_filename(__name__, "test_commandline-data")
+ROOT_DIR = os.path.abspath(os.path.join(TEST_DATA_DIR, "..", ".."))
 
 FIXTURES = [
-    {"command": [], "returncode": 1},
+    {"command": [], "returncode": 2},
     {
         "command": [
             "onepagezine",
             "8a6-portrait.pdf",
             "-o",
-            "8a6-onepagezine-right.pdf",
+            "8a6-onepagezine-right-impose.pdf",
             "-b",
             "right",
         ],
         "returncode": 0,
-        "diff": ("8a6-onepagezine-right.pdf", "8a6-onepagezine-right-control.pdf"),
+        "diff": (
+            "8a6-onepagezine-right-impose.pdf",
+            "8a6-onepagezine-right-control.pdf",
+        ),
     },
     {
         "command": [
             "onepagezine",
-            "8a6-portrait.pdf",
+            "8a6-landscape.pdf",
             "-o",
-            "8a6-onepagezine-top.pdf",
+            "8a6-onepagezine-top-impose.pdf",
             "-b",
             "top",
         ],
         "returncode": 0,
-        "diff": ("8a6-onepagezine-top.pdf", "8a6-onepagezine-top-control.pdf"),
+        "diff": ("8a6-onepagezine-top-impose.pdf", "8a6-onepagezine-top-control.pdf"),
     },
     {
         "command": [
             "onepagezine",
-            "8a6-portrait.pdf",
+            "8a6-landscape.pdf",
             "-o",
-            "8a6-onepagezine-bottom.pdf",
+            "8a6-onepagezine-bottom-impose.pdf",
             "-b",
             "bottom",
         ],
         "returncode": 0,
-        "diff": ("8a6-onepagezine-bottom.pdf", "8a6-onepagezine-bottom-control.pdf"),
+        "diff": (
+            "8a6-onepagezine-bottom-impose.pdf",
+            "8a6-onepagezine-bottom-control.pdf",
+        ),
     },
     {
         "command": [
             "onepagezine",
             "8a6-portrait.pdf",
             "-o",
-            "8a6-onepagezine-left.pdf",
+            "8a6-onepagezine-left-impose.pdf",
             "-b",
             "left",
         ],
         "returncode": 0,
-        "diff": ("8a6-onepagezine-left.pdf", "8a6-onepagezine-left-control.pdf"),
+        "diff": ("8a6-onepagezine-left-impose.pdf", "8a6-onepagezine-left-control.pdf"),
     },
     {
         "command": [
@@ -90,10 +97,10 @@ FIXTURES = [
             "onepagesize-5a6.pdf",
             "--last",
             "1",
-            "--imargin",
-            "10mm",
             "--omargin",
             "20mm",
+            "--mark",
+            "crop",
         ],
         "returncode": 0,
         "diff": ("onepagesize-8a6-impose.pdf", "onepagesize-8a6-impose-control.pdf"),
@@ -121,46 +128,15 @@ FIXTURES = [
     # {"command": [os.path.join(TEST_DATA_DIR, "nometadata.pdf")], "returncode": 0},
 ]
 
-WDEVNULL = open(os.devnull, "w")
-RDEVNULL = open(os.devnull, "r")
-
-
-def run(arguments):
-    """Kind-of backport of subprocess.run() function from python3.4.
-
-    Run "pdfimpose" with the arguments `arguments['command']` (feeding it
-    `arguments['stdin']` as standard input if it exists).
-
-    Return a dictionary with keys `stdout`, `stderr` (standard output and
-    error, as strings), and `returncode` (as an integer).
-
-    # TODO: Update to python3.8
-    """
-    completed = {}
-
-    for command in arguments.get("before", []):
-        subprocess.Popen(
-            command, stdout=WDEVNULL, stderr=WDEVNULL, stdin=RDEVNULL, cwd=TEST_DATA_DIR
-        )
-    process = subprocess.Popen(
-        EXECUTABLE + ["-m", "pdfimpose"] + arguments["command"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        universal_newlines=True,
-        cwd=TEST_DATA_DIR,
-    )
-    completed["stdout"], completed["stderr"] = process.communicate(
-        arguments.get("stdin", None)
-    )
-    completed["returncode"] = process.returncode
-    return completed
-
 
 class TestCommandLine(unittest.TestCase):
     """Run binary, and check produced files."""
 
     maxDiff = None
+
+    def setUp(self):
+        self.environ = os.environ.copy()
+        self.environ["PYTHONPATH"] = f"{ROOT_DIR}:self.environ['PYTHONPATH']"
 
     def assertPdfEqual(self, filea, fileb):
         """Test whether PDF files given in argument (as file names) are equal.
@@ -181,11 +157,16 @@ class TestCommandLine(unittest.TestCase):
         """Test binary, from command line to produced files."""
         for data in FIXTURES:
             with self.subTest(**data):
-                completed = run(data)
+                completed = subprocess.run(
+                    EXECUTABLE + ["-m", "pdfimpose"] + data["command"],
+                    env=self.environ,
+                    cwd=TEST_DATA_DIR,
+                    capture_output=True,
+                )
 
                 for key in ["returncode", "stderr", "stdout"]:
                     if key in data:
-                        self.assertEqual(completed.get(key), data.get(key))
+                        self.assertEqual(getattr(completed, key), data.get(key))
 
                 if "diff" in data:
                     self.assertPdfEqual(

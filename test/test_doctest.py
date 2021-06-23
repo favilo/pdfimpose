@@ -24,8 +24,7 @@ import pdfimpose
 
 
 def load_tests(__loader, tests, __pattern):
-    """Load tests (unittests and doctests).
-    """
+    """Load tests (unittests and doctests)."""
     # Loading doctests
     tests.addTests(doctest.DocTestSuite(pdfimpose))
     return tests
