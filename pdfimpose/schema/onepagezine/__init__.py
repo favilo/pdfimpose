@@ -26,7 +26,6 @@ from ..common import Page, Matrix
 @dataclasses.dataclass
 class OnePageZineImpositor(common.AbstractImpositor):
 
-    imargin: float = 0
     bind: str = "left"
 
     def blank_page_number(self, source):
@@ -38,22 +37,20 @@ class OnePageZineImpositor(common.AbstractImpositor):
         yield Matrix(
             [
                 [
-                    Page(4, bottom=self.imargin / 2, rotate=180),
-                    Page(5, top=self.imargin / 2),
+                    Page(4, rotate=180),
+                    Page(5),
                 ],
                 [
-                    Page(
-                        3, right=self.imargin / 2, bottom=self.imargin / 2, rotate=180
-                    ),
-                    Page(6, right=self.imargin / 2, top=self.imargin / 2),
+                    Page(3, rotate=180),
+                    Page(6),
                 ],
                 [
-                    Page(2, left=self.imargin / 2, bottom=self.imargin / 2, rotate=180),
-                    Page(7, left=self.imargin / 2, top=self.imargin / 2),
+                    Page(2, rotate=180),
+                    Page(7),
                 ],
                 [
-                    Page(1, bottom=self.imargin / 2, rotate=180),
-                    Page(0, top=self.imargin / 2),
+                    Page(1, rotate=180),
+                    Page(0),
                 ],
             ],
             rotate=common.BIND2ANGLE[self.bind],
@@ -102,11 +99,10 @@ class OnePageZineImpositor(common.AbstractImpositor):
         )
 
 
-def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, bind="left"):
+def impose(files, output, *, omargin=0, last=0, mark=None, bind="left"):
     if mark is None:
         mark = []
     OnePageZineImpositor(
-        imargin=imargin,
         omargin=omargin,
         last=last,
         mark=mark,
