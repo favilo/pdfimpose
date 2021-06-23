@@ -134,3 +134,6 @@ class Writer(contextlib.AbstractContextManager):
         self.doc[number].show_pdf_page(
             rect, source.parent, source.number, rotate=rotate
         )
+
+    def __getitem__(self, key):
+        return self.doc[key]

@@ -230,12 +230,19 @@ class AbstractImpositor:
 
     last: int = 0
     omargin: float = 0
+    mark: list[str] = dataclasses.field(default_factory=list)
 
     def blank_page_number(self, source):
         raise NotImplementedError()
 
     def matrixes(self):
         raise NotImplementedError()
+
+    def crop_marks(self, number, matrix, outputsize, inputsize):
+        yield from []
+
+    def bind_marks(self, number, matrix):
+        yield from []
 
     @contextlib.contextmanager
     def read(self, files):
@@ -316,7 +323,8 @@ class AbstractImpositor:
     def impose(self, files, output):
         with self.read(files) as reader, self.write(output) as writer:
             for matrix in self.matrixes(len(reader)):
-                destpage = writer.new_page(*self.pagesize(matrix, reader.size))
+                destpage_size = self.pagesize(matrix, reader.size)
+                destpage = writer.new_page(*destpage_size)
                 for x, y in matrix.coordinates():
                     if reader[matrix[x, y].number] is None:
                         # Blank page
@@ -329,3 +337,12 @@ class AbstractImpositor:
                         topleft=self.topleft(matrix, x, y, *reader.size),
                         rotate=matrix[x, y].rotate,
                     )
+
+                if "crop" in self.mark:
+                    for p1, p2 in self.crop_marks(
+                        destpage, matrix, destpage_size, reader.size
+                    ):
+                        writer[destpage].draw_line(p1, p2)
+                if "bind" in self.mark:
+                    for rect, color in self.bind_marks(destpage, matrix):
+                        writer[destpage].draw_rect(rect, color=color, fill=color)

@@ -28,7 +28,6 @@ class OnePageZineImpositor(common.AbstractImpositor):
 
     imargin: float = 0
     bind: str = "left"
-    mark: list[str] = dataclasses.field(default_factory=list)
 
     def blank_page_number(self, source):
         if source % 8 == 0:
@@ -65,6 +64,41 @@ class OnePageZineImpositor(common.AbstractImpositor):
         yield from self.stack_matrixes(
             list(self.base_matrix()),
             pages // 8,
+        )
+
+    def crop_marks(self, number, matrix, outputsize, inputsize):
+        if self.omargin == 0:
+            return
+
+        SPACE = 20
+        if SPACE > self.omargin:
+            SPACE = self.omargin / 2
+
+        yield ((0, self.omargin), (self.omargin - SPACE, self.omargin))
+        yield ((self.omargin, 0), (self.omargin, self.omargin - SPACE))
+        yield (
+            (outputsize[0], self.omargin),
+            (outputsize[0] - self.omargin + SPACE, self.omargin),
+        )
+        yield (
+            (outputsize[0] - self.omargin, 0),
+            (outputsize[0] - self.omargin, self.omargin - SPACE),
+        )
+        yield (
+            (0, outputsize[1] - self.omargin),
+            (self.omargin - SPACE, outputsize[1] - self.omargin),
+        )
+        yield (
+            (self.omargin, outputsize[1]),
+            (self.omargin, outputsize[1] - self.omargin + SPACE),
+        )
+        yield (
+            (outputsize[0], outputsize[1] - self.omargin),
+            (outputsize[0] - self.omargin + SPACE, outputsize[1] - self.omargin),
+        )
+        yield (
+            (outputsize[0] - self.omargin, outputsize[1]),
+            (outputsize[0] - self.omargin, outputsize[1] - self.omargin + SPACE),
         )
 
 
