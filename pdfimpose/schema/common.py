@@ -214,7 +214,6 @@ class Matrix:
     """
 
     pages: list[list[Page]] = dataclasses.field(default_factory=lambda: [[]])
-    omargin: float = 0
     rotate: dataclasses.InitVar[int] = 0
 
     def __post_init__(self, rotate):
@@ -250,7 +249,6 @@ class Matrix:
                 ]
                 for x in range(self.signature[0])
             ],
-            omargin=self.omargin,
         )
 
 
@@ -263,7 +261,10 @@ class AbstractImpositor:
     """
 
     last: int = 0
-    omargin: float = 0
+    omarginleft: float = 0
+    omarginright: float = 0
+    omargintop: float = 0
+    omarginbottom: float = 0
     mark: list[str] = dataclasses.field(default_factory=list)
 
     def blank_page_number(self, source):
@@ -343,7 +344,7 @@ class AbstractImpositor:
             (relative to the output page signature): `coord = (0, 2)` means
             'the first page from the left, third from the top'.
         """
-        left = self.omargin
+        left = self.omarginleft
         x, y = coord
         width, height = size
         for i in range(x):
@@ -354,7 +355,7 @@ class AbstractImpositor:
                 left += width
         left += matrix[x, y].left
 
-        top = self.omargin
+        top = self.omargintop
         for j in range(y):
             top += matrix[x, j].top + matrix[x, j].bottom
             if matrix[x, j].rotate in (90, 270):
@@ -373,7 +374,7 @@ class AbstractImpositor:
         """
         lines = set()
         for y in range(matrix.signature[1]):
-            line = 2 * self.omargin
+            line = self.omarginleft + self.omarginright
             for x in range(matrix.signature[0]):
                 line += matrix[x, y].left + matrix[x, y].right
                 if matrix[x, y].rotate in (90, 270):
@@ -384,7 +385,7 @@ class AbstractImpositor:
 
         rows = set()
         for x in range(matrix.signature[0]):
-            row = 2 * self.omargin
+            row = self.omargintop + self.omarginbottom
             for y in range(matrix.signature[1]):
                 row += matrix[x, y].top + matrix[x, y].bottom
                 if matrix[x, y].rotate in (90, 270):

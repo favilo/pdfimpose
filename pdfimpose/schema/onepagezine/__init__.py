@@ -74,38 +74,47 @@ class OnePageZineImpositor(common.AbstractImpositor):
         )
 
     def crop_marks(self, number, matrix, outputsize, inputsize):
-        if self.omargin == 0:
-            return
+        left = right = bottom = top = 20
+        if left > self.omarginleft:
+            left = self.omarginleft / 2
+        if right > self.omarginright:
+            right = self.omarginright / 2
+        if top > self.omargintop:
+            top = self.omargintop / 2
+        if bottom > self.omarginbottom:
+            bottom = self.omarginbottom / 2
 
-        space = 20
-        if space > self.omargin:
-            space = self.omargin / 2
-
-        yield ((0, self.omargin), (self.omargin - space, self.omargin))
-        yield ((self.omargin, 0), (self.omargin, self.omargin - space))
+        yield ((0, self.omargintop), (self.omarginleft - left, self.omargintop))
+        yield ((self.omarginleft, 0), (self.omarginleft, self.omargintop - top))
         yield (
-            (outputsize[0], self.omargin),
-            (outputsize[0] - self.omargin + space, self.omargin),
+            (outputsize[0], self.omargintop),
+            (outputsize[0] - self.omarginright + right, self.omargintop),
         )
         yield (
-            (outputsize[0] - self.omargin, 0),
-            (outputsize[0] - self.omargin, self.omargin - space),
+            (outputsize[0] - self.omarginright, 0),
+            (outputsize[0] - self.omarginright, self.omargintop - top),
         )
         yield (
-            (0, outputsize[1] - self.omargin),
-            (self.omargin - space, outputsize[1] - self.omargin),
+            (0, outputsize[1] - self.omargintop),
+            (self.omarginleft - left, outputsize[1] - self.omargintop),
         )
         yield (
-            (self.omargin, outputsize[1]),
-            (self.omargin, outputsize[1] - self.omargin + space),
+            (self.omarginleft, outputsize[1]),
+            (self.omarginleft, outputsize[1] - self.omarginbottom + bottom),
         )
         yield (
-            (outputsize[0], outputsize[1] - self.omargin),
-            (outputsize[0] - self.omargin + space, outputsize[1] - self.omargin),
+            (outputsize[0], outputsize[1] - self.omarginbottom),
+            (
+                outputsize[0] - self.omarginright + right,
+                outputsize[1] - self.omarginbottom,
+            ),
         )
         yield (
-            (outputsize[0] - self.omargin, outputsize[1]),
-            (outputsize[0] - self.omargin, outputsize[1] - self.omargin + space),
+            (outputsize[0] - self.omarginright, outputsize[1]),
+            (
+                outputsize[0] - self.omarginright,
+                outputsize[1] - self.omarginbottom + bottom,
+            ),
         )
 
 
@@ -128,7 +137,10 @@ def impose(files, output, *, omargin=0, last=0, mark=None, bind="left"):
     if mark is None:
         mark = []
     OnePageZineImpositor(
-        omargin=omargin,
+        omarginleft=omargin,
+        omarginright=omargin,
+        omargintop=omargin,
+        omarginbottom=omargin,
         last=last,
         mark=mark,
         bind=bind,
