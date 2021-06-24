@@ -24,6 +24,27 @@ import sys
 import fitz
 
 
+def readpdf(file):
+    """Read a PDF file.
+
+    The argument can be:
+    - a filename (type `str`);
+    - a stream, as returnd with ``open("foo.pdf", mode="rb")`` (type `io.BytesIO`);
+    - a `fitz.Document` object.
+    """
+    if isinstance(file, str):
+        return fitz.Document(file)
+    if isinstance(file, io.IOBase):
+        if file.name:
+            kwargs = {"filename": file.name}
+        else:
+            kwargs = {"filetype": "application/pdf"}
+        return fitz.Document(stream=file.read(), **kwargs)
+    if isinstance(file, fitz.Document):
+        return file
+    raise TypeError
+
+
 class Reader(contextlib.AbstractContextManager):
     """Read a PDF file."""
 
@@ -34,14 +55,9 @@ class Reader(contextlib.AbstractContextManager):
 
         if not files:
             # Read from standard input
-            self.files = [
-                fitz.Document(
-                    stream=io.BytesIO(sys.stdin.buffer.read()),
-                    filetype="application/pdf",
-                )
-            ]
+            self.files = [readpdf(sys.stdin.buffer)]
         else:
-            self.files = [fitz.Document(name) for name in files]
+            self.files = [readpdf(name) for name in files]
 
         # All pages have the same size
         if (

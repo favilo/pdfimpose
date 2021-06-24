@@ -38,6 +38,44 @@ FIXTURES = [
     {"command": [], "returncode": 2},
     {
         "command": [
+            "wire",
+            "wire-9x9.pdf",
+            "-o",
+            "wire-9x9-impose.pdf",
+            "--format",
+            "A4",
+            "--mark",
+            "crop",
+        ],
+        "returncode": 0,
+        "diff": (
+            "wire-impose.pdf",
+            "wire-control.pdf",
+        ),
+    },
+    {
+        "command": [
+            "wire",
+            "wire.pdf",
+            "-o",
+            "wire-impose.pdf",
+            "--signature",
+            "3x2",
+            "--imargin",
+            "2mm",
+            "--omargin",
+            "5mm",
+            "--mark",
+            "crop",
+        ],
+        "returncode": 0,
+        "diff": (
+            "wire-impose.pdf",
+            "wire-control.pdf",
+        ),
+    },
+    {
+        "command": [
             "onepagezine",
             "8a6-portrait.pdf",
             "-o",

@@ -74,15 +74,7 @@ class OnePageZineImpositor(common.AbstractImpositor):
         )
 
     def crop_marks(self, number, matrix, outputsize, inputsize):
-        left = right = bottom = top = 20
-        if left > self.omarginleft:
-            left = self.omarginleft / 2
-        if right > self.omarginright:
-            right = self.omarginright / 2
-        if top > self.omargintop:
-            top = self.omargintop / 2
-        if bottom > self.omarginbottom:
-            bottom = self.omarginbottom / 2
+        left, right, top, bottom = self._crop_space()
 
         yield ((0, self.omargintop), (self.omarginleft - left, self.omargintop))
         yield ((self.omarginleft, 0), (self.omarginleft, self.omargintop - top))

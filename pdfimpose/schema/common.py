@@ -44,6 +44,24 @@ def _type_length(text):
     return float(papersize.parse_length(text))
 
 
+def _type_signature(text):
+    """Check type of '--signature' argument."""
+    try:
+        if text.count("x") != 1:
+            raise ValueError()
+        left, right = map(int, text.split("x"))
+
+        if left <= 0 or right <= 0:
+            raise ValueError()
+
+        return (left, right)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(
+            """Argument must be "WIDTHxHEIGHT", """
+            """where both WIDTH and HEIGHT are non-zero positive integers."""
+        ) from error
+
+
 def _type_creep(text):
     """Turn a linear function (as a string) into a linear Python function.
 
@@ -177,6 +195,33 @@ class ArgumentParser(argparse.ArgumentParser):
                 default=[],
             )
 
+        if "signature" in options or "format" in options:
+            group = self.add_mutually_exclusive_group()
+
+        if "signature" in options:
+            group.add_argument(
+                "--signature",
+                "-s",
+                metavar="WIDTHxHEIGHT",
+                type=_type_signature,
+                help="Size of the destination pages (relative to the source page), e.g. 2x3.",
+                default=None,
+            )
+
+        if "format" in options:
+            group.add_argument(
+                "--format",
+                "-f",
+                type=papersize.parse_papersize,
+                help=(
+                    "Put as much source pages into the destination page of the given format. "
+                    "Note that margins are ignored when computing this; "
+                    "if options --imargin and --omargin are set, "
+                    "the resulting file might be larger than the required format."
+                ),
+                default=None,
+            )
+
     def parse_args(self, *args, **kwargs):
         args = super().parse_args(*args, **kwargs)
 
@@ -185,12 +230,36 @@ class ArgumentParser(argparse.ArgumentParser):
                 args.files[i] = f"{path}.pdf"
 
         if args.output is None:
-            source = pathlib.Path(args.files[0])
-            args.output = "{}-impose{}".format(
-                source.parent / source.stem, source.suffix
-            )
+            if args.files:
+                source = pathlib.Path(args.files[0])
+                args.output = "{}-impose{}".format(
+                    source.parent / source.stem, source.suffix
+                )
+            else:
+                args.output = "impose.pdf"
 
         return args
+
+
+def compute_signature(source, dest):
+    """Compute the signature to fit as many as possible sources in dest.
+
+    :param tuple[float] source: Size of the source page.
+    :param tuple[float] dest: Size of the destination page.
+
+    Return a tuple ``(signature, rotated)``, where:
+    - ``signature`` is a tuple of integers:
+      ``(2, 3)`` means that the best fit is 2 source pages wide by 3 source
+      pages tall on the destination page;
+    - ``rotated`` is a boolean, indicating that the destination page has to be
+      rotated to fit the signature.
+    """
+    straight = (round(dest[0] // source[0]), round(dest[1] // source[1]))
+    rotated = (round(dest[1] // source[0]), round(dest[0] // source[1]))
+
+    if straight[0] * straight[1] > rotated[0] * rotated[1]:
+        return straight, False
+    return rotated, True
 
 
 @dataclasses.dataclass
@@ -280,6 +349,18 @@ class AbstractImpositor:
         """Yield the list of all imposition matrixes."""
         raise NotImplementedError()
 
+    def _crop_space(self):
+        left = right = bottom = top = 20
+        if top > self.omargintop:
+            top = self.omargintop / 2
+        if bottom > self.omarginbottom:
+            bottom = self.omarginbottom / 2
+        if left > self.omarginleft:
+            left = self.omarginleft / 2
+        if right > self.omarginright:
+            right = self.omarginright / 2
+        return left, right, bottom, top
+
     def crop_marks(self, number, matrix, outputsize, inputsize):
         """Yield coordinates of crop marks."""
         # pylint: disable=unused-argument, no-self-use
@@ -292,12 +373,24 @@ class AbstractImpositor:
 
     @contextlib.contextmanager
     def read(self, files):
-        """TODO
+        """Context manager to read a list of files.
+
+        Return an object that can be processed as a list of pages
+        (regardless of the original files).
 
         At the end of this function, the return value has exactly the right
         number of pages to fit on a dest page.
+
+        Note that `files` can be either a list of file, or a :class:`pdfimpose.pdf.Reader` object,
+        but only the list of files (names or io.BytesIO streams) is supported:
+        the other type is an implementation detail.
         """
-        with pdf.Reader(files) as reader:
+        if isinstance(files, pdf.Reader):
+            opener = files
+        else:
+            opener = pdf.Reader(files)
+
+        with opener as reader:
             if len(reader) == 0:
                 raise UserError("Input files do not have any page.")
             reader.set_final_blank_pages(
@@ -399,8 +492,13 @@ class AbstractImpositor:
     def impose(self, files, output):
         """Perform imposition.
 
-        :param list files: List of files (as names) to impose.
+        :param list files: List of files (as names or io.BytesIO tream) to impose.
         :param str output: Name of the output file.
+
+        Warning: You might have noticed that `files` can also be a list of
+        :class:`fitz.Document` or a :class:`pdfimpose.pdf.Reader` object.
+        This is an implementation detail, and can change without notice in the future.
+        Use at your own risk.
         """
         with self.read(files) as reader, self.write(output) as writer:
             for matrix in self.matrixes(len(reader)):

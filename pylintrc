@@ -10,3 +10,6 @@ disable=
     no-else-return,
     # Let black handle formatting
     bad-continuation,
+
+[SIMILARITIES]
+ignore-imports = yes
