@@ -13,10 +13,13 @@
 # You should have received a copy of the GNU Affero Public License
 # along with pdfimpose.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Read and write PDF files."""
+
 import contextlib
 import functools
 import io
 import logging
+import sys
 
 import fitz
 
@@ -51,7 +54,8 @@ class Reader(contextlib.AbstractContextManager):
             != 1
         ):
             logging.warning(
-                "Pages of source files have different size. This is unsupported and will lead to unexpected results."
+                "Pages of source files have different size. "
+                "This is unsupported and will lead to unexpected results."
             )
 
     def set_final_blank_pages(self, number, position):
@@ -65,6 +69,10 @@ class Reader(contextlib.AbstractContextManager):
 
     @property
     def size(self):
+        """Return the size of an arbitrary page of the document.
+
+        The size is returned as a tuple `(width, height)`.
+        """
         # Either first or last page is not empty
         if self[0] is None:
             page = self[len(self) - 1]
@@ -82,7 +90,7 @@ class Reader(contextlib.AbstractContextManager):
         for number in range(len(self)):
             yield self[number]
 
-    def __getitem__(self, key):
+    def __getitem__(self, key):  # pylint: disable=inconsistent-return-statements
         if self._blank_position <= key < self._blank_position + self._blank_number:
             # Return a blank page
             return None
@@ -116,9 +124,19 @@ class Writer(contextlib.AbstractContextManager):
         self.doc.close()
 
     def new_page(self, width, height):
+        """Create a new page, and return its page number."""
+        # pylint: disable=no-member
         return self.doc.newPage(width=width, height=height).number
 
     def insert(self, number, source, topleft, rotate):
+        """Insert a pdf page (source) into another pdf page (destination).
+
+        :param int number: Destination page number.
+        :param fitz.Page source: Source page to insert.
+        :param fitz.Rect topleft: Position (on the dest page)
+            of the topleft corner of the source page.
+        :param int rotate: Angle of a rotation to apply to the source page (one of 0, 90, 180, 270).
+        """
         if rotate in (90, 270):
             rect = fitz.Rect(
                 topleft,

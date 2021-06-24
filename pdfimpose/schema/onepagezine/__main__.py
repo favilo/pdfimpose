@@ -31,7 +31,10 @@ def main():
         subcommand="onepagezine",
         options=["omargin", "mark", "last", "bind"],
         description=DESCRIPTION,
-        epilog="This command only perform imposition of the front of your fanzine. It is your job to print the poster on the back.",
+        epilog=(
+            "This command only perform imposition of the front of your fanzine. "
+            "It is your job to print the poster on the back."
+        ),
     )
 
     try:

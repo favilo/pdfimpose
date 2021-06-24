@@ -19,4 +19,4 @@ VERSION = "2.0.0"
 
 
 class UserError(BaseException):
-    pass
+    """User did something wrong."""

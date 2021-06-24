@@ -157,7 +157,7 @@ class TestCommandLine(unittest.TestCase):
         """Test binary, from command line to produced files."""
         for data in FIXTURES:
             with self.subTest(**data):
-                completed = subprocess.run(
+                completed = subprocess.run(  # pylint: disable=subprocess-run-check
                     EXECUTABLE + ["-m", "pdfimpose"] + data["command"],
                     env=self.environ,
                     cwd=TEST_DATA_DIR,

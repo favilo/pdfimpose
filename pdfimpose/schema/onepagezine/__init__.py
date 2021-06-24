@@ -25,6 +25,11 @@ from ..common import Page, Matrix
 
 @dataclasses.dataclass
 class OnePageZineImpositor(common.AbstractImpositor):
+    """Perform imposition of source files, with the 'one-page-zine' schema.
+
+    See
+    `http://experimentwithnature.com/03-found/experiment-with-paper-how-to-make-a-one-page-zine/`.
+    """
 
     bind: str = "left"
 
@@ -34,6 +39,10 @@ class OnePageZineImpositor(common.AbstractImpositor):
         return 8 - (source % 8)
 
     def base_matrix(self):
+        """Yield a single matrix.
+
+        This matrix contains the arrangement of source pages on the output pages.
+        """
         yield Matrix(
             [
                 [
@@ -67,39 +76,54 @@ class OnePageZineImpositor(common.AbstractImpositor):
         if self.omargin == 0:
             return
 
-        SPACE = 20
-        if SPACE > self.omargin:
-            SPACE = self.omargin / 2
+        space = 20
+        if space > self.omargin:
+            space = self.omargin / 2
 
-        yield ((0, self.omargin), (self.omargin - SPACE, self.omargin))
-        yield ((self.omargin, 0), (self.omargin, self.omargin - SPACE))
+        yield ((0, self.omargin), (self.omargin - space, self.omargin))
+        yield ((self.omargin, 0), (self.omargin, self.omargin - space))
         yield (
             (outputsize[0], self.omargin),
-            (outputsize[0] - self.omargin + SPACE, self.omargin),
+            (outputsize[0] - self.omargin + space, self.omargin),
         )
         yield (
             (outputsize[0] - self.omargin, 0),
-            (outputsize[0] - self.omargin, self.omargin - SPACE),
+            (outputsize[0] - self.omargin, self.omargin - space),
         )
         yield (
             (0, outputsize[1] - self.omargin),
-            (self.omargin - SPACE, outputsize[1] - self.omargin),
+            (self.omargin - space, outputsize[1] - self.omargin),
         )
         yield (
             (self.omargin, outputsize[1]),
-            (self.omargin, outputsize[1] - self.omargin + SPACE),
+            (self.omargin, outputsize[1] - self.omargin + space),
         )
         yield (
             (outputsize[0], outputsize[1] - self.omargin),
-            (outputsize[0] - self.omargin + SPACE, outputsize[1] - self.omargin),
+            (outputsize[0] - self.omargin + space, outputsize[1] - self.omargin),
         )
         yield (
             (outputsize[0] - self.omargin, outputsize[1]),
-            (outputsize[0] - self.omargin, outputsize[1] - self.omargin + SPACE),
+            (outputsize[0] - self.omargin, outputsize[1] - self.omargin + space),
         )
 
 
 def impose(files, output, *, omargin=0, last=0, mark=None, bind="left"):
+    """Perform imposition of source files into an output file, to be printed as a "one page zine".
+
+    :param list[str] files: List of source files. If empty, reads from standard input.
+    :param str output: List of output file.
+    :param float omargin: Output margin, in pt.
+    :param int last: Number of last pages (of the source files) to keep at the
+        end of the output document.  If blank pages were to be added to the
+        source files, they would be added before those last pages.
+    :param list[str] mark: List of marks to add.
+        Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
+    :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
+
+    See
+    `http://experimentwithnature.com/03-found/experiment-with-paper-how-to-make-a-one-page-zine/`.
+    """
     if mark is None:
         mark = []
     OnePageZineImpositor(
