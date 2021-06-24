@@ -311,14 +311,15 @@ class AbstractImpositor:
         with pdf.Writer(output) as writer:
             yield writer
 
-    def stack_matrixes(self, sheet, repeat: int):
-        """Repeat a given matrix, so that resulting sheets can be stacked on top of each others.
+    def stack_matrixes(self, matrixes, step: int, repeat: int):
+        """Iterate over copies of the matrixes, incrementing pages numbers by ``step``.
 
-        :param list[Matrix] sheet: A list of matrixes.
+        :param list[Matrix] matrix: A list of matrixes.
         :param int repeat: Number of repetitions of the matrixes given in argument.
+        :param int step: At each repetition, is page is increased by this number.
 
         For instance, given a single matrix containing pages from 1 to 8,
-        with `repeat=3`, this method will yield:
+        with `repeat=3` and `step=8`, this method will yield:
         - one matrix with pages from 1 to 8;
         - one matrix with pages from 9 to 16;
         - one matrix with pages from 17 to 24.
@@ -326,13 +327,9 @@ class AbstractImpositor:
         This method is an alternative to :meth:`Impositor.insert_matrixes`.
         """
         # pylint: disable=no-self-use
-        # We assume that every page is the same size
-        assert len(set(page.signature for page in sheet)) == 1
-
-        size = len(sheet) * sheet[0].signature[0] * sheet[0].signature[1]
         for i in range(repeat):
-            for page in sheet:
-                yield page.stack(i * size)
+            for matrix in matrixes:
+                yield matrix.stack(i * step)
 
     def topleft(self, matrix, coord, size):
         """Compute and return the coordinates of the top left corner of a page.

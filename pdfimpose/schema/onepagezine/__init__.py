@@ -69,7 +69,8 @@ class OnePageZineImpositor(common.AbstractImpositor):
         assert pages % 8 == 0
         yield from self.stack_matrixes(
             list(self.base_matrix()),
-            pages // 8,
+            step=8,
+            repeat=pages // 8,
         )
 
     def crop_marks(self, number, matrix, outputsize, inputsize):
