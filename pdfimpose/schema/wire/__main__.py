@@ -18,13 +18,12 @@
 import logging
 import sys
 
-import papersize
-
 from . import __doc__ as DESCRIPTION
 from . import impose
 from .. import common as schema
-from ... import pdf
 from ... import UserError
+from ... import pdf
+from ..cards.__main__ import format2signature
 
 
 def main():
@@ -32,40 +31,21 @@ def main():
 
     parser = schema.ArgumentParser(
         subcommand="wire",
-        options=["omargin", "imargin", "mark", "last", "signature", "format"],
         description=DESCRIPTION,
+        options=["omargin", "imargin", "mark", "last", "signature", "format"],
     )
 
     try:
         args = parser.parse_args()
 
-        # If --signature is not set, compute it from --format option
         args.files = pdf.Reader(args.files)
 
-        if args.signature is None:
-            if args.format is None:
-                args.format = papersize.parse_papersize("A4")
-            args.format = (float(args.format[0]), float(args.format[1]))
-
-            args.signature, rotated = schema.compute_signature(
-                args.files.size, args.format
-            )
-            if rotated:
-                args.format = (args.format[1], args.format[0])
-
-            if args.imargin == 0:
-                args.omargin = (
-                    (args.format[1] - args.files.size[1] * args.signature[1]) / 2,
-                    (args.format[0] - args.files.size[0] * args.signature[0]) / 2,
-                    (args.format[1] - args.files.size[1] * args.signature[1]) / 2,
-                    (args.format[0] - args.files.size[0] * args.signature[0]) / 2,
-                )
-
-        del args.format
+        format2signature(args.files, args)
 
         return impose(**vars(args))
-    except UserError as usererror:
-        logging.error(usererror)
+
+    except UserError as uerror:
+        logging.error(uerror)
         sys.exit(1)
 
 

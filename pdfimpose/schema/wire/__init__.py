@@ -20,24 +20,15 @@ import decimal
 import itertools
 import numbers
 
-from .. import common
+from .. import cards, common
 from ..common import Page, Matrix
 
 
 @dataclasses.dataclass
-class WireImpositor(common.AbstractImpositor):
+class WireImpositor(cards.CardsImpositor):
     """Perform imposition of source files, with the 'wire' schema."""
 
-    imargin: float = 0
-    signature: tuple[int] = (0, 0)
-
-    def blank_page_number(self, source):
-        pagesperpage = 2 * self.signature[0] * self.signature[1]
-        if source % pagesperpage == 0:
-            return 0
-        return pagesperpage - (source % pagesperpage)
-
-    def base_matrix(self, repeat):
+    def wire_base_matrix(self, repeat):
         """Yield a single matrix.
 
         This matrix contains the arrangement of source pages on the output pages.
@@ -46,21 +37,22 @@ class WireImpositor(common.AbstractImpositor):
             [[None for _ in range(self.signature[1])] for _ in range(self.signature[0])]
             for _ in range(2)
         )
+
         for i, coord in enumerate(itertools.product(*map(range, self.signature))):
             x, y = coord
             recto[x][y] = Page(
                 2 * i * repeat,
-                left=0 if x == 0 else self.imargin / 2,
-                right=0 if x == self.signature[0] - 1 else self.imargin / 2,
                 top=0 if y == 0 else self.imargin / 2,
                 bottom=0 if y == self.signature[1] - 1 else self.imargin / 2,
+                left=0 if x == 0 else self.imargin / 2,
+                right=0 if x == self.signature[0] - 1 else self.imargin / 2,
             )
             verso[self.signature[0] - x - 1][y] = Page(
                 2 * i * repeat + 1,
-                left=0 if x == self.signature[0] - 1 else self.imargin / 2,
-                right=0 if x == 0 else self.imargin / 2,
                 top=0 if y == 0 else self.imargin / 2,
                 bottom=0 if y == self.signature[1] - 1 else self.imargin / 2,
+                left=0 if x == self.signature[0] - 1 else self.imargin / 2,
+                right=0 if x == 0 else self.imargin / 2,
             )
         yield Matrix(recto)
         yield Matrix(verso)
@@ -70,75 +62,10 @@ class WireImpositor(common.AbstractImpositor):
 
         repeat = pages // (2 * self.signature[0] * self.signature[1])
         yield from self.stack_matrixes(
-            list(self.base_matrix(repeat)),
+            list(self.wire_base_matrix(repeat)),
             repeat=repeat,
             step=2,
         )
-
-    def crop_marks(self, number, matrix, outputsize, inputsize):
-        left, right, top, bottom = self._crop_space()
-
-        for x in range(self.signature[0]):
-            yield (
-                (self.omarginleft + x * (inputsize[0] + self.imargin), 0),
-                (
-                    self.omarginleft + x * (inputsize[0] + self.imargin),
-                    self.omargintop - top,
-                ),
-            )
-            yield (
-                (self.omarginleft + (x + 1) * inputsize[0] + x * self.imargin, 0),
-                (
-                    self.omarginleft + (x + 1) * inputsize[0] + x * self.imargin,
-                    self.omargintop - top,
-                ),
-            )
-            yield (
-                (self.omarginleft + x * (inputsize[0] + self.imargin), outputsize[1]),
-                (
-                    self.omarginleft + x * (inputsize[0] + self.imargin),
-                    outputsize[1] - self.omarginbottom + bottom,
-                ),
-            )
-            yield (
-                (
-                    self.omarginleft + (x + 1) * inputsize[0] + x * self.imargin,
-                    outputsize[1],
-                ),
-                (
-                    self.omarginleft + (x + 1) * inputsize[0] + x * self.imargin,
-                    outputsize[1] - self.omarginbottom + bottom,
-                ),
-            )
-
-        for y in range(self.signature[1]):
-            yield (
-                (0, self.omargintop + y * (inputsize[1] + self.imargin)),
-                (
-                    self.omarginleft - left,
-                    self.omargintop + y * (inputsize[1] + self.imargin),
-                ),
-            )
-            yield ((0, self.omargintop + (y + 1) * inputsize[1] + y * self.imargin)), (
-                self.omarginleft - left,
-                self.omargintop + (y + 1) * inputsize[1] + y * self.imargin,
-            )
-            yield (
-                (outputsize[0], self.omargintop + y * (inputsize[1] + self.imargin)),
-                (
-                    outputsize[0] - self.omarginright + right,
-                    self.omargintop + y * (inputsize[1] + self.imargin),
-                ),
-            )
-            yield (
-                (
-                    outputsize[0],
-                    self.omargintop + (y + 1) * inputsize[1] + y * self.imargin,
-                )
-            ), (
-                outputsize[0] - self.omarginright + right,
-                self.omargintop + (y + 1) * inputsize[1] + y * self.imargin,
-            )
 
 
 def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=None):
@@ -163,11 +90,11 @@ def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=
         omargin = (omargin, omargin, omargin, omargin)
 
     WireImpositor(
+        imargin=imargin,
         omargintop=omargin[0],
         omarginright=omargin[1],
         omarginbottom=omargin[2],
         omarginleft=omargin[3],
-        imargin=imargin,
         last=last,
         mark=mark,
         signature=signature,

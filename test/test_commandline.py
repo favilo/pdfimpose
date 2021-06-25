@@ -38,6 +38,21 @@ FIXTURES = [
     {"command": [], "returncode": 2},
     {
         "command": [
+            "cards",
+            "cards-9x9.pdf",
+            "-o",
+            "cards-9x9-impose.pdf",
+            "--mark",
+            "crop",
+        ],
+        "returncode": 0,
+        "diff": (
+            "cards-9x9-impose.pdf",
+            "cards-9x9-control.pdf",
+        ),
+    },
+    {
+        "command": [
             "wire",
             "wire-9x9.pdf",
             "-o",
@@ -49,8 +64,8 @@ FIXTURES = [
         ],
         "returncode": 0,
         "diff": (
-            "wire-impose.pdf",
-            "wire-control.pdf",
+            "wire-9x9-impose.pdf",
+            "wire-9x9-control.pdf",
         ),
     },
     {
