@@ -45,11 +45,11 @@ def main():
         if args.signature is None:
             if args.format is None:
                 args.format = papersize.parse_papersize("A4")
-            else:
-                args.format = (float(args.format[0]), float(args.format[1]))
-                args.signature, rotated = schema.compute_signature(
-                    args.files.size, args.format
-                )
+            args.format = (float(args.format[0]), float(args.format[1]))
+
+            args.signature, rotated = schema.compute_signature(
+                args.files.size, args.format
+            )
             if rotated:
                 args.format = (args.format[1], args.format[0])
 
