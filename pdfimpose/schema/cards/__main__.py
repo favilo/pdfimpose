@@ -27,7 +27,7 @@ from ... import pdf
 from ... import UserError
 
 
-def format2signature(files, args):
+def format2signature(sourcesize, args):
     """Convert the --format option into a --signature option.
 
     Warning: This function changes the value of its argument ``args``.
@@ -37,16 +37,16 @@ def format2signature(files, args):
             args.format = papersize.parse_papersize("A4")
         args.format = (float(args.format[0]), float(args.format[1]))
 
-        args.signature, rotated = schema.compute_signature(files.size, args.format)
+        args.signature, rotated = schema.compute_signature(sourcesize, args.format)
         if rotated:
             args.format = (args.format[1], args.format[0])
 
         if args.imargin == 0:
             args.omargin = (
-                (args.format[1] - files.size[1] * args.signature[1]) / 2,
-                (args.format[0] - files.size[0] * args.signature[0]) / 2,
-                (args.format[1] - files.size[1] * args.signature[1]) / 2,
-                (args.format[0] - files.size[0] * args.signature[0]) / 2,
+                (args.format[1] - sourcesize[1] * args.signature[1]) / 2,
+                (args.format[0] - sourcesize[0] * args.signature[0]) / 2,
+                (args.format[1] - sourcesize[1] * args.signature[1]) / 2,
+                (args.format[0] - sourcesize[0] * args.signature[0]) / 2,
             )
 
     del args.format
@@ -65,7 +65,7 @@ def main():
         args = parser.parse_args()
 
         args.files = pdf.Reader(args.files)
-        format2signature(args.files, args)
+        format2signature(args.files.size, args)
 
         return impose(**vars(args))
     except UserError as usererror:

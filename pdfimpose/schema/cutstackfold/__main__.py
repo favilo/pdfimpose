@@ -30,9 +30,18 @@ def main():
     """Main function"""
 
     parser = schema.ArgumentParser(
-        subcommand="wire",
+        subcommand="cutstackfold",
         description=DESCRIPTION,
-        options=["omargin", "imargin", "mark", "last", "signature", "format"],
+        options=[
+            "omargin",
+            "imargin",
+            "mark",
+            "last",
+            "signature",
+            "format",
+            "bind",
+            "creep",
+        ],
     )
 
     try:
@@ -40,7 +49,12 @@ def main():
 
         args.files = pdf.Reader(args.files)
 
-        format2signature(args.files.size, args)
+        sourcesize = args.files.size
+        if args.bind in ("top", "bottom"):
+            sourcesize = (2 * sourcesize[1], sourcesize[0])
+        else:
+            sourcesize = (2 * sourcesize[0], sourcesize[1])
+        format2signature(sourcesize, args)
 
         return impose(**vars(args))
 

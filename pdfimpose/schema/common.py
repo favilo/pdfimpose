@@ -36,7 +36,7 @@ BIND2ANGLE = {
 }
 
 RE_CREEP = re.compile(
-    r"(?P<slope>-?\d+(.\d+)?)x(?P<yintercept>[+-]\d+(.\d+)?)?(?P<unit>[^\d]+)?"
+    r"(?P<slope>-?\d+(.\d+)?)s(?P<yintercept>[+-]\d+(.\d+)?)?(?P<unit>[^\d]+)?"
 )
 
 
@@ -65,16 +65,16 @@ def _type_signature(text):
 def _type_creep(text):
     """Turn a linear function (as a string) into a linear Python function.
 
-    >>> _type_creep("-2x+3")(5)
+    >>> _type_creep("-2s+3")(5)
     -7
-    >>> _type_creep("2.5x")(2)
+    >>> _type_creep("2.5s")(2)
     5.0
     >>> _type_creep("7")(9)
     7
-    >>> _type_creep("2x-5pc")(3)
+    >>> _type_creep("2s-5pc")(3)
     12
     """
-    if "x" in text:
+    if "s" in text:
         if match := RE_CREEP.match(text):
             try:
                 groups = match.groupdict()
@@ -87,7 +87,7 @@ def _type_creep(text):
                     unit = papersize.UNITS[groups["unit"]]
                 else:
                     unit = 1
-                return lambda x: (slope * x + yintercept) * unit
+                return lambda s: (slope * s + yintercept) * unit
             except KeyError as error:
                 raise argparse.ArgumentTypeError(
                     "Invalid creep function "
@@ -157,11 +157,11 @@ class ArgumentParser(argparse.ArgumentParser):
                 "-c",
                 help=(
                     "Set creep (space added at each fold). "
-                    "This is a linear fonction of 'x', the number of folds "
-                    "(e.g. '.1x+2mm')."
+                    "This is a linear fonction of 's', the number of inner sheets "
+                    "(e.g. '.1s+2mm')."
                 ),
                 type=_type_creep,
-                default=lambda x: 0,
+                default=lambda s: 0,
             )
 
         if "last" in options:
