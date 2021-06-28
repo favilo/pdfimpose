@@ -19,6 +19,7 @@ import argparse
 import contextlib
 import dataclasses
 import decimal
+import numbers
 import pathlib
 import os
 import re
@@ -322,6 +323,22 @@ class Matrix:
 
 
 @dataclasses.dataclass
+class Margins:
+    left: float = 0
+    right: float = None
+    top: float = None
+    bottom: float = None
+
+    def __post_init__(self):
+        if self.right is None:
+            self.right = self.left
+        if self.top is None:
+            self.top = self.left
+        if self.bottom is None:
+            self.bottom = self.left
+
+
+@dataclasses.dataclass
 class AbstractImpositor:
     """Perform imposition of source files onto output file.
 
@@ -330,11 +347,12 @@ class AbstractImpositor:
     """
 
     last: int = 0
-    omarginleft: float = 0
-    omarginright: float = 0
-    omargintop: float = 0
-    omarginbottom: float = 0
+    omargin: Margins = Margins()
     mark: list[str] = dataclasses.field(default_factory=list)
+
+    def __post_init__(self):
+        if isinstance(self.omargin, numbers.Real):
+            self.omargin = Margins(self.omargin)
 
     def blank_page_number(self, source):
         """Return the number of blank pages to insert.
@@ -351,14 +369,14 @@ class AbstractImpositor:
 
     def _crop_space(self):
         left = right = bottom = top = 20
-        if top > self.omargintop:
-            top = self.omargintop / 2
-        if bottom > self.omarginbottom:
-            bottom = self.omarginbottom / 2
-        if left > self.omarginleft:
-            left = self.omarginleft / 2
-        if right > self.omarginright:
-            right = self.omarginright / 2
+        if top > self.omargin.top:
+            top = self.omargin.top / 2
+        if bottom > self.omargin.bottom:
+            bottom = self.omargin.bottom / 2
+        if left > self.omargin.left:
+            left = self.omargin.left / 2
+        if right > self.omargin.right:
+            right = self.omargin.right / 2
         return left, right, bottom, top
 
     def crop_marks(self, number, matrix, outputsize, inputsize):
@@ -437,7 +455,7 @@ class AbstractImpositor:
             (relative to the output page signature): `coord = (0, 2)` means
             'the first page from the left, third from the top'.
         """
-        left = self.omarginleft
+        left = self.omargin.left
         x, y = coord
         width, height = size
         for i in range(x):
@@ -448,7 +466,7 @@ class AbstractImpositor:
                 left += width
         left += matrix[x, y].left
 
-        top = self.omargintop
+        top = self.omargin.top
         for j in range(y):
             top += matrix[x, j].top + matrix[x, j].bottom
             if matrix[x, j].rotate in (90, 270):
@@ -467,7 +485,7 @@ class AbstractImpositor:
         """
         lines = set()
         for y in range(matrix.signature[1]):
-            line = self.omarginleft + self.omarginright
+            line = self.omargin.left + self.omargin.right
             for x in range(matrix.signature[0]):
                 line += matrix[x, y].left + matrix[x, y].right
                 if matrix[x, y].rotate in (90, 270):
@@ -478,7 +496,7 @@ class AbstractImpositor:
 
         rows = set()
         for x in range(matrix.signature[0]):
-            row = self.omargintop + self.omarginbottom
+            row = self.omargin.top + self.omargin.bottom
             for y in range(matrix.signature[1]):
                 row += matrix[x, y].top + matrix[x, y].bottom
                 if matrix[x, y].rotate in (90, 270):

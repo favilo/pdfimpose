@@ -97,72 +97,72 @@ class CutStackFoldImpositor(common.AbstractImpositor):
         for x in range(self.signature[0]):
             yield (
                 (
-                    self.omarginleft + 2 * x * inputsize[0] + x * self.imargin,
+                    self.omargin.left + 2 * x * inputsize[0] + x * self.imargin,
                     0,
                 ),
                 (
-                    self.omarginleft + 2 * x * inputsize[0] + x * self.imargin,
-                    self.omargintop - top,
+                    self.omargin.left + 2 * x * inputsize[0] + x * self.imargin,
+                    self.omargin.top - top,
                 ),
             )
             yield (
                 (
-                    self.omarginleft + 2 * (x + 1) * inputsize[0] + x * self.imargin,
+                    self.omargin.left + 2 * (x + 1) * inputsize[0] + x * self.imargin,
                     0,
                 ),
                 (
-                    self.omarginleft + 2 * (x + 1) * inputsize[0] + x * self.imargin,
-                    self.omargintop - top,
+                    self.omargin.left + 2 * (x + 1) * inputsize[0] + x * self.imargin,
+                    self.omargin.top - top,
                 ),
             )
             yield (
                 (
-                    self.omarginleft + 2 * x * inputsize[0] + x * self.imargin,
+                    self.omargin.left + 2 * x * inputsize[0] + x * self.imargin,
                     outputsize[1],
                 ),
                 (
-                    self.omarginleft + 2 * x * inputsize[0] + x * self.imargin,
-                    outputsize[1] - self.omarginbottom + bottom,
+                    self.omargin.left + 2 * x * inputsize[0] + x * self.imargin,
+                    outputsize[1] - self.omargin.bottom + bottom,
                 ),
             )
             yield (
                 (
-                    self.omarginleft + 2 * (x + 1) * inputsize[0] + x * self.imargin,
+                    self.omargin.left + 2 * (x + 1) * inputsize[0] + x * self.imargin,
                     outputsize[1],
                 ),
                 (
-                    self.omarginleft + 2 * (x + 1) * inputsize[0] + x * self.imargin,
-                    outputsize[1] - self.omarginbottom + bottom,
+                    self.omargin.left + 2 * (x + 1) * inputsize[0] + x * self.imargin,
+                    outputsize[1] - self.omargin.bottom + bottom,
                 ),
             )
 
         for y in range(self.signature[1]):
             yield (
-                (0, self.omargintop + y * (inputsize[1] + self.imargin)),
+                (0, self.omargin.top + y * (inputsize[1] + self.imargin)),
                 (
-                    self.omarginleft - left,
-                    self.omargintop + y * (inputsize[1] + self.imargin),
+                    self.omargin.left - left,
+                    self.omargin.top + y * (inputsize[1] + self.imargin),
                 ),
             )
-            yield ((0, self.omargintop + (y + 1) * inputsize[1] + y * self.imargin)), (
-                self.omarginleft - left,
-                self.omargintop + (y + 1) * inputsize[1] + y * self.imargin,
+            yield ((0, self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin)), (
+                self.omargin.left - left,
+                self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
             )
             yield (
-                (outputsize[0], self.omargintop + y * (inputsize[1] + self.imargin)),
+                (outputsize[0], self.omargin.top + y * (inputsize[1] + self.imargin)),
                 (
-                    outputsize[0] - self.omarginright + right,
-                    self.omargintop + y * (inputsize[1] + self.imargin),
+                    outputsize[0] - self.omargin.right + right,
+                    self.omargin.top + y * (inputsize[1] + self.imargin),
                 ),
             )
             yield (
                 (
                     outputsize[0],
-                    self.omargintop + (y + 1) * inputsize[1] + y * self.imargin,
+                    self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
                 )
             ), (
-                outputsize[0] - self.omarginright + right,
-                self.omargintop + (y + 1) * inputsize[1] + y * self.imargin,
+                outputsize[0] - self.omargin.right + right,
+                self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
             )
 
 
@@ -183,8 +183,7 @@ def impose(
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).
         If empty, reads from standard input.
     :param str output: List of output file.
-    :param float omargin: Output margin, in pt
-        (or a tuple of four margins: ``(top, right, bottom, left)``).
+    :param float omargin: Output margin, in pt. Can also be a :class:`Margins` object.
     :param float imargin: Input margin, in pt.
     :param int last: Number of last pages (of the source files) to keep at the
         end of the output document.  If blank pages were to be added to the
@@ -197,15 +196,10 @@ def impose(
     """
     if mark is None:
         mark = []
-    if isinstance(omargin, numbers.Real):
-        omargin = (omargin, omargin, omargin, omargin)
 
     CutStackFoldImpositor(
         imargin=imargin,
-        omargintop=omargin[0],
-        omarginright=omargin[1],
-        omarginbottom=omargin[2],
-        omarginleft=omargin[3],
+        omargin=omargin,
         mark=mark,
         last=last,
         signature=signature,

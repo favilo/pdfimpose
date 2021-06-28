@@ -74,8 +74,7 @@ def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).
         If empty, reads from standard input.
     :param str output: List of output file.
-    :param float omargin: Output margin, in pt
-        (or a tuple of four margins: ``(top, right, bottom, left)``).
+    :param float omargin: Output margin, in pt. Can also be a :class:`Margins` object.
     :param float imargin: Input margin, in pt.
     :param int last: Number of last pages (of the source files) to keep at the
         end of the output document.  If blank pages were to be added to the
@@ -86,15 +85,10 @@ def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=
     """
     if mark is None:
         mark = []
-    if isinstance(omargin, numbers.Real):
-        omargin = (omargin, omargin, omargin, omargin)
 
     WireImpositor(
         imargin=imargin,
-        omargintop=omargin[0],
-        omarginright=omargin[1],
-        omarginbottom=omargin[2],
-        omarginleft=omargin[3],
+        omargin=omargin,
         last=last,
         mark=mark,
         signature=signature,

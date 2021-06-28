@@ -42,11 +42,11 @@ def format2signature(sourcesize, args):
             args.format = (args.format[1], args.format[0])
 
         if args.imargin == 0:
-            args.omargin = (
-                (args.format[1] - sourcesize[1] * args.signature[1]) / 2,
-                (args.format[0] - sourcesize[0] * args.signature[0]) / 2,
-                (args.format[1] - sourcesize[1] * args.signature[1]) / 2,
-                (args.format[0] - sourcesize[0] * args.signature[0]) / 2,
+            args.omargin = schema.Margins(
+                top=(args.format[1] - sourcesize[1] * args.signature[1]) / 2,
+                bottom=(args.format[1] - sourcesize[1] * args.signature[1]) / 2,
+                left=(args.format[0] - sourcesize[0] * args.signature[0]) / 2,
+                right=(args.format[0] - sourcesize[0] * args.signature[0]) / 2,
             )
 
     del args.format
