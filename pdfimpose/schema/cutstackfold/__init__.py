@@ -49,15 +49,24 @@ class CutStackFoldImpositor(common.AbstractImpositor):
         """
         stack = total // (self.signature[0] * self.signature[1])
 
-        def imargins(x, y):
-            return {
-                "top": 0 if y == 0 else self.imargin / 2,
-                "bottom": 0 if y == self.signature[1] - 1 else self.imargin / 2,
-                "left": 0 if x == 0 or x % 2 == 0 else self.imargin / 2,
-                "right": 0
-                if x == 2 * self.signature[0] - 1 or x % 2 == 1
+        def _margins(x, y):
+            # Default margins, ignoring the output margins
+            margins = {
+                "top": self.omargin.top if y == 0 else self.imargin / 2,
+                "bottom": self.omargin.bottom
+                if y == self.signature[1] - 1
                 else self.imargin / 2,
+                "left": 0 if x % 2 == 1 else self.imargin / 2,
+                "right": 0 if x % 2 == 0 else self.imargin / 2,
             }
+
+            # Output margins
+            if x == 0:
+                margins["left"] = self.omargin.left
+            if x == 2 * self.signature[0] - 1:
+                margins["right"] = self.omargin.right
+
+            return margins
 
         for inner in range(stack // 4):
             recto, verso = (
@@ -71,16 +80,18 @@ class CutStackFoldImpositor(common.AbstractImpositor):
             for i, coord in enumerate(itertools.product(*map(range, self.signature))):
                 x, y = coord
                 recto[2 * x][y] = Page(
-                    (i + 1) * stack - 1 - 2 * inner, **imargins(2 * x + 1, y)
+                    (i + 1) * stack - 1 - 2 * inner, **_margins(2 * x, y)
                 )
-                recto[2 * x + 1][y] = Page(i * stack + 2 * inner, **imargins(2 * x, y))
+                recto[2 * x + 1][y] = Page(
+                    i * stack + 2 * inner, **_margins(2 * x + 1, y)
+                )
                 verso[2 * self.signature[0] - 2 * x - 1][y] = Page(
                     (i + 1) * stack - 2 * inner - 2,
-                    **imargins(2 * self.signature[0] - 2 * x - 2, y),
+                    **_margins(2 * self.signature[0] - 2 * x - 1, y),
                 )
                 verso[2 * self.signature[0] - 2 * x - 2][y] = Page(
                     i * stack + 2 * inner + 1,
-                    **imargins(2 * self.signature[0] - 2 * x - 1, y),
+                    **_margins(2 * self.signature[0] - 2 * x - 2, y),
                 )
 
             yield Matrix(recto, rotate=common.BIND2ANGLE[self.bind])
@@ -164,6 +175,14 @@ class CutStackFoldImpositor(common.AbstractImpositor):
                 outputsize[0] - self.omargin.right + right,
                 self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
             )
+
+    def compute_margins(self, matrix, pagenumber, totalpages):
+        TODO
+        super().compute_margins(matrix, pagenumber, totalpages)
+
+        # Compute maximum creep
+        maxcreep = max(self.creep(n) for n in range(totalpages // 4))
+        print(maxcreep)
 
 
 def impose(

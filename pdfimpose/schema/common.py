@@ -264,6 +264,28 @@ def compute_signature(source, dest):
 
 
 @dataclasses.dataclass
+class Margins:
+    """Left, right, top, bottom margins.
+
+    - If the constructor has only one argument, all four margins are equal to this value.
+    - If the constructor has no argument, all four margins are 0.
+    """
+
+    left: float = 0
+    right: float = None
+    top: float = None
+    bottom: float = None
+
+    def __post_init__(self):
+        if self.right is None:
+            self.right = self.left
+        if self.top is None:
+            self.top = self.left
+        if self.bottom is None:
+            self.bottom = self.left
+
+
+@dataclasses.dataclass
 class Page:
     """A virtual page: a page number, a rotation, and margins."""
 
@@ -290,6 +312,15 @@ class Matrix:
         for x, y in self.coordinates():
             self[x, y].rotate = (self[x, y].rotate + rotate) % 360
 
+    def copy(self, **changes):
+        """Return a copy of this object.
+
+        Changes can be applied.
+        """
+        if "rotate" not in changes:
+            changes["rotate"] = 0
+        return dataclasses.replace(self, **changes)
+
     @property
     def signature(self):
         """Signature of output pages.
@@ -298,7 +329,17 @@ class Matrix:
         (as a matrix of 3 horizontal pages and 2 vertical pages),
         the signature is `(3, 2)`.
         """
-        return (len(self.pages), len(self.pages[0]))
+        return (self.width, self.height)
+
+    @property
+    def width(self):
+        """Horizontal number of source pages."""
+        return len(self.pages)
+
+    @property
+    def height(self):
+        """Vertical number of source pages."""
+        return len(self.pages[0])
 
     def __getitem__(self, coord):
         return self.pages[coord[0]][coord[1]]
@@ -315,27 +356,74 @@ class Matrix:
             [
                 [
                     dataclasses.replace(self[x, y], number=self[x, y].number + number)
-                    for y in range(self.signature[1])
+                    for y in range(self.height)
                 ]
-                for x in range(self.signature[0])
+                for x in range(self.width)
             ],
         )
 
+    def topleft(self, coord, size):
+        """Compute and return the coordinates of the top left corner of a page.
 
-@dataclasses.dataclass
-class Margins:
-    left: float = 0
-    right: float = None
-    top: float = None
-    bottom: float = None
+        It answers the question:
+        Given the imposition matrix of source pages of a given size,
+        where should be the source page `(x, y)` placed on the output page?
 
-    def __post_init__(self):
-        if self.right is None:
-            self.right = self.left
-        if self.top is None:
-            self.top = self.left
-        if self.bottom is None:
-            self.bottom = self.left
+        :param tuple[int, int] coord: Coordinate of the source page
+            (relative to the output page signature): `coord = (0, 2)` means
+            'the first page from the left, third from the top'.
+        :param tuple[float, float] size: Size of source pages.
+        """
+        left = 0
+        x, y = coord
+        width, height = size
+        for i in range(x):
+            left += self[i, y].left + self[i, y].right
+            if self[i, y].rotate in (90, 270):
+                left += height
+            else:
+                left += width
+        left += self[x, y].left
+
+        top = 0
+        for j in range(y):
+            top += self[x, j].top + self[x, j].bottom
+            if self[x, j].rotate in (90, 270):
+                top += width
+            else:
+                top += height
+        top += self[x, y].top
+
+        return (left, top)
+
+    def pagesize(self, size):
+        """Compute and return the size of the output page.
+
+        :param tuple[float, float] size: Size of the source pages.
+        """
+        lines = set()
+        for y in range(self.height):
+            line = 0
+            for x in range(self.width):
+                line += self[x, y].left + self[x, y].right
+                if self[x, y].rotate in (90, 270):
+                    line += size[1]
+                else:
+                    line += size[0]
+            lines.add(line)
+
+        rows = set()
+        for x in range(self.width):
+            row = 0
+            for y in range(self.height):
+                row += self[x, y].top + self[x, y].bottom
+                if self[x, y].rotate in (90, 270):
+                    row += size[0]
+                else:
+                    row += size[1]
+            rows.add(row)
+
+        return (max(lines), max(rows))
 
 
 @dataclasses.dataclass
@@ -443,70 +531,6 @@ class AbstractImpositor:
             for matrix in matrixes:
                 yield matrix.stack(i * step)
 
-    def topleft(self, matrix, coord, size):
-        """Compute and return the coordinates of the top left corner of a page.
-
-        It answers the question:
-        Given the imposition matrix of source pages of a given size,
-        where should be the source page `(x, y)` placed on the output page?
-
-        :param Matrix matrix: Imposition matrix.
-        :param tuple coord: Coordinate of the source page
-            (relative to the output page signature): `coord = (0, 2)` means
-            'the first page from the left, third from the top'.
-        """
-        left = self.omargin.left
-        x, y = coord
-        width, height = size
-        for i in range(x):
-            left += matrix[i, y].left + matrix[i, y].right
-            if matrix[i, y].rotate in (90, 270):
-                left += height
-            else:
-                left += width
-        left += matrix[x, y].left
-
-        top = self.omargin.top
-        for j in range(y):
-            top += matrix[x, j].top + matrix[x, j].bottom
-            if matrix[x, j].rotate in (90, 270):
-                top += width
-            else:
-                top += height
-        top += matrix[x, y].top
-
-        return (left, top)
-
-    def pagesize(self, matrix, sourcesize):
-        """Compute and return the size of the output page.
-
-        :param Matrix matrix: Imposition matrix.
-        :param tuple sourcesize: Size of the source pages.
-        """
-        lines = set()
-        for y in range(matrix.signature[1]):
-            line = self.omargin.left + self.omargin.right
-            for x in range(matrix.signature[0]):
-                line += matrix[x, y].left + matrix[x, y].right
-                if matrix[x, y].rotate in (90, 270):
-                    line += sourcesize[1]
-                else:
-                    line += sourcesize[0]
-            lines.add(line)
-
-        rows = set()
-        for x in range(matrix.signature[0]):
-            row = self.omargin.top + self.omargin.bottom
-            for y in range(matrix.signature[1]):
-                row += matrix[x, y].top + matrix[x, y].bottom
-                if matrix[x, y].rotate in (90, 270):
-                    row += sourcesize[0]
-                else:
-                    row += sourcesize[1]
-            rows.add(row)
-
-        return (max(lines), max(rows))
-
     def impose(self, files, output):
         """Perform imposition.
 
@@ -520,7 +544,7 @@ class AbstractImpositor:
         """
         with self.read(files) as reader, self.write(output) as writer:
             for matrix in self.matrixes(len(reader)):
-                destpage_size = self.pagesize(matrix, reader.size)
+                destpage_size = matrix.pagesize(reader.size)
                 destpage = writer.new_page(*destpage_size)
                 for x, y in matrix.coordinates():
                     if reader[matrix[x, y].number] is None:
@@ -531,7 +555,7 @@ class AbstractImpositor:
                     writer.insert(
                         destpage,
                         sourcepage,
-                        topleft=self.topleft(matrix, (x, y), reader.size),
+                        topleft=matrix.topleft((x, y), reader.size),
                         rotate=matrix[x, y].rotate,
                     )
 

@@ -47,20 +47,20 @@ class OnePageZineImpositor(common.AbstractImpositor):
         yield Matrix(
             [
                 [
-                    Page(4, rotate=180),
-                    Page(5),
+                    Page(4, rotate=180, top=self.omargin.top, left=self.omargin.left),
+                    Page(5, bottom=self.omargin.bottom, left=self.omargin.left),
                 ],
                 [
-                    Page(3, rotate=180),
-                    Page(6),
+                    Page(3, rotate=180, top=self.omargin.top),
+                    Page(6, bottom=self.omargin.bottom),
                 ],
                 [
-                    Page(2, rotate=180),
-                    Page(7),
+                    Page(2, rotate=180, top=self.omargin.top),
+                    Page(7, bottom=self.omargin.bottom),
                 ],
                 [
-                    Page(1, rotate=180),
-                    Page(0),
+                    Page(1, rotate=180, top=self.omargin.top, right=self.omargin.right),
+                    Page(0, bottom=self.omargin.bottom, right=self.omargin.right),
                 ],
             ],
             rotate=common.BIND2ANGLE[self.bind],
