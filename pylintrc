@@ -10,6 +10,8 @@ disable=
     no-else-return,
     # Let black handle formatting
     bad-continuation,
+    # __main__.py files are too similar
+    duplicate-code,
 
 [SIMILARITIES]
 ignore-imports = yes
