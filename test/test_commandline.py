@@ -146,8 +146,8 @@ FIXTURES = [
     {
         "command": [
             "onepagezine",
-            "onepagesize-8a6",
-            "onepagesize-5a6.pdf",
+            "onepagezine-8a6",
+            "onepagezine-5a6.pdf",
             "--last",
             "1",
             "--omargin",
@@ -156,7 +156,7 @@ FIXTURES = [
             "crop",
         ],
         "returncode": 0,
-        "diff": ("onepagesize-8a6-impose.pdf", "onepagesize-8a6-impose-control.pdf"),
+        "diff": ("onepagezine-8a6-impose.pdf", "onepagezine-8a6-impose-control.pdf"),
     },
     # {
     #    "command": [os.path.join(TEST_DATA_DIR, "malformed.pdf")],
@@ -169,6 +169,11 @@ FIXTURES = [
     #    "command": [os.path.join(TEST_DATA_DIR, "zero.pdf")],
     #    "returncode": 1,
     #    "stderr": "Error: Not a single page to process.\n",
+    # },
+    # {
+    #    "command": ["cards", "A3.pdf"],
+    #    "returncode": 1,
+    #    "stderr": "Source pages are too big for output pages.",
     # },
     # {
     #    "before": [["rm", os.path.join(TEST_DATA_DIR, "absent.pdf")]],
