@@ -5,12 +5,15 @@
 \usepackage{calc}
 \usepackage[paperwidth={21cm/2},paperheight={29.7cm/4},margin=.5cm]{geometry}
 
+\usepackage{graphicx}
+\usepackage{qrcode}
+
 \usepackage{tikz}
 \usetikzlibrary{calendar}
 
 \IfFileExists{hyperref.sty}{
   \usepackage[
-      pdftitle={2019 Calendar},
+      pdftitle={2022 Calendar},
       pageanchor=false,
   ]{hyperref}
 }{
@@ -23,7 +26,7 @@
 \begin{document}
 
 \newcounter{year}
-\setcounter{year}{2019}
+\setcounter{year}{2022}
 
 \sffamily
 
@@ -54,4 +57,21 @@
     \pagebreak
 
   }
+
+  \begin{center}
+    \rotatebox{180}{
+      \begin{minipage}{9cm}
+        \begin{center}
+          Created as an example for:\\
+          \textbf{\large pdfimpose}
+
+          \vspace{1cm}
+
+          \qrcode{https://framagit.org/spalax/pdfimpose/}\\
+          \url{https://framagit.org/spalax/pdfimpose}
+        \end{center}
+      \end{minipage}
+    }
+    \vspace*{\stretch{1}}
+  \end{center}
   \end{document}
