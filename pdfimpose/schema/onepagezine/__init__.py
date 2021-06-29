@@ -74,7 +74,8 @@ class OnePageZineImpositor(common.AbstractImpositor):
             repeat=pages // 8,
         )
 
-    def crop_marks(self, number, matrix, outputsize, inputsize):
+    def crop_marks(self, number, total, matrix, outputsize, inputsize):
+        # pylint: disable=too-many-arguments
         left, right, top, bottom = self._crop_space()
 
         yield ((0, self.omargin.top), (self.omargin.left - left, self.omargin.top))

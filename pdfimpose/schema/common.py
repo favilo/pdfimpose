@@ -18,7 +18,6 @@
 import argparse
 import contextlib
 import dataclasses
-import decimal
 import numbers
 import pathlib
 import os
@@ -37,7 +36,7 @@ BIND2ANGLE = {
 }
 
 RE_CREEP = re.compile(
-    r"(?P<slope>-?\d+(.\d+)?)s(?P<yintercept>[+-]\d+(.\d+)?)?(?P<unit>[^\d]+)?"
+    r"(?P<slope>-?\d*(.\d+)?)s(?P<yintercept>[+-]\d+(.\d+)?)?(?P<unit>[^\d]+)?"
 )
 
 
@@ -79,13 +78,16 @@ def _type_creep(text):
         if match := RE_CREEP.match(text):
             try:
                 groups = match.groupdict()
-                slope = decimal.Decimal(groups["slope"])
+                if groups["slope"]:
+                    slope = float(groups["slope"])
+                else:
+                    slope = 1
                 if groups["yintercept"]:
-                    yintercept = decimal.Decimal(groups["yintercept"])
+                    yintercept = float(groups["yintercept"])
                 else:
                     yintercept = 0
                 if groups["unit"]:
-                    unit = papersize.UNITS[groups["unit"]]
+                    unit = float(papersize.UNITS[groups["unit"]])
                 else:
                     unit = 1
                 return lambda s: (slope * s + yintercept) * unit
@@ -467,9 +469,9 @@ class AbstractImpositor:
             right = self.omargin.right / 2
         return left, right, bottom, top
 
-    def crop_marks(self, number, matrix, outputsize, inputsize):
+    def crop_marks(self, number, total, matrix, outputsize, inputsize):
         """Yield coordinates of crop marks."""
-        # pylint: disable=unused-argument, no-self-use
+        # pylint: disable=unused-argument, no-self-use, too-many-arguments
         yield from []
 
     def bind_marks(self, number, matrix):
@@ -561,7 +563,7 @@ class AbstractImpositor:
 
                 if "crop" in self.mark:
                     for point1, point2 in self.crop_marks(
-                        destpage, matrix, destpage_size, reader.size
+                        destpage, len(reader), matrix, destpage_size, reader.size
                     ):
                         writer[destpage].draw_line(point1, point2)
                 if "bind" in self.mark:

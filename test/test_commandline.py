@@ -118,6 +118,25 @@ FIXTURES = [
     },
     {
         "command": [
+            "cutstackfold",
+            "cutstackfold.pdf",
+            "-m",
+            "1cm",
+            "-M",
+            "2cm",
+            "-c",
+            "5s",
+            "-k",
+            "crop",
+        ],
+        "returncode": 0,
+        "diff": (
+            "cutstackfold-impose.pdf",
+            "cutstackfold-control.pdf",
+        ),
+    },
+    {
+        "command": [
             "onepagezine",
             "8a6-landscape.pdf",
             "-o",

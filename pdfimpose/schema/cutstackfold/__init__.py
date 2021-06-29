@@ -97,52 +97,104 @@ class CutStackFoldImpositor(common.AbstractImpositor):
             yield Matrix(recto, rotate=common.BIND2ANGLE[self.bind])
             yield Matrix(verso, rotate=common.BIND2ANGLE[self.bind])
 
+    def _max_creep(self, total):
+        """Return the maximum creep of the document.
+
+        :param int total: Total number of source pages.
+        """
+        return max(self.creep(n) for n in range(total // 4))
+
     def matrixes(self, pages: int):
         assert pages % (4 * self.signature[0] * self.signature[1]) == 0
 
-        yield from self.cutstackfold_base_matrix(pages)
+        # Compute maximum creep
+        maxcreep = self._max_creep(pages)
 
-    def crop_marks(self, number, matrix, outputsize, inputsize):
+        for number, matrix in enumerate(self.cutstackfold_base_matrix(pages)):
+            for x, y in matrix.coordinates():
+                # Number of output sheets
+                sheets = pages // (4 * self.signature[0] * self.signature[1])
+                # Number of (output) sheets stacked on top in the current (output) sheet
+                included = sheets - number // 2 - 1
+                # Number of stacks included in the current page, once cut
+                stacks = self.signature[1] * (1 - x // 2) + self.signature[0] - y
+                creep = self.creep(included + stacks * sheets)
+
+                if number % 2 == 1:
+                    # Pages are reversed on the back of sheets (odd pages)
+                    x = matrix.width - x - 1
+
+                if x % 2 == 0:
+                    matrix[x, y].left += (maxcreep - creep) / 2
+                    matrix[x, y].right += creep / 2
+                else:
+                    matrix[x, y].left += creep / 2
+                    matrix[x, y].right += (maxcreep - creep) / 2
+            yield matrix
+
+    def crop_marks(self, number, total, matrix, outputsize, inputsize):
+        # pylint: disable=too-many-arguments
         left, right, top, bottom = self._crop_space()
+        maxcreep = self._max_creep(total)
 
         for x in range(self.signature[0]):
             yield (
                 (
-                    self.omargin.left + 2 * x * inputsize[0] + x * self.imargin,
+                    self.omargin.left
+                    + 2 * x * inputsize[0]
+                    + x * (self.imargin + maxcreep),
                     0,
                 ),
                 (
-                    self.omargin.left + 2 * x * inputsize[0] + x * self.imargin,
+                    self.omargin.left
+                    + 2 * x * inputsize[0]
+                    + x * (self.imargin + maxcreep),
                     self.omargin.top - top,
                 ),
             )
             yield (
                 (
-                    self.omargin.left + 2 * (x + 1) * inputsize[0] + x * self.imargin,
-                    0,
-                ),
-                (
-                    self.omargin.left + 2 * (x + 1) * inputsize[0] + x * self.imargin,
-                    self.omargin.top - top,
-                ),
-            )
-            yield (
-                (
-                    self.omargin.left + 2 * x * inputsize[0] + x * self.imargin,
+                    self.omargin.left
+                    + 2 * x * inputsize[0]
+                    + x * (self.imargin + maxcreep),
                     outputsize[1],
                 ),
                 (
-                    self.omargin.left + 2 * x * inputsize[0] + x * self.imargin,
+                    self.omargin.left
+                    + 2 * x * inputsize[0]
+                    + x * (self.imargin + maxcreep),
                     outputsize[1] - self.omargin.bottom + bottom,
                 ),
             )
             yield (
                 (
-                    self.omargin.left + 2 * (x + 1) * inputsize[0] + x * self.imargin,
+                    self.omargin.left
+                    + 2 * (x + 1) * inputsize[0]
+                    + x * self.imargin
+                    + (x + 1) * maxcreep,
+                    0,
+                ),
+                (
+                    self.omargin.left
+                    + 2 * (x + 1) * inputsize[0]
+                    + x * self.imargin
+                    + (x + 1) * maxcreep,
+                    self.omargin.top - top,
+                ),
+            )
+            yield (
+                (
+                    self.omargin.left
+                    + 2 * (x + 1) * inputsize[0]
+                    + x * self.imargin
+                    + (x + 1) * maxcreep,
                     outputsize[1],
                 ),
                 (
-                    self.omargin.left + 2 * (x + 1) * inputsize[0] + x * self.imargin,
+                    self.omargin.left
+                    + 2 * (x + 1) * inputsize[0]
+                    + x * self.imargin
+                    + (x + 1) * maxcreep,
                     outputsize[1] - self.omargin.bottom + bottom,
                 ),
             )
@@ -176,14 +228,6 @@ class CutStackFoldImpositor(common.AbstractImpositor):
                 self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
             )
 
-    def compute_margins(self, matrix, pagenumber, totalpages):
-        TODO
-        super().compute_margins(matrix, pagenumber, totalpages)
-
-        # Compute maximum creep
-        maxcreep = max(self.creep(n) for n in range(totalpages // 4))
-        print(maxcreep)
-
 
 def impose(
     files,
@@ -211,7 +255,8 @@ def impose(
         Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
     :param tuple[int] signature: Layout of source pages on output pages.
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
-    :param function creep: TODO Document
+    :param function creep: Function that takes the number of sheets in argument,
+        and return the space to be left between two adjacent pages.
     """
     if mark is None:
         mark = []

@@ -84,7 +84,8 @@ class CardsImpositor(common.AbstractImpositor):
             step=step,
         )
 
-    def crop_marks(self, number, matrix, outputsize, inputsize):
+    def crop_marks(self, number, total, matrix, outputsize, inputsize):
+        # pylint: disable=too-many-arguments
         left, right, top, bottom = self._crop_space()
 
         for x in range(self.signature[0]):
