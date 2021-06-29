@@ -7,6 +7,10 @@ According to `Wikipedia <http://en.wikipedia.org/wiki/Imposition>`_,
 printer's sheet, in order to obtain faster printing, simplify binding and
 reduce paper waste".
 
+TODO
+- credit https://metacpan.org/pod/PDF::Imposition
+- update calendar
+
 Contents
 --------
 
