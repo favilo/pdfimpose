@@ -30,7 +30,7 @@ class CutStackFoldImpositor(common.AbstractImpositor):
     """Perform imposition of source files, with the 'cutstackfold' schema."""
 
     bind: str = "left"
-    creep: typing.Callable[int, float] = dataclasses.field(default=lambda s: 0)
+    creep: typing.Callable[int, float] = dataclasses.field(default=common.nocreep)
     imargin: float = 0
     signature: tuple[int] = (0, 0)
 
@@ -239,7 +239,7 @@ def impose(
     mark=None,
     signature=None,
     bind="left",
-    creep=lambda x: 0,
+    creep=common.nocreep,
 ):
     """Perform imposition of source files into an output file, using the cut-stack-bind schema.
 

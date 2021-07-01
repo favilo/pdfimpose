@@ -40,6 +40,10 @@ RE_CREEP = re.compile(
 )
 
 
+def nocreep(s):
+    return 0
+
+
 def _type_length(text):
     return float(papersize.parse_length(text))
 
@@ -60,6 +64,10 @@ def _type_signature(text):
             """Argument must be "WIDTHxHEIGHT", """
             """where both WIDTH and HEIGHT are non-zero positive integers."""
         ) from error
+
+
+def _type_papersize(text):
+    return tuple(map(float, papersize.parse_papersize(text)))
 
 
 def _type_creep(text):
@@ -164,7 +172,7 @@ class ArgumentParser(argparse.ArgumentParser):
                     "(e.g. '.1s+2mm')."
                 ),
                 type=_type_creep,
-                default=lambda s: 0,
+                default=nocreep,
             )
 
         if "last" in options:
@@ -215,7 +223,7 @@ class ArgumentParser(argparse.ArgumentParser):
             group.add_argument(
                 "--format",
                 "-f",
-                type=papersize.parse_papersize,
+                type=_type_papersize,
                 help=(
                     "Put as much source pages into the destination page of the given format. "
                     "Note that margins are ignored when computing this; "
