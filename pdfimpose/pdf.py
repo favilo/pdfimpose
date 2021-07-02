@@ -23,6 +23,8 @@ import sys
 
 import fitz
 
+_BLACK = fitz.utils.getColor("black")
+
 
 def readpdf(file):
     """Read a PDF file.
@@ -171,3 +173,11 @@ class Writer(contextlib.AbstractContextManager):
 
     def __getitem__(self, key):
         return self.doc[key]
+
+    def draw_rectangle(self, page, rect):
+        """Draw a black rectangle on the given page.
+
+        :param int page: Page number
+        :param tuple[tuple[Int, Int], tuple[Int, Int]] rect: Coordinates of the rectangles.
+        """
+        self.doc[page].draw_rect(fitz.Rect(*rect), color=_BLACK, fill=_BLACK)

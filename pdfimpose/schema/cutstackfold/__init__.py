@@ -50,7 +50,7 @@ class CutStackFoldImpositor(common.AbstractImpositor):
         stack = total // (self.signature[0] * self.signature[1])
 
         def _margins(x, y):
-            # Default margins, ignoring the output margins
+            """Compute and return margin for page at coordinate (x, y)."""
             margins = {
                 "top": self.omargin.top if y == 0 else self.imargin / 2,
                 "bottom": self.omargin.bottom

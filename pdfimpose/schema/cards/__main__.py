@@ -34,7 +34,7 @@ def format2signature(sourcesize, args):
     """
     if args.signature is None:
         if args.format is None:
-            args.format = papersize.parse_papersize("A4")
+            args.format = tuple(map(float, papersize.parse_papersize("A4")))
 
         args.signature, rotated = schema.compute_signature(sourcesize, args.format)
         if rotated:

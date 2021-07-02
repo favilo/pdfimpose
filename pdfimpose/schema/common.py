@@ -41,6 +41,8 @@ RE_CREEP = re.compile(
 
 
 def nocreep(s):
+    """Dummy creep function, which always returns 0."""
+    # pylint: disable=invalid-name, unused-argument
     return 0
 
 
@@ -482,9 +484,9 @@ class AbstractImpositor:
         # pylint: disable=unused-argument, no-self-use, too-many-arguments
         yield from []
 
-    def bind_marks(self, number, matrix):
+    def bind_marks(self, number, total, matrix, outputsize, inputsize):
         """Yield coordinates of bind marks."""
-        # pylint: disable=unused-argument, no-self-use
+        # pylint: disable=unused-argument, no-self-use, too-many-arguments
         yield from []
 
     @contextlib.contextmanager
@@ -575,5 +577,7 @@ class AbstractImpositor:
                     ):
                         writer[destpage].draw_line(point1, point2)
                 if "bind" in self.mark:
-                    for rect, color in self.bind_marks(destpage, matrix):
-                        writer[destpage].draw_rect(rect, color=color, fill=color)
+                    for rect in self.bind_marks(
+                        destpage, len(reader), matrix, destpage_size, reader.size
+                    ):
+                        writer.draw_rectangle(destpage, rect)

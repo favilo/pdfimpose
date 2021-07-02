@@ -64,6 +64,31 @@ FIXTURES = {
         },
         {"command": ["nometadata.pdf"], "returncode": 0},
     ),
+    "perfect": (
+        {
+            "command": [
+                "perfect",
+                "small.pdf",
+                "--signature",
+                "4x4",
+                "--mark",
+                "crop",
+                "-k",
+                "bind",
+                "--bind",
+                "top",
+                "-m",
+                "2cm",
+                "-M",
+                "1cm",
+            ],
+            "returncode": 0,
+            "diff": (
+                "small-impose.pdf",
+                "small-control.pdf",
+            ),
+        },
+    ),
     "cards": (
         {
             "command": [
@@ -299,3 +324,7 @@ class TestCommandLine(unittest.TestCase):
     def test_cutstackfold(self):
         """Test of the cut-stack-fold schema."""
         return self._test_commandline("cutstackfold")
+
+    def test_perfect(self):
+        """Test of the perfect-bind schema."""
+        return self._test_commandline("perfect")
