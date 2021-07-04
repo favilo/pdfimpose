@@ -247,6 +247,25 @@ FIXTURES = {
             ),
         },
     ),
+    "saddle": (
+        {
+            "command": [
+                "saddle",
+                "saddle.pdf",
+                "--last",
+                "1",
+                "--format",
+                "A7",
+                "--bind",
+                "left",
+            ],
+            "returncode": 0,
+            "diff": (
+                "saddle-impose.pdf",
+                "saddle-control.pdf",
+            ),
+        },
+    ),
 }
 
 
@@ -328,3 +347,7 @@ class TestCommandLine(unittest.TestCase):
     def test_perfect(self):
         """Test of the perfect-bind schema."""
         return self._test_commandline("perfect")
+
+    def test_saddle(self):
+        """Test of the saddle-stitch schema."""
+        return self._test_commandline("saddle")

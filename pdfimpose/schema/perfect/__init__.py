@@ -86,6 +86,12 @@ class PerfectImpositor(common.AbstractImpositor):
 
         This matrix contains the arrangement of source pages on the output pages.
         """
+
+        def _rotate(y):
+            if self.signature[1] == 1:
+                return [0, 180][y % 2]
+            return [180, 0][y % 2]
+
         recto = [[0]]
         total = 2
         for fold in self.folds:
@@ -118,7 +124,7 @@ class PerfectImpositor(common.AbstractImpositor):
                 [
                     Page(
                         recto[x][y],
-                        rotate=[180, 0][y % 2],
+                        rotate=_rotate(y),
                         **vars(self._margins(x, y)),
                     )
                     for y in range(len(recto[x]))
@@ -132,7 +138,7 @@ class PerfectImpositor(common.AbstractImpositor):
                 [
                     Page(
                         evenodd2oddeven(recto[len(recto) - x - 1][y]),
-                        rotate=[180, 0][y % 2],
+                        rotate=_rotate(y),
                         **vars(self._margins(x, y)),
                     )
                     for y in range(len(recto[x]))

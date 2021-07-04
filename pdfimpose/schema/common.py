@@ -104,9 +104,9 @@ def _type_creep(text):
             except KeyError as error:
                 raise argparse.ArgumentTypeError(
                     "Invalid creep function "
-                    "(must be a linear function, with an optional unit, e.g. '2.3x-1mm')."
+                    "(must be a linear function, with an optional unit, e.g. '2.3s-1mm')."
                 ) from error
-    return lambda x: _type_length(text)
+    return lambda s: _type_length(text)
 
 
 def _type_positive_int(text):
@@ -324,14 +324,17 @@ class Matrix:
         for x, y in self.coordinates():
             self[x, y].rotate = (self[x, y].rotate + rotate) % 360
 
-    def copy(self, **changes):
+    def copy(self):
         """Return a copy of this object.
 
         Changes can be applied.
         """
-        if "rotate" not in changes:
-            changes["rotate"] = 0
-        return dataclasses.replace(self, **changes)
+        return self.__class__(
+            [
+                [dataclasses.replace(self[x, y]) for y in range(self.height)]
+                for x in range(self.width)
+            ]
+        )
 
     @property
     def signature(self):
