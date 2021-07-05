@@ -76,13 +76,13 @@ def _type_creep(text):
     """Turn a linear function (as a string) into a linear Python function.
 
     >>> _type_creep("-2s+3")(5)
-    -7
+    -7.0
     >>> _type_creep("2.5s")(2)
     5.0
     >>> _type_creep("7")(9)
-    7
+    7.0
     >>> _type_creep("2s-5pc")(3)
-    12
+    12.0
     """
     if "s" in text:
         if match := RE_CREEP.match(text):

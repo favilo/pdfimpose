@@ -55,7 +55,7 @@ FIXTURES = {
             "stderr": "Source pages are too big for output pages.",
         },
         {
-            "before": [["rm", "absent.pdf"]],
+            "before": [["rm", "-f", "absent.pdf"]],
             "command": ["absent.pdf"],
             "returncode": 1,
             "stderr": "Error: Could not read file '{filename}': [Errno 2] No such file or directory: '{filename}'.\n".format(  # pylint: disable=line-too-long
@@ -317,10 +317,11 @@ class TestCommandLine(unittest.TestCase):
         for data in FIXTURES[subtest]:
             with self.subTest(**data):
                 for command in data.get("before", ()):
-                    subprocess.run(  # pylint: disable=subprocess-run-check
+                    subprocess.run(
                         command,
                         env=self.environ,
                         cwd=os.path.join(TEST_DATA_DIR, subtest),
+                        check=True,
                     )
                 completed = subprocess.run(  # pylint: disable=subprocess-run-check
                     EXECUTABLE + ["-m", "pdfimpose"] + data["command"],

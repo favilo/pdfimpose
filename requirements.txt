@@ -1,2 +1,3 @@
+argdispatch
 papersize
-PyPDF2
+pymupdf
