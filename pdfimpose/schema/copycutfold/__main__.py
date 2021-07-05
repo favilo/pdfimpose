@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero Public License
 # along with pdfimpose.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Parse arguments for the schema "cutstackfold"."""
+"""Parse arguments for the schema "copycutfold"."""
 
 import logging
 import sys
@@ -30,7 +30,7 @@ def main():
     """Main function"""
 
     parser = schema.ArgumentParser(
-        subcommand="cutstackfold",
+        subcommand="copycutfold",
         description=DESCRIPTION,
         options=[
             "omargin",

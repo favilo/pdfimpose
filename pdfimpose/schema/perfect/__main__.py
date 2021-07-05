@@ -61,7 +61,7 @@ def any2folds(signature, outputsize, *, inputsize):
     # and we will add an "artificial" horizontal fold later in this function.
     inputsize = (2 * inputsize[0], inputsize[1])
     if signature is None and outputsize is None:
-        outputsize = papersize.parse_papersize("A4")
+        outputsize = tuple(map(float, papersize.parse_papersize("A4")))
     if signature is not None:
         if not (ispowerof2(signature[0]) and ispowerof2(signature[1])):
             raise UserError("Both numbers of signature must be powers of two.")

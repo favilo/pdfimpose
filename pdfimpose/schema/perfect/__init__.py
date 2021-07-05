@@ -81,11 +81,12 @@ class PerfectImpositor(common.AbstractImpositor):
 
         return margins
 
-    def base_matrix(self):
+    def base_matrix(self, total):
         """Yield a single matrix.
 
         This matrix contains the arrangement of source pages on the output pages.
         """
+        # pylint: disable=unused-argument
 
         def _rotate(y):
             if self.signature[1] == 1:
@@ -153,7 +154,7 @@ class PerfectImpositor(common.AbstractImpositor):
         assert pages % pages_per_signature == 0
 
         yield from self.stack_matrixes(
-            list(self.base_matrix()),
+            list(self.base_matrix(pages)),
             repeat=pages // pages_per_signature,
             step=pages_per_signature,
         )

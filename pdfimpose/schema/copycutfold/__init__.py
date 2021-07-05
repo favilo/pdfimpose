@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero Public License
 # along with pdfimpose.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Saddle stitch (like in newpapers or magazines)"""
+"""Print pages, to be cut and folded, and eventually bound, to produce multiple books."""
 
 import dataclasses
 import decimal
@@ -21,88 +21,92 @@ import itertools
 import numbers
 import typing
 
-from .. import common, perfect
+from .. import common, cutstackfold
 from ..common import Page, Matrix
 
 
 @dataclasses.dataclass
-class SaddleImpositor(perfect.PerfectImpositor):
-    """Perform imposition of source files, with the 'saddle' schema."""
+class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
+    """Perform imposition of source files, with the 'copycutfold' schema."""
 
-    creep: typing.Callable[int, float] = dataclasses.field(default=common.nocreep)
+    def blank_page_number(self, source):
+        if source % 4 == 0:
+            return 0
+        return 4 - (source % 4)
 
-    def _margins(self, x, y):
-        """Compute and return margin for page at coordinate (x, y)."""
-        margins = common.Margins(
-            top=self.omargin.top if y == 0 else self.imargin / 2,
-            bottom=self.omargin.bottom
-            if y == self.signature[1] - 1
-            else self.imargin / 2,
-            left=0 if x % 2 == 1 else self.imargin / 2,
-            right=0 if x % 2 == 0 else self.imargin / 2,
+    def base_matrix(self, total):
+        """Yield the first matrix.
+
+        This matrix contains the arrangement of source pages on the output pages.
+
+        :param int total: Total number of source pages.
+        """
+
+        recto, verso = (
+            [
+                [None for _ in range(self.signature[1])]
+                for _ in range(2 * self.signature[0])
+            ]
+            for _ in range(2)
         )
 
-        # Output margins
-        if x == 0:
-            margins.left = self.omargin.left
-        if x == self.signature[0] - 1:
-            margins.right = self.omargin.right
+        for x, y in itertools.product(*map(range, self.signature)):
+            recto[x][y] = Page(3, **self.margins(x, y))
+            recto[x + 1][y] = Page(0, **self.margins(x + 1, y))
+            verso[x][y] = Page(1, **self.margins(x, y))
+            verso[x + 1][y] = Page(2, **self.margins(x + 1, y))
 
-        return margins
+        yield Matrix(recto, rotate=common.BIND2ANGLE[self.bind])
+        yield Matrix(verso, rotate=common.BIND2ANGLE[self.bind])
 
     def matrixes(self, pages: int):
-        pages_per_signature = self.signature[0] * self.signature[1]
-        assert pages % pages_per_signature == 0
+        assert pages % 4 == 0
 
         matrixes = list(self.base_matrix(pages))
-        for i in range(pages // (2 * pages_per_signature)):
+        for i in range((pages - 1) // 4 + 1):
             yield from self.insert_sheets(
-                (matrix.copy() for matrix in matrixes), i, pages, pages_per_signature
+                (matrix.copy() for matrix in matrixes), i, pages, 2
             )
-
-    def bind_marks(self, number, total, matrix, outputsize, inputsize):
-        # pylint: disable=too-many-arguments
-        yield from []
 
 
 def impose(
     files,
     output,
     *,
-    folds,
     imargin=0,
     omargin=0,
-    mark=None,
     last=0,
+    mark=None,
+    signature=None,
     bind="left",
     creep=common.nocreep,
 ):
-    """Perform imposition of source files into an output file, to be bound using "saddle stitch".
+    """Perform imposition of source files into an output file, using the cut-stack-bind schema.
 
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).
         If empty, reads from standard input.
     :param str output: List of output file.
     :param float omargin: Output margin, in pt. Can also be a :class:`Margins` object.
     :param float imargin: Input margin, in pt.
-    :param list[str] mark: List of marks to add.
-        Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
-    :param str folds: TODO
-    :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
-    :param function creep: Function that takes the number of sheets in argument,
-        and return the space to be left between two adjacent pages.
     :param int last: Number of last pages (of the source files) to keep at the
         end of the output document.  If blank pages were to be added to the
         source files, they would be added before those last pages.
+    :param list[str] mark: List of marks to add.
+        Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
+    :param tuple[int] signature: Layout of source pages on output pages.
+    :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
+    :param function creep: Function that takes the number of sheets in argument,
+        and return the space to be left between two adjacent pages.
     """
     if mark is None:
         mark = []
 
-    SaddleImpositor(
-        omargin=omargin,
+    CopyCutFoldImpositor(
         imargin=imargin,
+        omargin=omargin,
         mark=mark,
         last=last,
+        signature=signature,
         bind=bind,
-        folds=folds,
         creep=creep,
     ).impose(files, output)

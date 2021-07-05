@@ -39,11 +39,12 @@ class OnePageZineImpositor(common.AbstractImpositor):
             return 0
         return 8 - (source % 8)
 
-    def base_matrix(self):
+    def base_matrix(self, total):
         """Yield a single matrix.
 
         This matrix contains the arrangement of source pages on the output pages.
         """
+        # pylint: disable=unused-argument
         yield Matrix(
             [
                 [
@@ -69,7 +70,7 @@ class OnePageZineImpositor(common.AbstractImpositor):
     def matrixes(self, pages: int):
         assert pages % 8 == 0
         yield from self.stack_matrixes(
-            list(self.base_matrix()),
+            list(self.base_matrix(pages)),
             step=8,
             repeat=pages // 8,
         )

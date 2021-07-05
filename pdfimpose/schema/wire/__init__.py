@@ -28,11 +28,13 @@ from ..common import Page, Matrix
 class WireImpositor(cards.CardsImpositor):
     """Perform imposition of source files, with the 'wire' schema."""
 
-    def wire_base_matrix(self, repeat):
+    def base_matrix(self, total):
         """Yield a single matrix.
 
         This matrix contains the arrangement of source pages on the output pages.
         """
+        repeat = total // (2 * self.signature[0] * self.signature[1])
+
         recto, verso = (
             [[None for _ in range(self.signature[1])] for _ in range(self.signature[0])]
             for _ in range(2)
@@ -68,10 +70,9 @@ class WireImpositor(cards.CardsImpositor):
     def matrixes(self, pages: int):
         assert pages % (2 * self.signature[0] * self.signature[1]) == 0
 
-        repeat = pages // (2 * self.signature[0] * self.signature[1])
         yield from self.stack_matrixes(
-            list(self.wire_base_matrix(repeat)),
-            repeat=repeat,
+            list(self.base_matrix(pages)),
+            repeat=pages // (2 * self.signature[0] * self.signature[1]),
             step=2,
         )
 

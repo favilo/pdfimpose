@@ -37,11 +37,12 @@ class CardsImpositor(common.AbstractImpositor):
             return 0
         return pagesperpage - (source % pagesperpage)
 
-    def base_matrix(self):
+    def base_matrix(self, total):
         """Yield a single matrix.
 
         This matrix contains the arrangement of source pages on the output pages.
         """
+        # pylint: disable=unused-argument
         recto, verso = (
             [[None for _ in range(self.signature[1])] for _ in range(self.signature[0])]
             for _ in range(2)
@@ -79,7 +80,7 @@ class CardsImpositor(common.AbstractImpositor):
         assert pages % step == 0
 
         yield from self.stack_matrixes(
-            list(self.base_matrix()),
+            list(self.base_matrix(pages)),
             repeat=pages // step,
             step=step,
         )

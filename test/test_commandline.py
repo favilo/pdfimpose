@@ -266,6 +266,25 @@ FIXTURES = {
             ),
         },
     ),
+    "copycutfold": (
+        {
+            "command": [
+                "copycutfold",
+                "copycutfold.pdf",
+                "-l1",
+                "-fa4",
+                "-m1cm",
+                "-M.5cm",
+                "-c1s",
+                "-kcrop",
+            ],
+            "returncode": 0,
+            "diff": (
+                "copycutfold-impose.pdf",
+                "copycutfold-control.pdf",
+            ),
+        },
+    ),
 }
 
 
@@ -351,3 +370,7 @@ class TestCommandLine(unittest.TestCase):
     def test_saddle(self):
         """Test of the saddle-stitch schema."""
         return self._test_commandline("saddle")
+
+    def test_copycutfold(self):
+        """Test of the copy-cut-fold schema."""
+        return self._test_commandline("copycutfold")

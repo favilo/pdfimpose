@@ -452,6 +452,7 @@ class AbstractImpositor:
     last: int = 0
     omargin: Margins = Margins()
     mark: list[str] = dataclasses.field(default_factory=list)
+    creep = nocreep
 
     def __post_init__(self):
         if isinstance(self.omargin, numbers.Real):
@@ -545,6 +546,30 @@ class AbstractImpositor:
         for i in range(repeat):
             for matrix in matrixes:
                 yield matrix.stack(i * step)
+
+    def insert_sheets(self, matrixes, sheets, pages, pagespersheet):
+        """TODO
+
+        :param int sheets: Number of inserted sheets.
+        :param int pages: Total number of pages in the source document.
+        """
+        for matrix in matrixes:
+            for x, y in matrix.coordinates():
+                # Add creep
+                if x % 2 == 0:
+                    matrix[x, y].right = self.creep(sheets) / 2
+                else:
+                    matrix[x, y].left = self.creep(sheets) / 2
+
+                # Change page numbers
+                if matrix[x, y].number < pagespersheet:
+                    matrix[x, y].number += pagespersheet * sheets
+                else:
+                    matrix[x, y].number = (
+                        pages - (sheets + 2) * pagespersheet + matrix[x, y].number
+                    )
+
+            yield matrix
 
     def impose(self, files, output):
         """Perform imposition.
