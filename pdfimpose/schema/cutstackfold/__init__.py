@@ -66,9 +66,9 @@ class CutStackFoldImpositor(common.AbstractImpositor):
 
         :param int total: Total number of source pages.
         """
-        stack = total // (self.signature[0] * self.signature[1])
+        stack = total // (2 * self.signature[0] * self.signature[1])
 
-        for inner in range(stack // 4):
+        for inner in range(stack // 2):
             recto, verso = (
                 [
                     [None for _ in range(self.signature[1])]
@@ -80,13 +80,13 @@ class CutStackFoldImpositor(common.AbstractImpositor):
             for i, coord in enumerate(itertools.product(*map(range, self.signature))):
                 x, y = coord
                 recto[2 * x][y] = Page(
-                    (i + 1) * stack - 1 - 2 * inner, **self.margins(2 * x, y)
+                    total - i * stack - 2 * inner - 1, **self.margins(2 * x, y)
                 )
                 recto[2 * x + 1][y] = Page(
                     i * stack + 2 * inner, **self.margins(2 * x + 1, y)
                 )
                 verso[2 * self.signature[0] - 2 * x - 1][y] = Page(
-                    (i + 1) * stack - 2 * inner - 2,
+                    total - i * stack - 2 * inner - 2,
                     **self.margins(2 * self.signature[0] - 2 * x - 1, y),
                 )
                 verso[2 * self.signature[0] - 2 * x - 2][y] = Page(
