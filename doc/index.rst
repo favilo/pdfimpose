@@ -10,7 +10,6 @@ reduce paper waste".
 TODO
 - credit https://metacpan.org/pod/PDF::Imposition
 - default A4 is implementation detail
-- perfect A5 -> A4 : Taille du papier
 
 Contents
 --------
