@@ -609,3 +609,4 @@ class AbstractImpositor:
                         destpage, len(reader), matrix, destpage_size, reader.size
                     ):
                         writer.draw_rectangle(destpage, rect)
+            writer.set_metadata(reader)

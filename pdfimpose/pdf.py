@@ -23,6 +23,8 @@ import sys
 
 import fitz
 
+from . import VERSION
+
 _BLACK = fitz.utils.getColor("black")
 
 
@@ -181,3 +183,17 @@ class Writer(contextlib.AbstractContextManager):
         :param tuple[tuple[Int, Int], tuple[Int, Int]] rect: Coordinates of the rectangles.
         """
         self.doc[page].draw_rect(fitz.Rect(*rect), color=_BLACK, fill=_BLACK)
+
+    def set_metadata(self, source):
+        """Read metadata from the input files, and (kind of) copy them to the output file."""
+        metadata = dict()
+        for keyword in ("title", "author", "subject", "keywords"):
+            metadata[keyword] = ", ".join(
+                doc.metadata.get(keyword, ()) for doc in source.files
+            )
+        metadata[
+            "creator"
+        ] = "Created with PdfImpose — https://framagit.org/spalax/pdfimpose"
+        metadata["producer"] = f"pdfimpose-{VERSION}"
+        # pylint: disable=no-member
+        self.doc.setMetadata(metadata)
