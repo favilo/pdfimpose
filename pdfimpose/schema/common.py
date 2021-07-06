@@ -370,6 +370,7 @@ class Matrix:
 
     def coordinates(self):
         """Iterate the list of coordinates of source pages."""
+        # pylint: disable=consider-using-enumerate
         for x in range(len(self.pages)):
             for y in range(len(self.pages[x])):
                 yield (x, y)
