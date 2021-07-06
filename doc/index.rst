@@ -10,6 +10,9 @@ reduce paper waste".
 TODO
 - credit https://metacpan.org/pod/PDF::Imposition
 - update calendar
+- default A4 is implementation detail
+- enable errors tests
+- perfect A5 -> A4 : Taille du papier
 
 Contents
 --------
