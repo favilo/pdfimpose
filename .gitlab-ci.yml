@@ -1,8 +1,10 @@
-image: paternal/pythons:buster
+image: paternal/pythons:bullseye
 
 before_script:
-  - apt-get update
-  - apt-get install --yes --force-yes --no-install-recommends ghostscript libmagickwand-dev
+  - apt update
+  - apt install --yes --force-yes --no-install-recommends ghostscript libmagickwand-dev
+  - apt install moreutils
+  - (head -n-1 /etc/ImageMagick-6/policy.xml; echo '  <policy domain="coder" rights="read | write" pattern="PDF" />'; tail -n1 /etc/ImageMagick-6/policy.xml) | sponge /etc/ImageMagick-6/policy.xml 
 
 tox:
   script:
