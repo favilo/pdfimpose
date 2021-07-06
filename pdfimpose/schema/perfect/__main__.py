@@ -122,7 +122,7 @@ def folds2margins(outputsize, sourcesize, folds, imargin):
     )
 
 
-def main():
+def main(argv=None):
     """Main function"""
 
     parser = schema.ArgumentParser(
@@ -132,7 +132,7 @@ def main():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
 
         args.files = pdf.Reader(args.files)
         if args.bind in ("top", "bottom"):

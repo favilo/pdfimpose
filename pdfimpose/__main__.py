@@ -21,6 +21,7 @@ import argdispatch
 
 from . import VERSION
 from . import schema
+from . import apply
 
 
 class _HelpSpaces(argdispatch.Action):
@@ -53,6 +54,7 @@ def main():
 
     subparser = parser.add_subparsers()
     subparser.add_submodules(schema)
+    subparser.add_module(apply, command="apply")
     subparser.required = True
     subparser.dest = "schema"
 

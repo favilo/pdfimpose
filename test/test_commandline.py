@@ -285,6 +285,18 @@ FIXTURES = {
             ),
         },
     ),
+    "apply": (
+        {
+            "command": [
+                "apply",
+            ],
+            "returncode": 0,
+            "diff": (
+                "foo-control.pdf",
+                "foo-impose.pdf",
+            ),
+        },
+    ),
 }
 
 
@@ -375,3 +387,7 @@ class TestCommandLine(unittest.TestCase):
     def test_copycutfold(self):
         """Test of the copy-cut-fold schema."""
         return self._test_commandline("copycutfold")
+
+    def test_apply(self):
+        """Test of the "apply" subcommand."""
+        return self._test_commandline("apply")

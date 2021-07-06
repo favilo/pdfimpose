@@ -51,7 +51,7 @@ def format2signature(sourcesize, args):
     del args.format
 
 
-def main():
+def main(argv=None):
     """Main function"""
 
     parser = schema.ArgumentParser(
@@ -61,7 +61,7 @@ def main():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
 
         args.files = pdf.Reader(args.files)
         format2signature(args.files.size, args)

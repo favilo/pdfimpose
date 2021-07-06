@@ -1,3 +1,4 @@
 argdispatch
 papersize
 pymupdf
+xdg

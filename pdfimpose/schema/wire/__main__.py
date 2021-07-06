@@ -26,7 +26,7 @@ from ... import pdf
 from ..cards.__main__ import format2signature
 
 
-def main():
+def main(argv=None):
     """Main function"""
 
     parser = schema.ArgumentParser(
@@ -36,7 +36,7 @@ def main():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
 
         args.files = pdf.Reader(args.files)
 
