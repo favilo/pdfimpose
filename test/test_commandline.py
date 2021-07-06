@@ -20,6 +20,7 @@
 import os
 import subprocess
 import sys
+import textwrap
 import unittest
 
 from wand.image import Image
@@ -34,35 +35,36 @@ else:
 TEST_DATA_DIR = pkg_resources.resource_filename(__name__, "test_commandline-data")
 ROOT_DIR = os.path.abspath(os.path.join(TEST_DATA_DIR, "..", ".."))
 
+# pylint: disable=line-too-long
 FIXTURES = {
     "errors": (
         {"command": [], "returncode": 2},
         {
-            "command": ["malformed.pdf"],
+            "command": ["perfect", "malformed.pdf"],
             "returncode": 1,
-            "stderr": "Error: Could not read file '{}': EOF marker not found.\n".format(
-                "malformed.pdf"
-            ),  # pylint: disable=line-too-long
         },
         {
-            "command": ["zero.pdf"],
+            "command": ["saddle", "zero.pdf"],
             "returncode": 1,
-            "stderr": "Error: Not a single page to process.\n",
+            "stderr": "ERROR:root:There is not a single page in the source documents.\n",
         },
         {
             "command": ["cards", "A3.pdf"],
             "returncode": 1,
-            "stderr": "Source pages are too big for output pages.",
+            "stderr": "ERROR:root:The source page is too big to fit in the destination page.\n",
         },
         {
             "before": [["rm", "-f", "absent.pdf"]],
-            "command": ["absent.pdf"],
+            "command": ["wire", "absent.pdf"],
             "returncode": 1,
-            "stderr": "Error: Could not read file '{filename}': [Errno 2] No such file or directory: '{filename}'.\n".format(  # pylint: disable=line-too-long
-                filename="absent.pdf"
+            "stderr": textwrap.dedent(
+                """\
+                mupdf: cannot open absent.pdf: No such file or directory
+                ERROR:root:Cannot open document 'absent.pdf': cannot open absent.pdf: No such file or directory.
+                """
             ),
         },
-        {"command": ["nometadata.pdf"], "returncode": 0},
+        {"command": ["cutstackfold", "nometadata.pdf"], "returncode": 0},
     ),
     "perfect": (
         {
@@ -340,6 +342,7 @@ class TestCommandLine(unittest.TestCase):
                     env=self.environ,
                     cwd=os.path.join(TEST_DATA_DIR, subtest),
                     capture_output=True,
+                    text=True,
                 )
 
                 for key in ["returncode", "stderr", "stdout"]:
@@ -356,8 +359,6 @@ class TestCommandLine(unittest.TestCase):
 
     def test_errors(self):
         """Test of commands that raise errors."""
-        # TODO
-        return
         return self._test_commandline("errors")
 
     def test_onepagezine(self):

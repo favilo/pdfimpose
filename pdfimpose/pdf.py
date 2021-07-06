@@ -23,7 +23,7 @@ import sys
 
 import fitz
 
-from . import VERSION
+from . import VERSION, UserError
 
 _BLACK = fitz.utils.getColor("black")
 
@@ -36,16 +36,19 @@ def readpdf(file):
     - a stream, as returnd with ``open("foo.pdf", mode="rb")`` (type `io.BytesIO`);
     - a `fitz.Document` object.
     """
-    if isinstance(file, str):
-        return fitz.Document(file)
-    if isinstance(file, io.IOBase):
-        if file.name:
-            kwargs = {"filename": file.name}
-        else:
-            kwargs = {"filetype": "application/pdf"}
-        return fitz.Document(stream=file.read(), **kwargs)
-    if isinstance(file, fitz.Document):
-        return file
+    try:
+        if isinstance(file, str):
+            return fitz.Document(file)
+        if isinstance(file, io.IOBase):
+            if file.name:
+                kwargs = {"filename": file.name}
+            else:
+                kwargs = {"filetype": "application/pdf"}
+            return fitz.Document(stream=file.read(), **kwargs)
+        if isinstance(file, fitz.Document):
+            return file
+    except Exception as error:
+        raise UserError(f"Cannot open document '{file}': {error}.") from error
     raise TypeError
 
 
@@ -62,6 +65,10 @@ class Reader(contextlib.AbstractContextManager):
             self.files = [readpdf(sys.stdin.buffer)]
         else:
             self.files = [readpdf(name) for name in files]
+
+        # There is at least one page
+        if len(self) == 0:
+            raise UserError("There is not a single page in the source documents.")
 
         # All pages have the same size
         if (

@@ -18,6 +18,7 @@
 import argparse
 import contextlib
 import dataclasses
+import math
 import numbers
 import pathlib
 import os
@@ -267,11 +268,19 @@ def compute_signature(source, dest):
     - ``rotated`` is a boolean, indicating that the destination page has to be
       rotated to fit the signature.
     """
-    straight = (round(dest[0] // source[0]), round(dest[1] // source[1]))
-    rotated = (round(dest[1] // source[0]), round(dest[0] // source[1]))
+    notrotated = (
+        math.floor(round(dest[0] / source[0], 6)),
+        math.floor(round(dest[1] / source[1], 6)),
+    )
+    rotated = (
+        math.floor(round(dest[1] / source[0], 6)),
+        math.floor(round(dest[0] / source[1], 6)),
+    )
 
-    if straight[0] * straight[1] > rotated[0] * rotated[1]:
-        return straight, False
+    if 0 in notrotated and 0 in rotated:
+        raise UserError("The source page is too big to fit in the destination page.")
+    if notrotated[0] * notrotated[1] > rotated[0] * rotated[1]:
+        return notrotated, False
     return rotated, True
 
 
