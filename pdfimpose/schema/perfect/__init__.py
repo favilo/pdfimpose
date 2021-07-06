@@ -266,7 +266,7 @@ def impose(
     :param float imargin: Input margin, in pt.
     :param list[str] mark: List of marks to add.
         Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
-    :param str folds: TODO
+    :param str folds: Sequence of folds, as a string of characters `h` and `v`.
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
     :param int last: Number of last pages (of the source files) to keep at the
         end of the output document.  If blank pages were to be added to the

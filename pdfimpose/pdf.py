@@ -86,7 +86,7 @@ class Reader(contextlib.AbstractContextManager):
             )
 
     def set_final_blank_pages(self, number, position):
-        """TODO
+        """Set the position and number of blank pages to be inserted in the document.
 
         position: index of first blank page
         number: number of blank pages.

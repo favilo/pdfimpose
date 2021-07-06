@@ -86,7 +86,7 @@ def impose(
     :param float imargin: Input margin, in pt.
     :param list[str] mark: List of marks to add.
         Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
-    :param str folds: TODO
+    :param str folds: Sequence of folds, as a string of characters `h` and `v`.
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
     :param function creep: Function that takes the number of sheets in argument,
         and return the space to be left between two adjacent pages.

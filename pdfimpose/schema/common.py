@@ -558,10 +558,16 @@ class AbstractImpositor:
                 yield matrix.stack(i * step)
 
     def insert_sheets(self, matrixes, sheets, pages, pagespersheet):
-        """TODO
+        """Iterates over "copies" of matrixes that can be inserted into each other.
 
+        For instance, if `matrixes` is the single matrix 1|2,
+        a set of sheets that can be inserted into each other (as in magazines, for instance),
+        is: 1|8 2|7 3|6 4|5.
+
+        :param matrixes: Matrixes to copy and insert into each other.
         :param int sheets: Number of inserted sheets.
         :param int pages: Total number of pages in the source document.
+        :param int pagespersheet: Nomber of source pages per output sheets.
         """
         for matrix in matrixes:
             for x, y in matrix.coordinates():

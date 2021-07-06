@@ -16,6 +16,7 @@
 """Command line"""
 
 import sys
+import textwrap
 
 import argdispatch
 
@@ -26,7 +27,20 @@ from . import apply
 
 class _HelpSpaces(argdispatch.Action):
     def __call__(self, *args, **kwargs):
-        print("TODO")
+        # pylint: disable=line-too-long
+        print(
+            textwrap.dedent(
+                """\
+        # Help about spaces
+
+        - omargin (margin on output files): Your printer is not perfect, and probably cannot print on the very edge of the sheet of paper. You might need to add some margin, so that everything is printed.
+        - imargin (margin on input files): Your scissors are not perfect. You might need to add some margin, so that you can cut exactly between two (input) pages.
+        - creep: Your paper is not perfect. When folded, the inner pages will go farther than the outer pages. Use creep to fix this.
+
+        You might want to set omargin as half of imargin, so that your printed sheets can be folded exactly in half.
+        """
+            )
+        )
         sys.exit(0)
 
 
