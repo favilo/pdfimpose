@@ -27,7 +27,9 @@ To use this schema:
     - otherwise, separately fold each sheet of paper, and insert them into each other;
 - bind.
 
-Example: :download:`source <examples/saddle.pdf>`, :download:`destination <examples/saddle-impose.pdf>`.
+Example:
+    :download:`source <examples/saddle.pdf>`,
+    :download:`destination <examples/saddle-impose.pdf>`.
 
 :class:`SaddleImpositor`
 ------------------------

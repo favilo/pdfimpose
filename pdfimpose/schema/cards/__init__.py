@@ -179,7 +179,8 @@ def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None):
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).
         If empty, reads from standard input.
     :param str output: List of output file.
-    :param float omargin: Output margin, in pt. Can also be a :class:`pdfimpose.schema.common.Margins` object.
+    :param float omargin: Output margin, in pt.
+        Can also be a :class:`pdfimpose.schema.common.Margins` object.
     :param float imargin: Input margin, in pt.
     :param list[str] mark: List of marks to add.
         Only crop marks are supported (``mark=['crop']``); everything else is silently ignored.

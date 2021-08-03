@@ -21,8 +21,10 @@ Each submodule provides:
 
 - a class :class:`SCHEMAImpositor`, where:
 
-  - its :meth:`SCHEMAImpositor.__init__` method takes the schema arguments (which are more or less the same ones as the corresponding command line subcommand);
-  - its :meth:`SCHEMAImpositor.impose` method take the source and destination file names as arguments, and performs the imposition;
+  - its :meth:`SCHEMAImpositor.__init__` method takes the schema arguments
+    (which are more or less the same ones as the corresponding command line subcommand);
+  - its :meth:`SCHEMAImpositor.impose` method take
+    the source and destination file names as arguments, and performs the imposition;
 
 - a function :func:`impose`, which is barely more than a wrapper to the aforementionned class.
 

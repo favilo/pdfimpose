@@ -29,7 +29,9 @@ To use this schema:
 - fold (once) and bind each stack of paper you got, separately;
 - voilà! You now have several copies of your book.
 
-Example: :download:`source <examples/copycutfold.pdf>`, :download:`destination <examples/copycutfold-impose.pdf>`.
+Example:
+    :download:`source <examples/copycutfold.pdf>`,
+    :download:`destination <examples/copycutfold-impose.pdf>`.
 
 :class:`CopyCutFoldImpositor`
 -----------------------------

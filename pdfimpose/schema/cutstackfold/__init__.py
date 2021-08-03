@@ -20,17 +20,21 @@
 You want to print and bind one single tiny A7 book.
 This book is made with A6 sheets
 (when you open the book, you get two A7 pages side-by-side, which is A6).
-Since you can fit four A6 pages on an A4 page, this means that you can print four A6 sheets on one A4 sheet.
+Since you can fit four A6 pages on an A4 page,
+this means that you can print four A6 sheets on one A4 sheet.
 
 To use this schema:
 
 - print your imposed file, two-sided;
 - cut the stack of paper, to get several stacks (four in the example above);
-- stack the several stacks you got on top of each other (take care to keep the pages in the right order);
+- stack the several stacks you got on top of each other
+  (take care to keep the pages in the right order);
 - fold and bind the stack of paper you got;
 - voilà! You now have a shiny, tiny book.
 
-Example: :download:`source <examples/cutstackfold.pdf>`, :download:`destination <examples/cutstackfold-impose.pdf>`.
+Example:
+    :download:`source <examples/cutstackfold.pdf>`,
+    :download:`destination <examples/cutstackfold-impose.pdf>`.
 
 :class:`CutStackFoldImpositor`
 ------------------------------

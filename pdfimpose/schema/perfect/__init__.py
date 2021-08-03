@@ -29,7 +29,9 @@ To use this schema:
 - stack them;
 - bind them.
 
-Example: :download:`source <examples/perfect.pdf>`, :download:`destination <examples/perfect-impose.pdf>`.
+Example:
+    :download:`source <examples/perfect.pdf>`,
+    :download:`destination <examples/perfect-impose.pdf>`.
 
 :class:`PerfectImpositor`
 -------------------------
