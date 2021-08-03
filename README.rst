@@ -1,12 +1,13 @@
 pdfimpose 📕 Perform imposition of a PDF file
 =============================================
 
-What is imposition?
--------------------
-
 Imposition consists in the arrangement of the printed product’s pages on
 the printer’s sheet, in order to obtain faster printing, simplify binding
 and reduce paper waste (source: http://en.wikipedia.org/wiki/Imposition).
+
+This software can perform imposition on PDF files of arbitrary size.
+It handles several imposition schemas: perfect binding, saddle stitch, one page zine, etc.
+See `documentation <https://pdfimpose.rtfd.io>`__ for more details.
 
 
 Examples
