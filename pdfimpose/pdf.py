@@ -149,7 +149,10 @@ class Writer(contextlib.AbstractContextManager):
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
         if exc_type is None:
-            self.doc.save(self.name)
+            if self.name is None:
+                sys.stdout.buffer.write(self.doc.write())
+            else:
+                self.doc.save(self.name)
         self.doc.close()
 
     def new_page(self, width, height):

@@ -138,14 +138,21 @@ class ArgumentParser(argparse.ArgumentParser):
         super().__init__(**kwargs)
 
         self.add_argument(
-            "files", metavar="FILEs", help="PDF files to process", nargs="*", type=str
+            "files",
+            metavar="FILEs",
+            help='PDF files to process. If "-", read from standard input.',
+            nargs="*",
+            type=str,
         )
 
         self.add_argument(
             "--output",
             "-o",
             metavar="FILE",
-            help='Destination file. Default is "-impose" appended to first source file.',
+            help=(
+                'Destination file. Default is "-impose" appended to first source file. '
+                'If "-", print to standard output.'
+            ),
             type=str,
         )
 
@@ -245,14 +252,14 @@ class ArgumentParser(argparse.ArgumentParser):
             if (not os.path.exists(path)) and os.path.exists(f"{path}.pdf"):
                 args.files[i] = f"{path}.pdf"
 
-        if args.output is None:
+        if args.output is None or args.output == "-":
             if args.files:
                 source = pathlib.Path(args.files[0])
                 args.output = "{}-impose{}".format(
                     source.parent / source.stem, source.suffix
                 )
             else:
-                args.output = "impose.pdf"
+                args.output = None
 
         return args
 
