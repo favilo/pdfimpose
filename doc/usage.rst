@@ -1,57 +1,60 @@
 Command line
 ============
 
-This module includes a command line client: `pdfimpose`. It can be used to
-impose a pdf document. For instance, the following command creates a
-:file:`foo-impose.pdf` file, corresponding to the imposition of :file:`foo.pdf`
-with the default options.::
-
-    pdfimpose foo.pdf
-
+This module includes a command line client: `pdfimpose`, which can be used to
+impose a PDF document, using one of the :ref:`imposition schemas <schemas>`.
 
 .. contents:: Contents
    :local:
    :depth: 1
 
-
-Options
+Schemas
 -------
 
-Here are its command line options.
+You can impose file using any schemas with the following command line::
 
-.. argparse::
-    :module: pdfimpose.options
-    :func: commandline_parser
-    :prog: pdfimpose
+    pdfimpose SCHEMA foo.pdf
 
-Layout
-------
+For instance, to impress your A5 document using *saddle stitch* (like in magazines), use::
 
-The ``[--fold FOLD | --size WIDTHxHEIGHT | --paper PAPER | --sheets SHEETS]`` are used to define the layout of the output pages. They are exclusive.
+    pdfimpose saddle foo.pdf
 
-Let's say I have a :download:`PDF file of 32 A6 pages <usage/a6.pdf>`, that I want to impose on A3 paper.
-The :download:`resulting file <usage/a6-impose.pdf>` is to be printed on two A3 sheets of paper, the first one being:
+Each schema have different options. Use ``pdfimpose SCHEME --help`` for more information.
 
-.. table:: Recto
-   :widths: auto
+Configuration file
+------------------
 
-   == === === ==
-   2  15  14  3
-   7* 10* 11* 6*
-   == === === ==
+Subcommand ``apply`` can be used to store options in a configuration file::
 
-.. table:: Verso
-   :widths: auto
+    pdfimpose apply [-h] [--schema SCHEMA] [CONF] [PDF ...]
 
-   == === == ==
-   4  13  16 1
-   5* 12* 9* 8*
-   == === == ==
+- ``CONF`` is a configuration file, in *yaml* format (see below);
+- ``PDF`` is the file(s) to process;
+- ``SCHEMA`` is the imposition schema to use.
 
-To generate this, I could use any of those commands.
+Those three arguments are optional: ``pdfimpose apply`` is a valid command line:
 
-- ``pdfimpose --fold hvh file.pdf`` means "Impose 'file.pdf' so that I will have to fold the resulting paper sheets horizontally, then vertically, then horizontally again."
-- ``pdfimpose --size 4x2 file.pdf`` means "Impose 'file.pdf' so that on the resulting paper sheets, I will have 4 columns and 2 rows of source pages."
-- ``pdfimpose --paper A3 file.pdf`` means "Impose 'file.pdf' so that it can be printed on A3 paper."
-- ``pdfimpose --sheets 2 file.pdf`` means "Impose 'file.pdf' so that it can be printed on two paper sheets."
+- If ``CONF`` is missing, a configuration file is searched:
+  - ``pdfimpose.cfg`` or ``.pdfimpose.cfg``, in the current working directory;
+  - the same files, in the parent directory, or grand-parent directory, or…;
+  - the same files, in ``~/.config``;
+  - the same files, in the home directory;
+  - ``/etc/pdfimpose.cfg`` (depending on the operating system).
+- If ``PDF`` is missing, it is read from the configuration file (section ``general``, option ``files``).
+- If ``SCHEMA`` is missing, it is read from the configuration file (section ``general``, option ``schema``).
 
+For instance, calling ``pdfimpose apply foo.cfg``, where ``foo.cfg`` contains:
+
+.. code-block:: cfg
+
+    [general]
+    schema = perfect
+    files = foo.pdf bar.pdf
+
+    [perfect]
+    imargin = 1cm
+    omargin = .5cm
+
+is equivalent to the following command line::
+
+    pdfimpose perfect --imargin 1cm --omargin .5cm foo.pdf bar.pdf

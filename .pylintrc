@@ -1,0 +1,17 @@
+[VARIABLES]
+#dummy-variables-rgx=([^_]+_)|dummy
+dummy-variables-rgx=_|dummy
+good-names=i,j,x,y,z
+#additional-builtins=_
+
+[MESSAGES CONTROL]
+disable=
+    logging-format-interpolation,
+    no-else-return,
+    # Let black handle formatting
+    bad-continuation,
+    # __main__.py files are too similar
+    duplicate-code,
+
+[SIMILARITIES]
+ignore-imports = yes

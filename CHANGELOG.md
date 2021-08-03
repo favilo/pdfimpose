@@ -1,7 +1,15 @@
 * pdfimpose 2.0.0 (unreleased)
 
-    * Drop python2, python3.5 and python3.6 support.
+    * Warning: This version is backward-incompatible with pdfimpose version 1.
+    * Python support
+      * Drop python2, python3.5 to python3.7 support.
+      * Add python3.8 to python3.9 support.
     * Minor improvements to setup.
+    * Licence changed from GPL to AGPL (due to a new PDF backend used: pyMuPDF, itself licenced under AGPL).
+    * pdfimpose has been fully rewritten
+      * It now support several imposition schemas: cards, copycutfold, cutstackfold, onepagezine, perfect, saddle, wire (closes #18).
+      * It now support margins, fold creep, crop and bind marks (closes #19).
+      * Options can be set in a configuration file (closes #22).
 
     -- Louis Paternault <spalax@gresille.org>
 

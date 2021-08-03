@@ -1,0 +1,78 @@
+% I claim no copyright on this file (I do not consider it original enough to
+% claim anything on it).
+\documentclass[12pt]{article}
+
+\usepackage{calc}
+\usepackage[paperwidth={21cm/2},paperheight={29.7cm/4},margin=.5cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage{qrcode}
+
+\usepackage{tikz}
+\usetikzlibrary{calendar}
+
+\IfFileExists{hyperref.sty}{
+  \usepackage[
+      pdftitle={2022 Calendar},
+      pageanchor=false,
+  ]{hyperref}
+}{
+}
+
+\newfont{\HUGE}{cmr10 at 100pt}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\newcounter{year}
+\setcounter{year}{2022}
+
+\sffamily
+
+\begin{titlepage}
+  \vspace*{\stretch{1}}
+  \begin{center}
+    \HUGE\theyear
+  \end{center}
+  \vspace*{\stretch{1}}
+\end{titlepage}
+
+\pagebreak
+
+\foreach \month in {1, 2, ..., 12} {
+  \hspace*{-.5cm}\resizebox{.95\textwidth}{\textheight}{
+    \begin{tikzpicture}[
+        every calendar/.style={
+          week list,
+          month label above centered, 
+          month text=\bfseries\textcolor{red}{\%mt} \%y0,
+      %every date/.append style={font=\Huge},
+          if={(Sunday) [black!50]}
+        }]
+        \calendar [dates=\theyear-\month-01 to \theyear-\month-last];
+      \end{tikzpicture}
+    }
+
+    \pagebreak
+
+  }
+
+  \begin{center}
+    \vspace*{\stretch{1}}
+    \rotatebox{180}{
+      \begin{minipage}{9cm}
+        \begin{center}
+          Created as an example for:\\
+          \textbf{\large pdfimpose}
+
+          \vspace{1cm}
+
+          \qrcode{https://framagit.org/spalax/pdfimpose/}\\
+          \url{https://framagit.org/spalax/pdfimpose}
+        \end{center}
+      \end{minipage}
+    }
+    \vspace*{\stretch{1}}
+  \end{center}
+  \end{document}
