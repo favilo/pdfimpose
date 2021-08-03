@@ -53,10 +53,11 @@ class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
         )
 
         for x, y in itertools.product(*map(range, self.signature)):
-            recto[x][y] = Page(3, **self.margins(x, y))
-            recto[x + 1][y] = Page(0, **self.margins(x + 1, y))
-            verso[x][y] = Page(1, **self.margins(x, y))
-            verso[x + 1][y] = Page(2, **self.margins(x + 1, y))
+            print((x, y), (x + 1, y))
+            recto[2 * x][y] = Page(3, **self.margins(2 * x, y))
+            recto[2 * x + 1][y] = Page(0, **self.margins(2 * x + 1, y))
+            verso[2 * x][y] = Page(1, **self.margins(2 * x, y))
+            verso[2 * x + 1][y] = Page(2, **self.margins(2 * x + 1, y))
 
         yield Matrix(recto, rotate=common.BIND2ANGLE[self.bind])
         yield Matrix(verso, rotate=common.BIND2ANGLE[self.bind])
