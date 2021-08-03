@@ -1,6 +1,7 @@
 * pdfimpose 2.0.0 (unreleased)
 
     * Drop python2, python3.5 and python3.6 support.
+    * Add python3.8 to python3.9 support.
     * Minor improvements to setup.
 
     -- Louis Paternault <spalax@gresille.org>
