@@ -1,4 +1,0 @@
-Library
-=======
-
-.. automodule:: pdfimpose

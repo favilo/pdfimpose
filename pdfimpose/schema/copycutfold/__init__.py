@@ -15,7 +15,32 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with pdfimpose.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Print pages, to be cut and folded, and eventually bound, to produce multiple books."""
+"""Print pages, to be cut and folded, and eventually bound, to produce multiple books.
+
+You want to print and bind several copies of a tiny A7 book.
+Those books are made with A6 sheets
+(when you open the book, you get two A7 pages side-by-side, which is A6).
+Since you can fit four A6 pages on an A4 page, this means that you can print four books at once.
+
+To use this schema:
+
+- print your imposed file, two-sided;
+- cut the stack of paper, to get several stacks (four in the example above);
+- fold (once) and bind each stack of paper you got, separately;
+- voilà! You now have several copies of your book.
+
+Example: :download:`source <examples/copycutfold.pdf>`, :download:`destination <examples/copycutfold-impose.pdf>`.
+
+:class:`CopyCutFoldImpositor`
+-----------------------------
+
+.. autoclass:: CopyCutFoldImpositor
+
+:func:`impose`
+--------------
+
+.. autofunction:: impose
+"""
 
 import dataclasses
 import decimal

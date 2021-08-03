@@ -12,5 +12,6 @@ calendar2022.pdf: calendar2022.tex
 	pdflatex $<
 
 # Schemas
+
 %-impose.pdf: %.pdf
 	pdfimpose $$(echo $@ | cut -d- -f1) $<

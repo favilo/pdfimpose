@@ -15,7 +15,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with pdfimpose.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Cut as invidual pages, stack and wire bind."""
+"""Cut as invidual pages, stack and wire bind.
+
+Use this schema if you want to print several source pages on each destination page,
+and your booklet is to be wire-bound.
+
+To use this schema:
+
+- print your imposed PDF file, two-sided;
+- cut the sheets to separate the pages (you must get one page per page);
+- stack the resulting stacks onto each other;
+- bind.
+
+Example: :download:`source <examples/wire.pdf>`, :download:`destination <examples/wire-impose.pdf>`.
+
+:class:`WireImpositor`
+----------------------
+
+.. autoclass:: WireImpositor
+
+:func:`impose`
+--------------
+
+.. autofunction:: impose
+"""
 
 import dataclasses
 import decimal

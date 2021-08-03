@@ -15,7 +15,32 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with pdfimpose.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Perfect binding (done in books, like dictionaries)"""
+"""Perfect binding (done in books, like dictionaries)
+
+Perfect binding is the schema used to print *real* books (novels, dictionnaries, etc.):
+several destination pages are printed on a single, big, sheet of paper,
+which is folded, and cut.
+Those booklets are stacked onto each other, and bound together, to make your book.
+
+To use this schema:
+
+- print your imposed PDF file, two-sided;
+- separately fold each sheet of paper;
+- stack them;
+- bind them.
+
+Example: :download:`source <examples/perfect.pdf>`, :download:`destination <examples/perfect-impose.pdf>`.
+
+:class:`PerfectImpositor`
+-------------------------
+
+.. autoclass:: PerfectImpositor
+
+:func:`impose`
+--------------
+
+.. autofunction:: impose
+"""
 
 import dataclasses
 import decimal

@@ -15,7 +15,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with pdfimpose.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A one-page fanzine, with a poster on the back."""
+"""A one-page fanzine, with a poster on the back.
+
+On this schema, you get an 8 pages book which, once unfolded, gives a poster on the back (see `some photos <http://experimentwithnature.com/03-found/experiment-with-paper-how-to-make-a-one-page-zine/>`__).
+
+Example: :download:`source <examples/onepagezine.pdf>`, :download:`destination <examples/onepagezine-impose.pdf>`.
+
+:class:`OnePageZineImpositor`
+-----------------------------
+
+.. autoclass:: OnePageZineImpositor
+
+:func:`impose`
+--------------
+
+.. autofunction:: impose
+"""
 
 import collections.abc
 import dataclasses

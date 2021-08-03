@@ -15,7 +15,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with pdfimpose.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Cut as flash cards (question on front, answer on back)."""
+"""Cut as flash cards (question on front, answer on back).
+
+This schema can be used when you want to print flash cards:
+
+- your source PDF is a list of (let's say) A6 pages:
+  Question 1, Answer 1, Question 2, Answer 2, Question 3, Answer 3…
+- you want to print those questions and answer on an A4 sheet of paper,
+  and cut it to get your flash cards (questions on front, answers on back).
+
+:class:`CardsImpositor`
+-----------------------
+
+.. autoclass:: CardsImpositor
+
+:func:`impose`
+--------------
+
+.. autofunction:: impose
+"""
+
 
 import dataclasses
 import decimal
@@ -160,10 +179,10 @@ def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None):
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).
         If empty, reads from standard input.
     :param str output: List of output file.
-    :param float omargin: Output margin, in pt. Can also be a :class:`Margins` object.
+    :param float omargin: Output margin, in pt. Can also be a :class:`pdfimpose.schema.common.Margins` object.
     :param float imargin: Input margin, in pt.
     :param list[str] mark: List of marks to add.
-        Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
+        Only crop marks are supported (``mark=['crop']``); everything else is silently ignored.
     :param tuple[int] signature: Layout of source pages on output pages.
     """
     if mark is None:

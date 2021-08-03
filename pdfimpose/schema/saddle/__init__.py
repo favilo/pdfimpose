@@ -15,7 +15,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with pdfimpose.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Saddle stitch (like in newpapers or magazines)"""
+"""Saddle stitch (like in newpapers or magazines)
+
+This schema is used in newspapers or magazines: the sheets are inserted into each other.
+
+To use this schema:
+
+- print your imposed PDF file, two-sided;
+- if there is two source pages on each destination page:
+    - fold all your sheets at once;
+    - otherwise, separately fold each sheet of paper, and insert them into each other;
+- bind.
+
+Example: :download:`source <examples/saddle.pdf>`, :download:`destination <examples/saddle-impose.pdf>`.
+
+:class:`SaddleImpositor`
+------------------------
+
+.. autoclass:: SaddleImpositor
+
+:func:`impose`
+--------------
+
+.. autofunction:: impose
+"""
 
 import dataclasses
 import decimal
