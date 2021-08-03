@@ -13,8 +13,14 @@ See `documentation <https://pdfimpose.rtfd.io>`__ for more details.
 Examples
 --------
 
-* `2022 calendar <http://pdfimpose.readthedocs.io/en/latest/_downloads/calendar2022-impose.pdf>`_ (`source <http://pdfimpose.readthedocs.io/en/latest/_downloads/calendar2022.pdf>`__, see LaTeX source file in sources repository).
-* `64 pages file <http://pdfimpose.readthedocs.io/en/latest/_downloads/dummy64-impose.pdf>`_ (`source <http://pdfimpose.readthedocs.io/en/latest/_downloads/dummy64.pdf>`__, generated using `dummypdf <http://framagit.org/spalax/dummypdf>`_).
+* `2022 calendar <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/calendar2022-impose.pdf?inline=false>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/calendar2022.pdf?inline=false>`__, see LaTeX source file in sources repository).
+* `Flash cards <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cards-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cards.pdf>`);
+* `Copy, cut, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold.pdf>`);
+* `Cut, stack, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold.pdf>`);
+* `One-page-zine <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/onepagezine-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/onepagezine.pdf>`);
+* `Perfect binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/perfect-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/perfect.pdf>`);
+* `Saddle stitch <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/saddle-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/saddle.pdf>`);
+* `Wire binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/wire-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/wire.pdf>`).
 
 What's new?
 -----------
