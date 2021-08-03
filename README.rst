@@ -14,13 +14,13 @@ Examples
 --------
 
 * `2022 calendar <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/calendar2022-impose.pdf?inline=false>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/calendar2022.pdf?inline=false>`__, see LaTeX source file in sources repository).
-* `Flash cards <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cards-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cards.pdf>`);
-* `Copy, cut, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold.pdf>`);
-* `Cut, stack, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold.pdf>`);
-* `One-page-zine <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/onepagezine-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/onepagezine.pdf>`);
-* `Perfect binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/perfect-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/perfect.pdf>`);
-* `Saddle stitch <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/saddle-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/saddle.pdf>`);
-* `Wire binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/wire-impose.pdf>` (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/wire.pdf>`).
+* `Flash cards <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cards-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cards.pdf>`_);
+* `Copy, cut, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold.pdf>`_);
+* `Cut, stack, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold.pdf>`_);
+* `One-page-zine <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/onepagezine-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/onepagezine.pdf>`_);
+* `Perfect binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/perfect-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/perfect.pdf>`_);
+* `Saddle stitch <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/saddle-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/saddle.pdf>`_);
+* `Wire binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/wire-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/wire.pdf>`_).
 
 What's new?
 -----------
