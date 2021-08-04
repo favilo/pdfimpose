@@ -62,7 +62,7 @@ class CutStackFoldImpositor(common.AbstractImpositor):
     """Perform imposition of source files, with the 'cutstackfold' schema."""
 
     bind: str = "left"
-    creep: typing.Callable[int, float] = dataclasses.field(default=common.nocreep)
+    creep: typing.Callable[[int], float] = dataclasses.field(default=common.nocreep)
     imargin: float = 0
     signature: tuple[int] = (0, 0)
 

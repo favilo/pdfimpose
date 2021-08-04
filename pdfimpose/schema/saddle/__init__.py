@@ -56,7 +56,7 @@ from ..common import Page, Matrix
 class SaddleImpositor(perfect.PerfectImpositor):
     """Perform imposition of source files, with the 'saddle' schema."""
 
-    creep: typing.Callable[int, float] = dataclasses.field(default=common.nocreep)
+    creep: typing.Callable[[int], float] = dataclasses.field(default=common.nocreep)
 
     def _margins(self, x, y):
         """Compute and return margin for page at coordinate (x, y)."""
