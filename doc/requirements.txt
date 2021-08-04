@@ -1,3 +1,4 @@
-sphinx>=4
-sphinx-argparse
+-r../requirements.txt
 mock
+sphinx-argparse
+sphinx>=4
