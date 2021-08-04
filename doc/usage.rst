@@ -2,7 +2,7 @@ Command line
 ============
 
 This module includes a command line client: `pdfimpose`, which can be used to
-impose a PDF document, using one of the :ref:`imposition schemas <schemas>`.
+impose a PDF document, using one of the :ref:`imposition schemas <library>`.
 
 .. contents:: Contents
    :local:
