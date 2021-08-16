@@ -2,4 +2,4 @@
 
 # Helper file for development tests: call `pdfimpose`.
 export PYTHONPATH="$(cd $(dirname $0)/.. && pwd):$PYTHONPATH"
-python -m pdfimpose $*
+python3 -m pdfimpose $*
