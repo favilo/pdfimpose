@@ -1,3 +1,9 @@
+* pdfimpose 2.0.2 (unreleased)
+
+    * [setup] Fix version of a dependency.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.0.1 (2021-08-04)
 
     * Drop python3.8 support (this was already the case in version 2.0.0, but was (wrongly) documented otherwise).
