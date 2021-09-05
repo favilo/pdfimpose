@@ -80,7 +80,6 @@ class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
         )
 
         for x, y in itertools.product(*map(range, self.signature)):
-            print((x, y), (x + 1, y))
             recto[2 * x][y] = Page(3, **self.margins(2 * x, y))
             recto[2 * x + 1][y] = Page(0, **self.margins(2 * x + 1, y))
             verso[2 * x][y] = Page(1, **self.margins(2 * x, y))
