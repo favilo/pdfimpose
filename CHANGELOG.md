@@ -1,7 +1,8 @@
-* pdfimpose 2.1.0 (unreleased)
+* pdfimpose 2.1.0 (2022-02-15)
 
     * [setup] Fix version of a dependency.
     * Python3.10 support.
+    * Remove cryptic debug message.
 
     -- Louis Paternault <spalax@gresille.org>
 
