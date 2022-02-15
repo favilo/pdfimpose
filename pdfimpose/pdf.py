@@ -1,4 +1,4 @@
-# Copyright 2021 Louis Paternault
+# Copyright 2021-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -198,7 +198,7 @@ class Writer(contextlib.AbstractContextManager):
 
     def set_metadata(self, source):
         """Read metadata from the input files, and (kind of) copy them to the output file."""
-        metadata = dict()
+        metadata = {}
         for keyword in ("title", "author", "subject", "keywords"):
             metadata[keyword] = ", ".join(
                 doc.metadata.get(keyword, ()) for doc in source.files

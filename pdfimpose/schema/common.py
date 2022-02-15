@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -212,7 +212,7 @@ class ArgumentParser(argparse.ArgumentParser):
                 "-c",
                 help=(
                     "Set creep (space added at each fold). "
-                    "This is a linear fonction of 's', the number of inner sheets "
+                    "This is a linear function of 's', the number of inner sheets "
                     "(e.g. '.1s+2mm')."
                 ),
                 type=_type_creep,
@@ -287,9 +287,7 @@ class ArgumentParser(argparse.ArgumentParser):
         if args.output is None or args.output == "-":
             if args.files:
                 source = pathlib.Path(args.files[0])
-                args.output = "{}-impose{}".format(
-                    source.parent / source.stem, source.suffix
-                )
+                args.output = f"{source.parent / source.stem}-impose{source.suffix}"
             else:
                 args.output = None
 
@@ -614,9 +612,13 @@ class AbstractImpositor:
             for x, y in matrix.coordinates():
                 # Add creep
                 if x % 2 == 0:
-                    matrix[x, y].right = self.creep(sheets) / 2
+                    matrix[x, y].right = (
+                        self.creep(sheets) / 2  # pylint: disable=too-many-function-args
+                    )
                 else:
-                    matrix[x, y].left = self.creep(sheets) / 2
+                    matrix[x, y].left = (
+                        self.creep(sheets) / 2  # pylint: disable=too-many-function-args
+                    )
 
                 # Change page numbers
                 if matrix[x, y].number < pagespersheet:

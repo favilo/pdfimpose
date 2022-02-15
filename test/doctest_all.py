@@ -1,4 +1,4 @@
-# Copyright 2015-2021 Louis Paternault
+# Copyright 2015-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -29,7 +29,7 @@ def load_tests(__loader, tests, __pattern):
     # Loading doctests
     tests.addTests(doctest.DocTestSuite(pdfimpose))
     for module_finder, name, __is_pkg in pkgutil.walk_packages(
-        pdfimpose.__path__, prefix="{}.".format(pdfimpose.__name__)
+        pdfimpose.__path__, prefix=f"{pdfimpose.__name__}."
     ):
         if name in sys.modules:
             module = sys.modules[name]

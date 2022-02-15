@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -111,8 +111,8 @@ def main():
     try:
         args = parser.parse_args()
 
-        conf = list()
-        pdf = list()
+        conf = []
+        pdf = []
         for arg in [args.CONF] + args.PDF:
             if arg is None:
                 continue
@@ -135,9 +135,11 @@ def main():
             confname = pathlib.Path(conf[0])
         else:
             raise UserError(
-                "Too many configuration files provided: {}.".format(", ".join(conf))
+                "Too many configuration files provided: {}.".format(  # pylint: disable=consider-using-f-string
+                    ", ".join(conf)
+                )
             )
-        with open(confname) as conffile:
+        with open(confname, encoding="utf8") as conffile:
             config.read_file(conffile)
 
         # Get list of PDF
@@ -171,7 +173,7 @@ def main():
         if schema in config:
             schemacfg = dict(config[schema])
         else:
-            schemacfg = dict()
+            schemacfg = dict()  #  pylint: disable=use-dict-literal
 
         apply(
             sources=pdf,
