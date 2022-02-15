@@ -1,6 +1,7 @@
-* pdfimpose 2.0.2 (unreleased)
+* pdfimpose 2.1.0 (unreleased)
 
     * [setup] Fix version of a dependency.
+    * Python3.10 support.
 
     -- Louis Paternault <spalax@gresille.org>
 
