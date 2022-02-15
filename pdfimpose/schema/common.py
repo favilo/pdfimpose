@@ -55,14 +55,13 @@ import contextlib
 import dataclasses
 import math
 import numbers
-import pathlib
 import os
+import pathlib
 import re
 
 import papersize
 
-from .. import pdf
-from .. import UserError
+from .. import UserError, pdf
 
 BIND2ANGLE = {
     "left": 0,

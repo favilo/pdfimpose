@@ -20,10 +20,10 @@
 import logging
 import sys
 
+from ... import UserError
+from .. import common as schema
 from . import __doc__ as DESCRIPTION
 from . import impose
-from .. import common as schema
-from ... import UserError
 
 
 def main(argv=None):

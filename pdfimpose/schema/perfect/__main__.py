@@ -24,11 +24,10 @@ import sys
 
 import papersize
 
+from ... import UserError, pdf
+from .. import common as schema
 from . import __doc__ as DESCRIPTION
 from . import impose
-from .. import common as schema
-from ... import pdf
-from ... import UserError
 
 
 def ispowerof2(number):

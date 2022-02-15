@@ -13,8 +13,9 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
+import sys
+
 from mock import Mock as MagicMock
 
 # Mocking libraries not needed to build the documentation

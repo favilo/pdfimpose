@@ -23,9 +23,8 @@ import sys
 import textwrap
 import unittest
 
-from wand.image import Image
 import pkg_resources
-
+from wand.image import Image
 
 if "COVERAGE_PROCESS_START" in os.environ:
     EXECUTABLE = ["coverage", "run"]

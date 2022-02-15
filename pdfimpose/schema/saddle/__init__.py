@@ -49,7 +49,7 @@ import numbers
 import typing
 
 from .. import common, perfect
-from ..common import Page, Matrix
+from ..common import Matrix, Page
 
 
 @dataclasses.dataclass

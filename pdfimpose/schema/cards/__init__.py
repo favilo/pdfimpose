@@ -42,7 +42,7 @@ import itertools
 import numbers
 
 from .. import common
-from ..common import Page, Matrix
+from ..common import Matrix, Page
 
 
 @dataclasses.dataclass

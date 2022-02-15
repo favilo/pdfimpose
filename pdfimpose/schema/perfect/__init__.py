@@ -51,7 +51,7 @@ import numbers
 import typing
 
 from .. import common
-from ..common import Page, Matrix
+from ..common import Matrix, Page
 
 
 def evenodd2oddeven(number):

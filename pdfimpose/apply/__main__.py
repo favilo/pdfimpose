@@ -26,9 +26,9 @@ import shlex
 import sys
 import textwrap
 
+from .. import UserError
 from . import __doc__ as DESCRIPTION
 from . import apply, find_config
-from .. import UserError
 
 
 def main():

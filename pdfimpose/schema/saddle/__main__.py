@@ -20,12 +20,11 @@
 import logging
 import sys
 
-from . import __doc__ as DESCRIPTION
-from . import impose
+from ... import UserError, pdf
 from .. import common as schema
 from ..perfect.__main__ import any2folds, folds2margins
-from ... import UserError
-from ... import pdf
+from . import __doc__ as DESCRIPTION
+from . import impose
 
 
 def main(argv=None):

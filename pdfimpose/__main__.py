@@ -22,9 +22,7 @@ import textwrap
 
 import argdispatch
 
-from . import VERSION
-from . import schema
-from . import apply
+from . import VERSION, apply, schema
 
 
 class _HelpSpaces(argdispatch.Action):

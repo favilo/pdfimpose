@@ -20,12 +20,11 @@
 import logging
 import sys
 
+from ... import UserError, pdf
+from .. import common as schema
+from ..cards.__main__ import format2signature
 from . import __doc__ as DESCRIPTION
 from . import impose
-from .. import common as schema
-from ... import UserError
-from ... import pdf
-from ..cards.__main__ import format2signature
 
 
 def main(argv=None):
