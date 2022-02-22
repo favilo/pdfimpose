@@ -1,6 +1,7 @@
 * pdfimpose 2.1.1 (unreleased)
 
     * Fix minimum PyMuPDF version.
+    * Fix compatibility issue with PyMuPDF>1.19.
 
     -- Louis Paternault <spalax@gresille.org>
 

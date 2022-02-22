@@ -158,7 +158,7 @@ class Writer(contextlib.AbstractContextManager):
     def new_page(self, width, height):
         """Create a new page, and return its page number."""
         # pylint: disable=no-member
-        return self.doc.newPage(width=width, height=height).number
+        return self.doc.new_page(width=width, height=height).number
 
     def insert(self, number, source, topleft, rotate):
         """Insert a pdf page (source) into another pdf page (destination).
@@ -208,4 +208,4 @@ class Writer(contextlib.AbstractContextManager):
         ] = "Created with PdfImpose — https://framagit.org/spalax/pdfimpose"
         metadata["producer"] = f"pdfimpose-{VERSION}"
         # pylint: disable=no-member
-        self.doc.setMetadata(metadata)
+        self.doc.set_metadata(metadata)
