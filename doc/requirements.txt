@@ -2,3 +2,4 @@
 mock
 sphinx-argparse
 sphinx>=4
+sphinx-rtd-theme
