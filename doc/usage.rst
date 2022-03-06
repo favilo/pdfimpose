@@ -35,11 +35,13 @@ Subcommand ``apply`` can be used to store options in a configuration file::
 Those three arguments are optional: ``pdfimpose apply`` is a valid command line:
 
 - If ``CONF`` is missing, a configuration file is searched:
+
   - ``pdfimpose.cfg`` or ``.pdfimpose.cfg``, in the current working directory;
   - the same files, in the parent directory, or grand-parent directory, or…;
   - the same files, in ``~/.config``;
   - the same files, in the home directory;
   - ``/etc/pdfimpose.cfg`` (depending on the operating system).
+
 - If ``PDF`` is missing, it is read from the configuration file (section ``general``, option ``files``).
 - If ``SCHEMA`` is missing, it is read from the configuration file (section ``general``, option ``schema``).
 
