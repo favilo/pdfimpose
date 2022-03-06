@@ -19,7 +19,7 @@ For instance, to impress your A5 document using *saddle stitch* (like in magazin
 
     pdfimpose saddle foo.pdf
 
-Each schema have different options. Use ``pdfimpose SCHEME --help`` for more information.
+Each schema have different options. Use ``pdfimpose SCHEMA --help`` for more information.
 
 Configuration file
 ------------------
