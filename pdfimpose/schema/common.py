@@ -166,6 +166,8 @@ class ArgumentParser(argparse.ArgumentParser):
 
         if "prog" not in kwargs:
             kwargs["prog"] = f"pdfimpose {subcommand}"
+        if "formatter_class" not in kwargs:
+            kwargs["formatter_class"] = argparse.RawTextHelpFormatter
 
         super().__init__(**kwargs)
 
