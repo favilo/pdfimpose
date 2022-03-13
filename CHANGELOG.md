@@ -2,7 +2,7 @@
 
     * Fix minimum PyMuPDF version.
     * Fix compatibility issue with PyMuPDF>1.19.
-    * Fix formatting of `--help` text.
+    * Fix formatting of `--help` text (closes #34).
 
     -- Louis Paternault <spalax@gresille.org>
 

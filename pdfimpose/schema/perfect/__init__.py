@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -28,20 +28,6 @@ To use this schema:
 - separately fold each sheet of paper;
 - stack them;
 - bind them.
-
-Example:
-    :download:`source <examples/perfect.pdf>`,
-    :download:`destination <examples/perfect-impose.pdf>`.
-
-:class:`PerfectImpositor`
--------------------------
-
-.. autoclass:: PerfectImpositor
-
-:func:`impose`
---------------
-
-.. autofunction:: impose
 """
 
 import dataclasses

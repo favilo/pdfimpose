@@ -25,7 +25,7 @@ Contents
    :maxdepth: 1
 
    usage
-   library
+   lib
 
 
 Examples

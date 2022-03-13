@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -26,18 +26,6 @@ To use this schema:
 - cut the sheets to separate the pages (you must get one page per page);
 - stack the resulting stacks onto each other;
 - bind.
-
-Example: :download:`source <examples/wire.pdf>`, :download:`destination <examples/wire-impose.pdf>`.
-
-:class:`WireImpositor`
-----------------------
-
-.. autoclass:: WireImpositor
-
-:func:`impose`
---------------
-
-.. autofunction:: impose
 """
 
 import dataclasses

@@ -168,6 +168,10 @@ class ArgumentParser(argparse.ArgumentParser):
             kwargs["prog"] = f"pdfimpose {subcommand}"
         if "formatter_class" not in kwargs:
             kwargs["formatter_class"] = argparse.RawTextHelpFormatter
+        if "epilog" not in kwargs:
+            kwargs[
+                "epilog"
+            ] = "For more information, see: https://pdfimpose.readthedocs.io/en/latest/lib/."
 
         super().__init__(**kwargs)
 

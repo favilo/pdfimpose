@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -26,20 +26,6 @@ To use this schema:
     - fold all your sheets at once;
     - otherwise, separately fold each sheet of paper, and insert them into each other;
 - bind.
-
-Example:
-    :download:`source <examples/saddle.pdf>`,
-    :download:`destination <examples/saddle-impose.pdf>`.
-
-:class:`SaddleImpositor`
-------------------------
-
-.. autoclass:: SaddleImpositor
-
-:func:`impose`
---------------
-
-.. autofunction:: impose
 """
 
 import dataclasses

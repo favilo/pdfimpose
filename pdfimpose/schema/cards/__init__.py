@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -23,16 +23,6 @@ This schema can be used when you want to print flash cards:
   Question 1, Answer 1, Question 2, Answer 2, Question 3, Answer 3…
 - you want to print those questions and answer on an A4 sheet of paper,
   and cut it to get your flash cards (questions on front, answers on back).
-
-:class:`CardsImpositor`
------------------------
-
-.. autoclass:: CardsImpositor
-
-:func:`impose`
---------------
-
-.. autofunction:: impose
 """
 
 

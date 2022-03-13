@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -31,20 +31,6 @@ To use this schema:
   (take care to keep the pages in the right order);
 - fold and bind the stack of paper you got;
 - voilà! You now have a shiny, tiny book.
-
-Example:
-    :download:`source <examples/cutstackfold.pdf>`,
-    :download:`destination <examples/cutstackfold-impose.pdf>`.
-
-:class:`CutStackFoldImpositor`
-------------------------------
-
-.. autoclass:: CutStackFoldImpositor
-
-:func:`impose`
---------------
-
-.. autofunction:: impose
 """
 
 import dataclasses

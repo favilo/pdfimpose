@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -28,20 +28,6 @@ To use this schema:
 - cut the stack of paper, to get several stacks (four in the example above);
 - fold (once) and bind each stack of paper you got, separately;
 - voilà! You now have several copies of your book.
-
-Example:
-    :download:`source <examples/copycutfold.pdf>`,
-    :download:`destination <examples/copycutfold-impose.pdf>`.
-
-:class:`CopyCutFoldImpositor`
------------------------------
-
-.. autoclass:: CopyCutFoldImpositor
-
-:func:`impose`
---------------
-
-.. autofunction:: impose
 """
 
 import dataclasses

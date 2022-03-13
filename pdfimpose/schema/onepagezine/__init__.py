@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -21,19 +21,7 @@ On this schema, you get an 8 pages book which, once unfolded, gives a poster on 
 (see `some photos
 <http://experimentwithnature.com/03-found/experiment-with-paper-how-to-make-a-one-page-zine/>`__).
 
-Example:
-    :download:`source <examples/onepagezine.pdf>`,
-    :download:`destination <examples/onepagezine-impose.pdf>`.
-
-:class:`OnePageZineImpositor`
------------------------------
-
-.. autoclass:: OnePageZineImpositor
-
-:func:`impose`
---------------
-
-.. autofunction:: impose
+This command only perform imposition of the front of your fanzine. It is your job to print the poster on the back.
 """
 
 import collections.abc
