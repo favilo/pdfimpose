@@ -22,7 +22,8 @@
 
 * pdfimpose 2.0.0 (2021-08-04)
 
-    * ⚠️Warning: This version is backward-incompatible with pdfimpose version 1.
+    Warning: This version is backward-incompatible with pdfimpose version 1.
+
     * pdfimpose has been fully rewritten
       * It now support several imposition schemas: cards, copycutfold, cutstackfold, onepagezine, perfect, saddle, wire (closes #14 #18 #25).
       * It now support margins and fold creep (closes #19 #21).
