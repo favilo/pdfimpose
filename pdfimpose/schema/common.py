@@ -58,6 +58,7 @@ import numbers
 import os
 import pathlib
 import re
+import textwrap
 
 import papersize
 
@@ -160,7 +161,10 @@ def _type_positive_int(text):
 class ArgumentParser(argparse.ArgumentParser):
     """A "pre-seeded" argument parser, with configuration common to several schemas."""
 
+    #  pylint: disable=line-too-long
+
     def __init__(self, subcommand, options=None, **kwargs):
+        #  pylint: disable=too-many-branches
         if options is None:
             options = []
 
@@ -217,9 +221,13 @@ class ArgumentParser(argparse.ArgumentParser):
                 "--creep",
                 "-c",
                 help=(
-                    "Set creep (space added at each fold). "
-                    "This is a linear function of 's', the number of inner sheets "
-                    "(e.g. '.1s+2mm')."
+                    textwrap.dedent(
+                        """\
+                    Set creep (space added at each fold). This is a linear function of "s", the number of inner sheets (e.g. ".1s+2mm").
+                    Note that "s" is the number of inner *printed* sheets: if a sheet is printed and folded, it still counts as 1 in this function. You might need to do some math…
+                    The output of this function is the space separating two input pages on the output page: it is twice the distance to the spine.
+                    """
+                    )
                 ),
                 type=_type_creep,
                 default=nocreep,

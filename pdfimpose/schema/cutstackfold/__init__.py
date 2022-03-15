@@ -274,7 +274,7 @@ def impose(
     :param tuple[int] signature: Layout of source pages on output pages.
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
     :param function creep: Function that takes the number of sheets in argument,
-        and return the space to be left between two adjacent pages.
+        and return the space to be left between two adjacent pages (that is, twice the distance to the spine).
     """
     if mark is None:
         mark = []
