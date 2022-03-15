@@ -96,7 +96,7 @@ def impose(
     bind="left",
     creep=common.nocreep,
 ):
-    """Perform imposition of source files into an output file, using the cut-stack-bind schema.
+    """Perform imposition of source files into an output file, using the copy-cut-fold schema.
 
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).
         If empty, reads from standard input.
