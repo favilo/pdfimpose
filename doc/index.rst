@@ -7,16 +7,25 @@ According to `Wikipedia <http://en.wikipedia.org/wiki/Imposition>`_,
 printer's sheet, in order to obtain faster printing, simplify binding and
 reduce paper waste".
 
-.. note::
+.. warning::
 
-   *I do not know where to put this, so…*
+   - I am not a printing expert (I am not even sure I deserve to be called a printing hobbyist).
+   - English is not my first language.
+   - The few things I inaccurately know about printing, I know them in my first language.
 
-   - When ``pdfimpose`` has to guess the size of the output paper,
-     it uses the `A4 format <https://en.wikipedia.org/wiki/ISO_216#A_series A4>`_.
-     This is an (arbitrary) implementation detail, and might change in future releases.
+   Those are three reasons why this documentation might be sometimes unclear.
+   If you have time to spare, I would really appreciate some proofreading.
 
-   - When printing an imposed PDF, it shall be printed two-sided,
-     the binding edge on the left or right.
+
+Printing
+--------
+
+- When ``pdfimpose`` has to guess the size of the output paper,
+  it uses the `A4 format <https://en.wikipedia.org/wiki/ISO_216#A_series A4>`_.
+  This is an (arbitrary) implementation detail, and might change in future releases.
+
+- When printing an imposed PDF, it shall be printed two-sided,
+  the binding edge on the left or right.
 
 Contents
 --------
