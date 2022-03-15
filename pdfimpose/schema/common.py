@@ -264,7 +264,7 @@ class ArgumentParser(argparse.ArgumentParser):
                 default=[],
             )
 
-        if "signature" in options or "format" in options:
+        if "cutsignature" in options or "signature" in options or "format" in options:
             group = self.add_mutually_exclusive_group()
 
         if "signature" in options:
@@ -274,6 +274,21 @@ class ArgumentParser(argparse.ArgumentParser):
                 metavar="WIDTHxHEIGHT",
                 type=_type_signature,
                 help="Size of the destination pages (relative to the source page), e.g. 2x3.",
+                default=None,
+            )
+
+        if "cutsignature" in options:
+            group.add_argument(
+                "--signature",
+                "-s",
+                metavar="WIDTHxHEIGHT",
+                type=_type_signature,
+                help=textwrap.dedent(
+                    """\
+                        Size of the destination pages, e.g. 2x3.
+                        This represents the number of sheets you will get after having cut each printed sheet.
+                        """
+                ),
                 default=None,
             )
 

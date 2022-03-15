@@ -57,7 +57,7 @@ def main(argv=None):
 
     parser = schema.ArgumentParser(
         subcommand="cards",
-        options=["omargin", "imargin", "mark", "signature", "format"],
+        options=["omargin", "imargin", "mark", "cutsignature", "format"],
         description=DESCRIPTION,
     )
 

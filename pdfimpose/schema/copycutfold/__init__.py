@@ -109,6 +109,8 @@ def impose(
     :param list[str] mark: List of marks to add.
         Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
     :param tuple[int] signature: Layout of source pages on output pages.
+        For instance ``(2, 3)`` means: the printed sheets are to be cut in a matrix of
+        2 horizontal sheets per 3 vertical sheets.
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
     :param function creep: Function that takes the number of sheets in argument,
         and return the space to be left between two adjacent pages.

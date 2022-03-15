@@ -5,6 +5,7 @@
     * Documentation
         * Fix formatting of `--help` text (closes #34).
         * Improve documentation about creep (closes #35).
+        * Improve documentation about signatures (closes #32).
 
     -- Louis Paternault <spalax@gresille.org>
 

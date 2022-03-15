@@ -38,7 +38,7 @@ def main(argv=None):
             "imargin",
             "mark",
             "last",
-            "signature",
+            "cutsignature",
             "format",
             "bind",
             "creep",

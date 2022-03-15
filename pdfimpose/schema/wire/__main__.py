@@ -33,7 +33,7 @@ def main(argv=None):
     parser = schema.ArgumentParser(
         subcommand="wire",
         description=DESCRIPTION,
-        options=["omargin", "imargin", "mark", "last", "signature", "format"],
+        options=["omargin", "imargin", "mark", "last", "cutsignature", "format"],
     )
 
     try:
