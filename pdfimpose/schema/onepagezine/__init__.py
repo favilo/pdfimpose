@@ -21,7 +21,8 @@ On this schema, you get an 8 pages book which, once unfolded, gives a poster on 
 (see `some photos
 <http://experimentwithnature.com/03-found/experiment-with-paper-how-to-make-a-one-page-zine/>`__).
 
-This command only perform imposition of the front of your fanzine. It is your job to print the poster on the back.
+This command only perform imposition of the front of your fanzine.
+It is your job to print the poster on the back.
 """
 
 import collections.abc
