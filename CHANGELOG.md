@@ -1,7 +1,8 @@
-* pdfimpose 2.1.1 (unreleased)
+* pdfimpose 2.1.1 (2022-03-21)
 
-    * Fix minimum PyMuPDF version.
-    * Fix compatibility issue with PyMuPDF>1.19.
+    * PyMuPDF dependency
+        * Fix minimum PyMuPDF version.
+        * Fix compatibility issue with PyMuPDF>1.19.
     * [saddle, perfect] A 2 nanometers overlap is allowed between pages (was 0.2 nanometers before).
     * Documentation
         * Fix formatting of `--help` text (closes #34).
