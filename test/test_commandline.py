@@ -58,8 +58,7 @@ FIXTURES = {
             "returncode": 1,
             "stderr": textwrap.dedent(
                 """\
-                mupdf: cannot open absent.pdf: No such file or directory
-                ERROR:root:Cannot open document 'absent.pdf': cannot open absent.pdf: No such file or directory.
+                        ERROR:root:Cannot open document 'absent.pdf': no such file: 'absent.pdf'.
                 """
             ),
         },
