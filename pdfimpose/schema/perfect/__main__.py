@@ -69,28 +69,28 @@ def any2folds(signature, outputsize, *, inputsize):
         return signature2folds(*signature), outputsize
     else:
         # We are rounding the ratio of (dest/source) to
-        # 0.000001, so that 0.999999 is rounded to 1:
+        # 0.00001, so that 0.99999 is rounded to 1:
         # in some cases, we *should* get 1, but due to
-        # floating point arithmetic, we get 0.999999
+        # floating point arithmetic, we get 0.99999
         # instead. We want it to be 1.
         #
         # Let's compute the error: how long is such an error?
         #
-        # log2(ratio)=10^(-6) => ratio=2^(10^(-6))=1.000000693
+        # log2(ratio)=10^(-5) => ratio=2^(10^(-5))=1.00000693
         #
-        # The ratio error is about 1.000000693.
+        # The ratio error is about 1.00000693.
         # What does this represent on the big side of an A4 sheet of paper?
         #
-        # 0.000000693×29.7cm = 0.000020582cm = 0.20582 nm
+        # 0.00000693×29.7cm = 0.00020582cm = 2.0582 nm
         #
-        # We are talking about a 0.2 nanometers error. We do not care.
+        # We are talking about a 2 nanometers error. We do not care.
         notrotated = (
-            math.floor(math.log2(round(outputsize[0] / inputsize[0], 6))),
-            math.floor(math.log2(round(outputsize[1] / inputsize[1], 6))),
+            math.floor(math.log2(round(outputsize[0] / inputsize[0], 5))),
+            math.floor(math.log2(round(outputsize[1] / inputsize[1], 5))),
         )
         rotated = (
-            math.floor(math.log2(round(outputsize[1] / inputsize[0], 6))),
-            math.floor(math.log2(round(outputsize[0] / inputsize[1], 6))),
+            math.floor(math.log2(round(outputsize[1] / inputsize[0], 5))),
+            math.floor(math.log2(round(outputsize[0] / inputsize[1], 5))),
         )
         if (rotated[0] < 0 or rotated[1] < 0) and (
             notrotated[0] < 0 or notrotated[1] < 0

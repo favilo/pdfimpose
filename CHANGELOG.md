@@ -2,6 +2,7 @@
 
     * Fix minimum PyMuPDF version.
     * Fix compatibility issue with PyMuPDF>1.19.
+    * [saddle, perfect] A 2 nanometers overlap is allowed between pages (was 0.2 nanometers before).
     * Documentation
         * Fix formatting of `--help` text (closes #34).
         * Improve documentation about creep (closes #35).
