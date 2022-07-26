@@ -112,8 +112,13 @@ class Reader(contextlib.AbstractContextManager):
             page.cropbox.height,
         )
 
+    @property
+    def source_len(self):
+        """TODO"""
+        return sum(len(file) for file in self.files)
+
     def __len__(self):
-        return sum(len(file) for file in self.files) + self._blank_number
+        return self.source_len + self._blank_number
 
     def __iter__(self):
         for number in range(len(self)):

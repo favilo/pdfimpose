@@ -1,3 +1,9 @@
+* pdfimpose 2.2.0 (unreleased)
+
+    * [cards] Add a --back option.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.1.1 (2022-03-21)
 
     * PyMuPDF dependency

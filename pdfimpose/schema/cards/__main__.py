@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -22,8 +22,9 @@ import sys
 
 import papersize
 
-from ... import UserError, pdf
+from ... import UserError
 from .. import common as schema
+from . import PdfReader
 from . import __doc__ as DESCRIPTION
 from . import impose
 
@@ -57,14 +58,14 @@ def main(argv=None):
 
     parser = schema.ArgumentParser(
         subcommand="cards",
-        options=["omargin", "imargin", "mark", "cutsignature", "format"],
+        options=["omargin", "imargin", "mark", "cutsignature", "format", "back"],
         description=DESCRIPTION,
     )
 
     try:
         args = parser.parse_args(argv)
 
-        args.files = pdf.Reader(args.files)
+        args.files = PdfReader(args.files, back=args.back)
         format2signature(args.files.size, args)
 
         return impose(**vars(args))

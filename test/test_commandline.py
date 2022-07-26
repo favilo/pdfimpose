@@ -105,6 +105,21 @@ FIXTURES = {
                 "cards-9x9-control.pdf",
             ),
         },
+        {
+            "command": [
+                "cards",
+                "cards-back7.pdf",
+                "-o",
+                "cards-back7-impose.pdf",
+                "--back",
+                "cards-back7-back.pdf",
+            ],
+            "returncode": 0,
+            "diff": (
+                "cards-back7-impose.pdf",
+                "cards-back7-control.pdf",
+            ),
+        },
     ),
     "wire": (
         {

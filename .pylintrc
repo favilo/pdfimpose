@@ -8,10 +8,10 @@ good-names=i,j,x,y,z
 disable=
     logging-format-interpolation,
     no-else-return,
-    # Let black handle formatting
-    bad-continuation,
     # __main__.py files are too similar
     duplicate-code,
+load-plugins=
+    pylint.extensions.no_self_use
 
 [SIMILARITIES]
 ignore-imports = yes
