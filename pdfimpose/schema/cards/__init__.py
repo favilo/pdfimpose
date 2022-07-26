@@ -21,6 +21,7 @@ This schema can be used when you want to print flash cards:
 
 - your source PDF is a list of (let's say) A6 pages:
   Question 1, Answer 1, Question 2, Answer 2, Question 3, Answer 3…
+  Note that this behavior can be changed with option --back.
 - you want to print those questions and answer on an A4 sheet of paper,
   and cut it to get your flash cards (questions on front, answers on back).
 """
@@ -31,8 +32,38 @@ import decimal
 import itertools
 import numbers
 
+from ... import pdf
 from .. import common
 from ..common import Matrix, Page
+
+
+class PdfReader(pdf.Reader):
+    """PDF Reader that read source files AND back files."""
+
+    def __init__(self, files, *, back=""):
+        if back:
+            self.back = pdf.readpdf(back)
+        else:
+            self.back = None
+        super().__init__(files)
+
+    def __getitem__(self, key):
+        if self.back and key // 2 < self.source_len:
+            if key % 2 == 0:
+                return super().__getitem__(key // 2)
+            return self.back[(key // 2) % len(self.back)]
+        return super().__getitem__(key)
+
+    def __len__(self):
+        if self.back:
+            return 2 * self.source_len + self._blank_number
+        else:
+            return super().__len__()
+
+    def __exit__(self, *args, **kwargs):
+        if self.back:
+            self.back.close()
+        super().__exit__(*args, **kwargs)
 
 
 @dataclasses.dataclass
@@ -41,6 +72,7 @@ class CardsImpositor(common.AbstractImpositor):
 
     imargin: float = 0
     signature: tuple[int] = (0, 0)
+    back: str = ""
 
     def blank_page_number(self, source):
         pagesperpage = 2 * self.signature[0] * self.signature[1]
@@ -162,8 +194,11 @@ class CardsImpositor(common.AbstractImpositor):
                 self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
             )
 
+    def open_pdf(self, files):  # pylint: disable=arguments-differ
+        return PdfReader(files, back=self.back)
 
-def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None):
+
+def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None, back=""):
     """Perform imposition of source files into an output file, to be cut as flash cards.
 
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).
@@ -177,6 +212,7 @@ def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None):
     :param tuple[int] signature: Layout of source pages on output pages.
         For instance, ``(2, 3)`` means that each output page will contain
         2 columns and 3 rows of source pages.
+    :param Optional[str] back: TODO.
     """
     if mark is None:
         mark = []
@@ -186,4 +222,5 @@ def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None):
         imargin=imargin,
         mark=mark,
         signature=signature,
+        back=back,
     ).impose(files, output)

@@ -306,6 +306,27 @@ class ArgumentParser(argparse.ArgumentParser):
                 default=None,
             )
 
+        if "back" in options:
+            self.add_argument(
+                "--back",
+                "-b",
+                help=(
+                    textwrap.dedent(
+                        """\
+                                    Back sides of cards.
+
+                                - If absent, pages of source files are considered to be : front1, back1, front2, back2, etc.
+                                - If a one-page file, source files are the front pages, and argument to this command is the common back side of all those pages.
+                                - If a file with as many page as the source files, pages of the source files are considered to be : front1, front2, front3, etc., while pages of the back file are considered to be : back1, back2, back3, etc.
+                                - If a file with any other number of pages, the behavior is the same as the previous item, excepted that the back pages are repeated as much as needed, and extra back pages are ignored.
+                                """
+                    )
+                ),
+                nargs="?",
+                type=str,
+                default="",
+            )
+
     def parse_args(self, *args, **kwargs):
         args = super().parse_args(*args, **kwargs)
 
@@ -571,6 +592,11 @@ class AbstractImpositor:
         # pylint: disable=unused-argument, no-self-use, too-many-arguments
         yield from []
 
+    @staticmethod
+    def open_pdf(files):
+        """Open the PDF files, and return a list of :class:`pdf.Reader` objects."""
+        return pdf.Reader(files)
+
     @contextlib.contextmanager
     def read(self, files):
         """Context manager to read a list of files.
@@ -588,7 +614,7 @@ class AbstractImpositor:
         if isinstance(files, pdf.Reader):
             opener = files
         else:
-            opener = pdf.Reader(files)
+            opener = self.open_pdf(files)
 
         with opener as reader:
             if len(reader) == 0:
