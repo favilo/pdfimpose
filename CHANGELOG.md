@@ -1,6 +1,7 @@
 * pdfimpose 2.2.0 (unreleased)
 
     * [cards] Add a --back option.
+    * Add a warning on --creep option: it is broken. See #36.
 
     -- Louis Paternault <spalax@gresille.org>
 

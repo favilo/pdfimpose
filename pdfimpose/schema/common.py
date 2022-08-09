@@ -226,6 +226,7 @@ class ArgumentParser(argparse.ArgumentParser):
                     Set creep (space added at each fold). This is a linear function of "s", the number of inner sheets (e.g. ".1s+2mm").
                     Note that "s" is the number of inner *printed* sheets: if a sheet is printed and folded, it still counts as 1 in this function. You might need to do some math…
                     The output of this function is the space separating two input pages on the output page: it is twice the distance to the spine.
+                    \u26a0 Warning \u26a0 This option is broken. It is left not to break the workflow of anyone who might be using it, but computed space might be wrong on the output document. It might be fixed some day, but it is cumbersome, so I lack motivation to do so… Help (or money) is welcome. See https://framagit.org/spalax/pdfimpose/-/issues/36 for more information.
                     """
                     )
                 ),
