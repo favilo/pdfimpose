@@ -323,7 +323,6 @@ class ArgumentParser(argparse.ArgumentParser):
                                 """
                     )
                 ),
-                nargs="?",
                 type=str,
                 default="",
             )
