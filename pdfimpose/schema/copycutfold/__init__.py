@@ -36,8 +36,7 @@ import math
 import numbers
 import typing
 
-from .. import common, cutstackfold
-from ..common import Matrix, Page
+from .. import BIND2ANGLE, Matrix, Page, cutstackfold, nocreep
 
 
 @dataclasses.dataclass
@@ -71,8 +70,8 @@ class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
             verso[2 * x][y] = Page(1, **self.margins(2 * x, y))
             verso[2 * x + 1][y] = Page(2, **self.margins(2 * x + 1, y))
 
-        yield Matrix(recto, rotate=common.BIND2ANGLE[self.bind])
-        yield Matrix(verso, rotate=common.BIND2ANGLE[self.bind])
+        yield Matrix(recto, rotate=BIND2ANGLE[self.bind])
+        yield Matrix(verso, rotate=BIND2ANGLE[self.bind])
 
     def matrixes(self, pages: int):
         assert pages % 4 == 0
@@ -108,7 +107,7 @@ def impose(
     mark=None,
     signature=None,
     bind="left",
-    creep=common.nocreep,
+    creep=nocreep,
     group=0,
 ):
     """Perform imposition of source files into an output file, using the copy-cut-fold schema.

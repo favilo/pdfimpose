@@ -21,7 +21,7 @@ import logging
 import sys
 
 from ... import UserError, pdf
-from .. import common as schema
+from .. import ArgumentParser
 from ..cards.__main__ import format2signature
 from . import __doc__ as DESCRIPTION
 from . import impose
@@ -30,7 +30,7 @@ from . import impose
 def main(argv=None):
     """Main function"""
 
-    parser = schema.ArgumentParser(
+    parser = ArgumentParser(
         subcommand="copycutfold",
         description=DESCRIPTION,
         options=[

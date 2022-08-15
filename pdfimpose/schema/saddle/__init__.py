@@ -37,19 +37,18 @@ import math
 import numbers
 import typing
 
-from .. import common, perfect
-from ..common import Matrix, Page
+from .. import Margins, Matrix, Page, nocreep, perfect
 
 
 @dataclasses.dataclass
 class SaddleImpositor(perfect.PerfectImpositor):
     """Perform imposition of source files, with the 'saddle' schema."""
 
-    creep: typing.Callable[[int], float] = dataclasses.field(default=common.nocreep)
+    creep: typing.Callable[[int], float] = dataclasses.field(default=nocreep)
 
     def _margins(self, x, y):
         """Compute and return margin for page at coordinate (x, y)."""
-        margins = common.Margins(
+        margins = Margins(
             top=self.omargin.top if y == 0 else self.imargin / 2,
             bottom=self.omargin.bottom
             if y == self.signature[1] - 1
@@ -96,7 +95,7 @@ def impose(
     mark=None,
     last=0,
     bind="left",
-    creep=common.nocreep,
+    creep=nocreep,
     group=1,
 ):
     """Perform imposition of source files into an output file, to be bound using "saddle stitch".

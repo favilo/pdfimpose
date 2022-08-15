@@ -39,8 +39,7 @@ import math
 import numbers
 import typing
 
-from .. import common
-from ..common import Matrix, Page
+from .. import BIND2ANGLE, AbstractImpositor, Margins, Matrix, Page
 
 
 def evenodd2oddeven(number):
@@ -58,7 +57,7 @@ def evenodd2oddeven(number):
 
 
 @dataclasses.dataclass
-class PerfectImpositor(common.AbstractImpositor):
+class PerfectImpositor(AbstractImpositor):
     """Perform imposition of source files, with the 'perfect' schema."""
 
     folds: str = None
@@ -83,7 +82,7 @@ class PerfectImpositor(common.AbstractImpositor):
 
     def _margins(self, x, y):
         """Compute and return margin for page at coordinate (x, y)."""
-        margins = common.Margins(
+        margins = Margins(
             top=self.omargin.top if y == 0 else self.imargin / 2,
             bottom=self.omargin.bottom
             if y == self.signature[1] - 1
@@ -148,7 +147,7 @@ class PerfectImpositor(common.AbstractImpositor):
                 ]
                 for x in range(len(recto))
             ],
-            rotate=common.BIND2ANGLE[self.bind],
+            rotate=BIND2ANGLE[self.bind],
         )
         yield Matrix(
             [
@@ -162,7 +161,7 @@ class PerfectImpositor(common.AbstractImpositor):
                 ]
                 for x in range(len(recto))
             ],
-            rotate=common.BIND2ANGLE[self.bind],
+            rotate=BIND2ANGLE[self.bind],
         )
 
     def group_matrixes(self, total):

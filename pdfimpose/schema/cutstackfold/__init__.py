@@ -37,16 +37,15 @@ import itertools
 import numbers
 import typing
 
-from .. import common
-from ..common import Matrix, Page
+from .. import BIND2ANGLE, AbstractImpositor, Matrix, Page, nocreep
 
 
 @dataclasses.dataclass
-class CutStackFoldImpositor(common.AbstractImpositor):
+class CutStackFoldImpositor(AbstractImpositor):
     """Perform imposition of source files, with the 'cutstackfold' schema."""
 
     bind: str = "left"
-    creep: typing.Callable[[int], float] = dataclasses.field(default=common.nocreep)
+    creep: typing.Callable[[int], float] = dataclasses.field(default=nocreep)
     imargin: float = 0
     signature: tuple[int] = (0, 0)
     group: int = 0
@@ -111,8 +110,8 @@ class CutStackFoldImpositor(common.AbstractImpositor):
                     **self.margins(2 * self.signature[0] - 2 * x - 2, y),
                 )
 
-            yield Matrix(recto, rotate=common.BIND2ANGLE[self.bind])
-            yield Matrix(verso, rotate=common.BIND2ANGLE[self.bind])
+            yield Matrix(recto, rotate=BIND2ANGLE[self.bind])
+            yield Matrix(verso, rotate=BIND2ANGLE[self.bind])
 
     def _max_creep(self, total):
         """Return the maximum creep of the document.
@@ -268,7 +267,7 @@ def impose(
     mark=None,
     signature=None,
     bind="left",
-    creep=common.nocreep,
+    creep=nocreep,
     group=0,
 ):
     """Perform imposition of source files into an output file, using the cut-stack-bind schema.
