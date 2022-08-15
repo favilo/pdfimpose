@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -42,6 +42,7 @@ def main(argv=None):
             "format",
             "bind",
             "creep",
+            "group0",
         ],
     )
 

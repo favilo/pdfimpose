@@ -312,6 +312,19 @@ FIXTURES = {
                 "copycutfold-control.pdf",
             ),
         },
+        {
+            "command": [
+                "copycutfold",
+                "copycutfold-group.pdf",
+                "--group",
+                "3",
+            ],
+            "returncode": 0,
+            "diff": (
+                "copycutfold-group-impose.pdf",
+                "copycutfold-group-control.pdf",
+            ),
+        },
     ),
     "apply": (
         {

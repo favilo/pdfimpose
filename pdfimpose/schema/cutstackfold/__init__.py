@@ -132,7 +132,7 @@ class CutStackFoldImpositor(common.AbstractImpositor):
         maxcreep = self._max_creep(self.group * pages_per_sheet)
 
         # First, we compute the first group of pages
-        matrix_group = []
+        group_matrixes = []
 
         for number, matrix in enumerate(self.base_matrix(self.group * pages_per_sheet)):
             for x, y in matrix.coordinates():
@@ -152,11 +152,11 @@ class CutStackFoldImpositor(common.AbstractImpositor):
                 else:
                     matrix[x, y].left += creep / 2
                     matrix[x, y].right += (maxcreep - creep) / 2
-            matrix_group.append(matrix)
+            group_matrixes.append(matrix)
 
-        # Repeat group as many as necessary
+        # Then, we repeat the group as many times as necessary
         for i in range(pages // (self.group * pages_per_sheet)):
-            for matrix in matrix_group:
+            for matrix in group_matrixes:
                 yield matrix.stack(i * pages_per_sheet * self.group)
 
     def crop_marks(self, number, total, matrix, outputsize, inputsize):

@@ -17,22 +17,22 @@
 
 """Print pages, to be cut and folded, and eventually bound, to produce multiple books.
 
-You want to print and bind several copies of a tiny A7 book.
-Those books are made with A6 sheets
-(when you open the book, you get two A7 pages side-by-side, which is A6).
-Since you can fit four A6 pages on an A4 page, this means that you can print four books at once.
+You want to print and bind several copies of a tiny A7 book.  Those books are made with A6 sheets (when you open the book, you get two A7 pages side-by-side, which is A6).  Since you can fit four A6 pages on an A4 page, this means that you can print four books at once.
 
-To use this schema:
+To use this schema (without option --group):
 
 - print your imposed file, two-sided;
 - cut the stack of paper, to get several stacks (four in the example above);
 - fold (once) and bind each stack of paper you got, separately;
 - voilà! You now have several copies of your book.
-"""
+
+With option --group=3 (for instance), repeat the step above for every group of three sheets. You get several signatures, that you have to bind together to get a proper book.
+"""  # pylint: disable=line-too-long
 
 import dataclasses
 import decimal
 import itertools
+import math
 import numbers
 import typing
 
@@ -77,11 +77,23 @@ class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
     def matrixes(self, pages: int):
         assert pages % 4 == 0
 
-        matrixes = list(self.base_matrix(pages))
-        for i in range((pages - 1) // 4 + 1):
-            yield from self.insert_sheets(
-                (matrix.copy() for matrix in matrixes), i, pages, 2
+        if self.group == 0:
+            self.group = math.ceil(pages / 4)
+
+        # First, we compute the first group of pages
+        base_matrixes = list(self.base_matrix(4 * self.group))
+        group_matrixes = []
+        for i in range(self.group):
+            group_matrixes.extend(
+                self.insert_sheets(
+                    (matrix.copy() for matrix in base_matrixes), i, 4 * self.group, 2
+                )
             )
+
+        # Then, we repeat the group as many times as necessary
+        for i in range(math.ceil(pages / (4 * self.group))):
+            for matrix in group_matrixes:
+                yield matrix.stack(i * 4 * self.group)
 
 
 def impose(
@@ -95,6 +107,7 @@ def impose(
     signature=None,
     bind="left",
     creep=common.nocreep,
+    group=0,
 ):
     """Perform imposition of source files into an output file, using the copy-cut-fold schema.
 
@@ -114,6 +127,8 @@ def impose(
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
     :param function creep: Function that takes the number of sheets in argument,
         and return the space to be left between two adjacent pages.
+    :param int group: Group sheets before cutting them.
+        See help of command line --group option for more information.
     """
     if mark is None:
         mark = []
@@ -126,4 +141,5 @@ def impose(
         signature=signature,
         bind=bind,
         creep=creep,
+        group=group,
     ).impose(files, output)
