@@ -114,7 +114,7 @@ class Reader(contextlib.AbstractContextManager):
 
     @property
     def source_len(self):
-        """TODO"""
+        """Total number of pages of source files."""
         return sum(len(file) for file in self.files)
 
     def __len__(self):

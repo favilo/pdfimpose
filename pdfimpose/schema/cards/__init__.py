@@ -212,7 +212,7 @@ def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None, ba
     :param tuple[int] signature: Layout of source pages on output pages.
         For instance, ``(2, 3)`` means that each output page will contain
         2 columns and 3 rows of source pages.
-    :param Optional[str] back: TODO.
+    :param Optional[str] back: Back sides of cards. See --back help for more information.
     """
     if mark is None:
         mark = []
