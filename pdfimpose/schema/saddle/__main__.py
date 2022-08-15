@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -21,7 +21,7 @@ import logging
 import sys
 
 from ... import UserError, pdf
-from .. import common as schema
+from .. import ArgumentParser, nocreep
 from ..perfect.__main__ import any2folds, folds2margins
 from . import __doc__ as DESCRIPTION
 from . import impose
@@ -30,7 +30,7 @@ from . import impose
 def main(argv=None):
     """Main function"""
 
-    parser = schema.ArgumentParser(
+    parser = ArgumentParser(
         subcommand="saddle",
         options=[
             "omargin",
@@ -41,6 +41,7 @@ def main(argv=None):
             "last",
             "bind",
             "creep",
+            "group1",
         ],
         description=DESCRIPTION,
     )
@@ -62,7 +63,7 @@ def main(argv=None):
         if (
             args.format is not None
             and args.imargin == 0
-            and args.creep == schema.nocreep  # pylint: disable=comparison-with-callable
+            and args.creep == nocreep  # pylint: disable=comparison-with-callable
         ):
             args.omargin = folds2margins(
                 args.format, sourcesize, args.folds, args.imargin

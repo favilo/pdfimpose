@@ -22,22 +22,24 @@ several destination pages are printed on a single, big, sheet of paper,
 which is folded, and cut.
 Those booklets are stacked onto each other, and bound together, to make your book.
 
-To use this schema:
+To use this schema (without option --group, or with --group=1):
 
 - print your imposed PDF file, two-sided;
 - separately fold each sheet of paper;
 - stack them;
 - bind them.
-"""
+
+With option --group=3 (for instance), repeat the step above for every group of three sheets. You get several signatures, that you have to bind together to get a proper book.
+"""  # pylint: disable=line-too-long
 
 import dataclasses
 import decimal
 import itertools
+import math
 import numbers
 import typing
 
-from .. import common
-from ..common import Matrix, Page
+from .. import BIND2ANGLE, AbstractImpositor, Margins, Matrix, Page
 
 
 def evenodd2oddeven(number):
@@ -55,12 +57,13 @@ def evenodd2oddeven(number):
 
 
 @dataclasses.dataclass
-class PerfectImpositor(common.AbstractImpositor):
+class PerfectImpositor(AbstractImpositor):
     """Perform imposition of source files, with the 'perfect' schema."""
 
     folds: str = None
     imargin: float = 0
     bind: str = "left"
+    group: int = 1
 
     def __post_init__(self):
         super().__post_init__()
@@ -79,7 +82,7 @@ class PerfectImpositor(common.AbstractImpositor):
 
     def _margins(self, x, y):
         """Compute and return margin for page at coordinate (x, y)."""
-        margins = common.Margins(
+        margins = Margins(
             top=self.omargin.top if y == 0 else self.imargin / 2,
             bottom=self.omargin.bottom
             if y == self.signature[1] - 1
@@ -97,10 +100,7 @@ class PerfectImpositor(common.AbstractImpositor):
         return margins
 
     def base_matrix(self, total):
-        """Yield a single matrix.
-
-        This matrix contains the arrangement of source pages on the output pages.
-        """
+        """Yield two matrixes (recto and verso) corresponding to one folded sheet."""
         # pylint: disable=unused-argument
 
         def _rotate(y):
@@ -147,7 +147,7 @@ class PerfectImpositor(common.AbstractImpositor):
                 ]
                 for x in range(len(recto))
             ],
-            rotate=common.BIND2ANGLE[self.bind],
+            rotate=BIND2ANGLE[self.bind],
         )
         yield Matrix(
             [
@@ -161,17 +161,85 @@ class PerfectImpositor(common.AbstractImpositor):
                 ]
                 for x in range(len(recto))
             ],
-            rotate=common.BIND2ANGLE[self.bind],
+            rotate=BIND2ANGLE[self.bind],
         )
 
+    def group_matrixes(self, total):
+        """Yield matrixes corresponding to a group of sheets.
+
+        1. First, we compute the matrix corresponding to a single folded sheet
+           (see :meth:`PerfectImpositor.base_matrix`).
+
+        2. Then, we compute the matrix corresponding to the outer sheet of the group.
+           Note that:
+
+           - The way the sheet is folded is irrelevant here:
+             everything can be computed using only page numbers, regardless of their position.
+           - One side of the sheet, when folded, faces the same sheet, or the outer world;
+             the other side, when folded, faces other sheets of the same group.
+
+           Here is an example.
+           Let's consider a (output) sheet with 8 (input) pages per (output page):
+           this sheet has 16 input pages on it, from 0 to 15.
+           When folded, the original page numbers become (with different ``self.group`` values):
+
+           Original sheets: 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+           self.group == 1: 0  1  6  7  8  9 14 15 16 17 22 23 24 25 30 31
+           self.group == 2: 0  1 10 11 12 13 22 23 24 25 34 35 36 37 46 47
+           self.group == 3: 0  1 14 15 16 17 30 31 32 33 46 47 48 49 62 63
+
+           To compute this yourself, take 1, 2, 3 (or more) sheets of paper,
+           place (output) page numbers on the outer one, fold them,
+           and watch the new page numbers you get.
+
+           Note that the numbers are consecutives, exepted for gaps every 4 numbers,
+           starting between 1 and 2. Each of these gaps is 4×(self.group-1).
+           Thus, the formula used to compute `outer` (see code below).
+
+        3. At last, we compute the matrix of the inner sheets.
+           Those being adjacent to the inner sheets,
+           we simply add or substract page numbers to them.
+        """
+        if self.group == 0:
+            group = math.ceil(total / (2 * self.signature[0] * self.signature[1]))
+        else:
+            group = self.group
+
+        for g in range(group):  #  pylint: disable=invalid-name
+            for matrix in self.base_matrix(total):
+                grouped = [
+                    [None for y in range(matrix.height)] for x in range(matrix.width)
+                ]
+                for x, y in matrix.coordinates():
+                    # `outer` is the matrix of the outer sheet. Matrixes of the inner sheets will be computed by adding or substracting pages from `outer`.
+                    outer = matrix[x, y].number + math.floor(
+                        (matrix[x, y].number + 2) / 4
+                    ) * 4 * (group - 1)
+                    if g == 0:
+                        grouped[x][y] = dataclasses.replace(matrix[x, y], number=outer)
+                    elif matrix[x, y].number % 4 <= 1:
+                        grouped[x][y] = dataclasses.replace(
+                            matrix[x, y], number=outer + 2 * g
+                        )
+                    else:
+                        grouped[x][y] = dataclasses.replace(
+                            matrix[x, y], number=outer - 2 * g
+                        )
+                yield Matrix(grouped)
+
     def matrixes(self, pages: int):
-        pages_per_signature = 2 * self.signature[0] * self.signature[1]
-        assert pages % pages_per_signature == 0
+        if self.group == 0:
+            group = math.ceil(pages / (2 * self.signature[0] * self.signature[1]))
+        else:
+            group = self.group
+
+        pages_per_group = 2 * self.signature[0] * self.signature[1] * group
+        assert pages % pages_per_group == 0
 
         yield from self.stack_matrixes(
-            list(self.base_matrix(pages)),
-            repeat=pages // pages_per_signature,
-            step=pages_per_signature,
+            list(self.group_matrixes(pages)),
+            repeat=pages // pages_per_group,
+            step=pages_per_group,
         )
 
     def bind_marks(self, number, total, matrix, outputsize, inputsize):
@@ -270,7 +338,16 @@ class PerfectImpositor(common.AbstractImpositor):
 
 
 def impose(
-    files, output, *, folds, imargin=0, omargin=0, mark=None, last=0, bind="left"
+    files,
+    output,
+    *,
+    folds,
+    imargin=0,
+    omargin=0,
+    mark=None,
+    last=0,
+    bind="left",
+    group=1,
 ):
     """Perform imposition of source files into an output file, to be bound using "perfect binding".
 
@@ -286,6 +363,8 @@ def impose(
     :param int last: Number of last pages (of the source files) to keep at the
         end of the output document.  If blank pages were to be added to the
         source files, they would be added before those last pages.
+    :param int group: Group sheets before folding them.
+        See help of command line --group option for more information.
     """
     if mark is None:
         mark = []
@@ -297,4 +376,5 @@ def impose(
         last=last,
         bind=bind,
         folds=folds,
+        group=group,
     ).impose(files, output)

@@ -1,4 +1,4 @@
-# Copyright 2017-2021 Louis Paternault
+# Copyright 2017-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -86,6 +86,19 @@ FIXTURES = {
             "diff": (
                 "small-impose.pdf",
                 "small-control.pdf",
+            ),
+        },
+        {
+            "command": [
+                "perfect",
+                "group3.pdf",
+                "--group",
+                "3",
+            ],
+            "returncode": 0,
+            "diff": (
+                "group3-impose.pdf",
+                "group3-control.pdf",
             ),
         },
     ),
@@ -261,6 +274,19 @@ FIXTURES = {
                 "cutstackfold-control.pdf",
             ),
         },
+        {
+            "command": [
+                "cutstackfold",
+                "cutstackfold-group.pdf",
+                "-g",
+                "3",
+            ],
+            "returncode": 0,
+            "diff": (
+                "cutstackfold-group-impose.pdf",
+                "cutstackfold-group-control.pdf",
+            ),
+        },
     ),
     "saddle": (
         {
@@ -280,6 +306,19 @@ FIXTURES = {
                 "saddle-control.pdf",
             ),
         },
+        {
+            "command": [
+                "saddle",
+                "group3.pdf",
+                "--group",
+                "3",
+            ],
+            "returncode": 0,
+            "diff": (
+                "group3-impose.pdf",
+                "group3-control.pdf",
+            ),
+        },
     ),
     "copycutfold": (
         {
@@ -297,6 +336,19 @@ FIXTURES = {
             "diff": (
                 "copycutfold-impose.pdf",
                 "copycutfold-control.pdf",
+            ),
+        },
+        {
+            "command": [
+                "copycutfold",
+                "copycutfold-group.pdf",
+                "--group",
+                "3",
+            ],
+            "returncode": 0,
+            "diff": (
+                "copycutfold-group-impose.pdf",
+                "copycutfold-group-control.pdf",
             ),
         },
     ),

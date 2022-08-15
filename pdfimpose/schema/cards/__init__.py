@@ -33,8 +33,7 @@ import itertools
 import numbers
 
 from ... import pdf
-from .. import common
-from ..common import Matrix, Page
+from .. import AbstractImpositor, Matrix, Page
 
 
 class PdfReader(pdf.Reader):
@@ -67,7 +66,7 @@ class PdfReader(pdf.Reader):
 
 
 @dataclasses.dataclass
-class CardsImpositor(common.AbstractImpositor):
+class CardsImpositor(AbstractImpositor):
     """Perform imposition of source files, with the 'card' schema."""
 
     imargin: float = 0
@@ -205,14 +204,14 @@ def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None, ba
         If empty, reads from standard input.
     :param str output: List of output file.
     :param float omargin: Output margin, in pt.
-        Can also be a :class:`pdfimpose.schema.common.Margins` object.
+        Can also be a :class:`pdfimpose.schema.Margins` object.
     :param float imargin: Input margin, in pt.
     :param list[str] mark: List of marks to add.
         Only crop marks are supported (``mark=['crop']``); everything else is silently ignored.
     :param tuple[int] signature: Layout of source pages on output pages.
         For instance, ``(2, 3)`` means that each output page will contain
         2 columns and 3 rows of source pages.
-    :param Optional[str] back: TODO.
+    :param Optional[str] back: Back sides of cards. See --back help for more information.
     """
     if mark is None:
         mark = []

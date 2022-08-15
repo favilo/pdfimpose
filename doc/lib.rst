@@ -15,7 +15,7 @@ Use the others at your own risk!
 .. toctree::
    :maxdepth: 1
 
-   lib/common
+   lib/schema
    lib/cards
    lib/copycutfold
    lib/cutstackfold

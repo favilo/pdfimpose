@@ -30,12 +30,11 @@ import dataclasses
 import decimal
 import numbers
 
-from .. import common
-from ..common import Matrix, Page
+from .. import BIND2ANGLE, AbstractImpositor, Matrix, Page
 
 
 @dataclasses.dataclass
-class OnePageZineImpositor(common.AbstractImpositor):
+class OnePageZineImpositor(AbstractImpositor):
     """Perform imposition of source files, with the 'one-page-zine' schema.
 
     See
@@ -74,7 +73,7 @@ class OnePageZineImpositor(common.AbstractImpositor):
                     Page(0, bottom=self.omargin.bottom, right=self.omargin.right),
                 ],
             ],
-            rotate=common.BIND2ANGLE[self.bind],
+            rotate=BIND2ANGLE[self.bind],
         )
 
     def matrixes(self, pages: int):

@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -25,7 +25,7 @@ import sys
 import papersize
 
 from ... import UserError, pdf
-from .. import common as schema
+from .. import ArgumentParser, Margins
 from . import __doc__ as DESCRIPTION
 from . import impose
 
@@ -118,17 +118,24 @@ def folds2margins(outputsize, sourcesize, folds, imargin):
         - sourcesize[1] * 2 ** folds.count("v")
         - imargin * (2 ** folds.count("v") - 1)
     )
-    return schema.Margins(
-        top=topbottom, bottom=topbottom, left=leftright, right=leftright
-    )
+    return Margins(top=topbottom, bottom=topbottom, left=leftright, right=leftright)
 
 
 def main(argv=None):
     """Main function"""
 
-    parser = schema.ArgumentParser(
+    parser = ArgumentParser(
         subcommand="perfect",
-        options=["omargin", "imargin", "mark", "signature", "format", "last", "bind"],
+        options=[
+            "omargin",
+            "imargin",
+            "mark",
+            "signature",
+            "format",
+            "last",
+            "bind",
+            "group1",
+        ],
         description=DESCRIPTION,
     )
 

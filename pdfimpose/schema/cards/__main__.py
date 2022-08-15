@@ -23,7 +23,7 @@ import sys
 import papersize
 
 from ... import UserError
-from .. import common as schema
+from .. import ArgumentParser, Margins, compute_signature
 from . import PdfReader
 from . import __doc__ as DESCRIPTION
 from . import impose
@@ -38,12 +38,12 @@ def format2signature(sourcesize, args):
         if args.format is None:
             args.format = tuple(map(float, papersize.parse_papersize("A4")))
 
-        args.signature, rotated = schema.compute_signature(sourcesize, args.format)
+        args.signature, rotated = compute_signature(sourcesize, args.format)
         if rotated:
             args.format = (args.format[1], args.format[0])
 
         if args.imargin == 0:
-            args.omargin = schema.Margins(
+            args.omargin = Margins(
                 top=(args.format[1] - sourcesize[1] * args.signature[1]) / 2,
                 bottom=(args.format[1] - sourcesize[1] * args.signature[1]) / 2,
                 left=(args.format[0] - sourcesize[0] * args.signature[0]) / 2,
@@ -56,7 +56,7 @@ def format2signature(sourcesize, args):
 def main(argv=None):
     """Main function"""
 
-    parser = schema.ArgumentParser(
+    parser = ArgumentParser(
         subcommand="cards",
         options=["omargin", "imargin", "mark", "cutsignature", "format", "back"],
         description=DESCRIPTION,

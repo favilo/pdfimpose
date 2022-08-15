@@ -19,34 +19,36 @@
 
 This schema is used in newspapers or magazines: the sheets are inserted into each other.
 
-To use this schema:
+To use this schema (with --group=1, or without --group):
 
 - print your imposed PDF file, two-sided;
 - if there is two source pages on each destination page:
     - fold all your sheets at once;
     - otherwise, separately fold each sheet of paper, and insert them into each other;
 - bind.
-"""
+
+With option --group=3 (for instance), repeat the step above for every group of three sheets. You get several signatures, that you have to bind together to get a proper book.
+"""  # pylint: disable=line-too-long
 
 import dataclasses
 import decimal
 import itertools
+import math
 import numbers
 import typing
 
-from .. import common, perfect
-from ..common import Matrix, Page
+from .. import Margins, Matrix, Page, nocreep, perfect
 
 
 @dataclasses.dataclass
 class SaddleImpositor(perfect.PerfectImpositor):
     """Perform imposition of source files, with the 'saddle' schema."""
 
-    creep: typing.Callable[[int], float] = dataclasses.field(default=common.nocreep)
+    creep: typing.Callable[[int], float] = dataclasses.field(default=nocreep)
 
     def _margins(self, x, y):
         """Compute and return margin for page at coordinate (x, y)."""
-        margins = common.Margins(
+        margins = Margins(
             top=self.omargin.top if y == 0 else self.imargin / 2,
             bottom=self.omargin.bottom
             if y == self.signature[1] - 1
@@ -64,13 +66,18 @@ class SaddleImpositor(perfect.PerfectImpositor):
         return margins
 
     def matrixes(self, pages: int):
-        pages_per_signature = self.signature[0] * self.signature[1]
-        assert pages % pages_per_signature == 0
+        if self.group == 0:
+            group = math.ceil(pages / (2 * self.signature[0] * self.signature[1]))
+        else:
+            group = self.group
 
-        matrixes = list(self.base_matrix(pages))
-        for i in range(pages // (2 * pages_per_signature)):
+        pages_per_group = group * self.signature[0] * self.signature[1]
+        assert pages % pages_per_group == 0
+
+        matrixes = list(self.group_matrixes(pages))
+        for i in range(pages // (2 * pages_per_group)):
             yield from self.insert_sheets(
-                (matrix.copy() for matrix in matrixes), i, pages, pages_per_signature
+                (matrix.copy() for matrix in matrixes), i, pages, pages_per_group
             )
 
     def bind_marks(self, number, total, matrix, outputsize, inputsize):
@@ -88,7 +95,8 @@ def impose(
     mark=None,
     last=0,
     bind="left",
-    creep=common.nocreep,
+    creep=nocreep,
+    group=1,
 ):
     """Perform imposition of source files into an output file, to be bound using "saddle stitch".
 
@@ -106,6 +114,8 @@ def impose(
     :param int last: Number of last pages (of the source files) to keep at the
         end of the output document.  If blank pages were to be added to the
         source files, they would be added before those last pages.
+    :param int group: Group sheets before folding them.
+        See help of command line --group option for more information.
     """
     if mark is None:
         mark = []
@@ -118,4 +128,5 @@ def impose(
         bind=bind,
         folds=folds,
         creep=creep,
+        group=group,
     ).impose(files, output)

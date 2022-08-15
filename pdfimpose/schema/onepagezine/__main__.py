@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -21,7 +21,7 @@ import logging
 import sys
 
 from ... import UserError
-from .. import common as schema
+from .. import ArgumentParser
 from . import __doc__ as DESCRIPTION
 from . import impose
 
@@ -29,7 +29,7 @@ from . import impose
 def main(argv=None):
     """Main function"""
 
-    parser = schema.ArgumentParser(
+    parser = ArgumentParser(
         subcommand="onepagezine",
         options=["omargin", "mark", "last", "bind"],
         description=DESCRIPTION,

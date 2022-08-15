@@ -33,8 +33,7 @@ import decimal
 import itertools
 import numbers
 
-from .. import cards, common
-from ..common import Matrix, Page
+from .. import Matrix, Page, cards
 
 
 @dataclasses.dataclass

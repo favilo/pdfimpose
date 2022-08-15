@@ -1,6 +1,7 @@
 * pdfimpose 2.2.0 (unreleased)
 
     * [cards] Add a --back option.
+    * [cutstackfold, copycutfold, perfect, saddle] Add a --group option (see #33).
     * Add a warning on --creep option: it is broken. See #36.
 
     -- Louis Paternault <spalax@gresille.org>
