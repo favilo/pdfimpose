@@ -42,6 +42,7 @@ def main(argv=None):
             "format",
             "bind",
             "creep",
+            "group0",
         ],
     )
 

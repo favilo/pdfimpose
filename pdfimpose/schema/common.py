@@ -327,6 +327,27 @@ class ArgumentParser(argparse.ArgumentParser):
                 default="",
             )
 
+        if "group0" in options or "group1" in options:
+            if "group0" in options:
+                default = 0
+            else:
+                default = 1
+            self.add_argument(
+                "--group",
+                "-g",
+                help=textwrap.dedent(
+                    f"""\
+                            Group paper sheets before folding/cutting them. Special value 0 means "group everything". Default value is {default}.
+
+                            This can be used to simulate a "big" printer on an home printer: Suppose you want to print your book on an A2 printer (and fold it 5 times), but you only have an A4 printer. If you print on A2 sheets, and fold it twice, you get A4 paper. So, instead of printing on an A2 printer, then folding it 5 times, you can print it on an A4 printer, process sheets by groups of 4 (--group=4), and fold it thrice.
+
+                            Note: I am a non-native English speaker, sick at the time of writing this. Sorry if this is unclear; proofreading would be appreciated…
+                            """
+                ),
+                default=0,
+                type=_type_positive_int,
+            )
+
     def parse_args(self, *args, **kwargs):
         args = super().parse_args(*args, **kwargs)
 

@@ -17,13 +17,9 @@
 
 """Print pages, to be cut, stacked, folded, and eventually bound.
 
-You want to print and bind one single tiny A7 book.
-This book is made with A6 sheets
-(when you open the book, you get two A7 pages side-by-side, which is A6).
-Since you can fit four A6 pages on an A4 page,
-this means that you can print four A6 sheets on one A4 sheet.
+Example: You want to print and bind one single tiny A7 book.  This book is made with A6 sheets (when you open the book, you get two A7 pages side-by-side, which is A6).  Since you can fit four A6 pages on an A4 page, this means that you can print four A6 sheets on one A4 sheet.
 
-To use this schema:
+To use this schema (without using option --group):
 
 - print your imposed file, two-sided;
 - cut the stack of paper, to get several stacks (four in the example above);
@@ -31,7 +27,9 @@ To use this schema:
   (take care to keep the pages in the right order);
 - fold and bind the stack of paper you got;
 - voilà! You now have a shiny, tiny book.
-"""
+
+With option --group=3 (for instance), repeat the step above for every group of three sheets. You get several signatures, that you have to bind together to get a proper book.
+"""  # pylint: disable=line-too-long
 
 import dataclasses
 import decimal
@@ -51,6 +49,7 @@ class CutStackFoldImpositor(common.AbstractImpositor):
     creep: typing.Callable[[int], float] = dataclasses.field(default=common.nocreep)
     imargin: float = 0
     signature: tuple[int] = (0, 0)
+    group: int = 0
 
     def blank_page_number(self, source):
         pagesperpage = 4 * self.signature[0] * self.signature[1]
@@ -123,20 +122,25 @@ class CutStackFoldImpositor(common.AbstractImpositor):
         return max(self.creep(n) for n in range(total // 4))
 
     def matrixes(self, pages: int):
-        assert pages % (4 * self.signature[0] * self.signature[1]) == 0
+        pages_per_sheet = 4 * self.signature[0] * self.signature[1]
+        assert pages % pages_per_sheet == 0
+
+        if self.group == 0:
+            self.group = pages // pages_per_sheet
 
         # Compute maximum creep
-        maxcreep = self._max_creep(pages)
+        maxcreep = self._max_creep(self.group * pages_per_sheet)
 
-        for number, matrix in enumerate(self.base_matrix(pages)):
+        # First, we compute the first group of pages
+        matrix_group = []
+
+        for number, matrix in enumerate(self.base_matrix(self.group * pages_per_sheet)):
             for x, y in matrix.coordinates():
-                # Number of output sheets
-                sheets = pages // (4 * self.signature[0] * self.signature[1])
                 # Number of (output) sheets stacked on top in the current (output) sheet
-                included = sheets - number // 2 - 1
+                included = self.group - number // 2 - 1
                 # Number of stacks included in the current page, once cut
                 stacks = self.signature[1] * (1 - x // 2) + self.signature[0] - y
-                creep = self.creep(included + stacks * sheets)
+                creep = self.creep(included + stacks * self.group)
 
                 if number % 2 == 1:
                     # Pages are reversed on the back of sheets (odd pages)
@@ -148,7 +152,12 @@ class CutStackFoldImpositor(common.AbstractImpositor):
                 else:
                     matrix[x, y].left += creep / 2
                     matrix[x, y].right += (maxcreep - creep) / 2
-            yield matrix
+            matrix_group.append(matrix)
+
+        # Repeat group as many as necessary
+        for i in range(pages // (self.group * pages_per_sheet)):
+            for matrix in matrix_group:
+                yield matrix.stack(i * pages_per_sheet * self.group)
 
     def crop_marks(self, number, total, matrix, outputsize, inputsize):
         # pylint: disable=too-many-arguments
@@ -258,6 +267,7 @@ def impose(
     signature=None,
     bind="left",
     creep=common.nocreep,
+    group=0,
 ):
     """Perform imposition of source files into an output file, using the cut-stack-bind schema.
 
@@ -278,6 +288,8 @@ def impose(
     :param function creep: Function that takes the number of sheets in argument,
         and return the space to be left between two adjacent pages
         (that is, twice the distance to the spine).
+    :param int group: Group sheets before cutting them.
+        See help of command line --group option for more information.
     """
     if mark is None:
         mark = []
@@ -290,4 +302,5 @@ def impose(
         signature=signature,
         bind=bind,
         creep=creep,
+        group=group,
     ).impose(files, output)

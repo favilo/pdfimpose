@@ -261,6 +261,19 @@ FIXTURES = {
                 "cutstackfold-control.pdf",
             ),
         },
+        {
+            "command": [
+                "cutstackfold",
+                "cutstackfold-group.pdf",
+                "-g",
+                "3",
+            ],
+            "returncode": 0,
+            "diff": (
+                "cutstackfold-group-impose.pdf",
+                "cutstackfold-group-control.pdf",
+            ),
+        },
     ),
     "saddle": (
         {
