@@ -466,7 +466,7 @@ class Matrix:
 
     def stack(self, number):
         """Return a copy of this matrix, where each page number is incremented by `number`."""
-        return Matrix(
+        return self.__class__(
             [
                 [
                     dataclasses.replace(self[x, y], number=self[x, y].number + number)
