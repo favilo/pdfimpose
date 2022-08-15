@@ -126,21 +126,23 @@ class CutStackFoldImpositor(common.AbstractImpositor):
         assert pages % pages_per_sheet == 0
 
         if self.group == 0:
-            self.group = pages // pages_per_sheet
+            group = pages // pages_per_sheet
+        else:
+            group = self.group
 
         # Compute maximum creep
-        maxcreep = self._max_creep(self.group * pages_per_sheet)
+        maxcreep = self._max_creep(group * pages_per_sheet)
 
         # First, we compute the first group of pages
         group_matrixes = []
 
-        for number, matrix in enumerate(self.base_matrix(self.group * pages_per_sheet)):
+        for number, matrix in enumerate(self.base_matrix(group * pages_per_sheet)):
             for x, y in matrix.coordinates():
                 # Number of (output) sheets stacked on top in the current (output) sheet
-                included = self.group - number // 2 - 1
+                included = group - number // 2 - 1
                 # Number of stacks included in the current page, once cut
                 stacks = self.signature[1] * (1 - x // 2) + self.signature[0] - y
-                creep = self.creep(included + stacks * self.group)
+                creep = self.creep(included + stacks * group)
 
                 if number % 2 == 1:
                     # Pages are reversed on the back of sheets (odd pages)
@@ -155,9 +157,9 @@ class CutStackFoldImpositor(common.AbstractImpositor):
             group_matrixes.append(matrix)
 
         # Then, we repeat the group as many times as necessary
-        for i in range(pages // (self.group * pages_per_sheet)):
+        for i in range(pages // (group * pages_per_sheet)):
             for matrix in group_matrixes:
-                yield matrix.stack(i * pages_per_sheet * self.group)
+                yield matrix.stack(i * pages_per_sheet * group)
 
     def crop_marks(self, number, total, matrix, outputsize, inputsize):
         # pylint: disable=too-many-arguments

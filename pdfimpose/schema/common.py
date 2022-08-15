@@ -344,7 +344,7 @@ class ArgumentParser(argparse.ArgumentParser):
                             Note: I am a non-native English speaker, sick at the time of writing this. Sorry if this is unclear; proofreading would be appreciated…
                             """
                 ),
-                default=0,
+                default=default,
                 type=_type_positive_int,
             )
 

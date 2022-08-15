@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2022 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -128,7 +128,16 @@ def main(argv=None):
 
     parser = schema.ArgumentParser(
         subcommand="perfect",
-        options=["omargin", "imargin", "mark", "signature", "format", "last", "bind"],
+        options=[
+            "omargin",
+            "imargin",
+            "mark",
+            "signature",
+            "format",
+            "last",
+            "bind",
+            "group1",
+        ],
         description=DESCRIPTION,
     )
 

@@ -78,22 +78,24 @@ class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
         assert pages % 4 == 0
 
         if self.group == 0:
-            self.group = math.ceil(pages / 4)
+            group = math.ceil(pages / 4)
+        else:
+            group = self.group
 
         # First, we compute the first group of pages
-        base_matrixes = list(self.base_matrix(4 * self.group))
+        base_matrixes = list(self.base_matrix(4 * group))
         group_matrixes = []
-        for i in range(self.group):
+        for i in range(group):
             group_matrixes.extend(
                 self.insert_sheets(
-                    (matrix.copy() for matrix in base_matrixes), i, 4 * self.group, 2
+                    (matrix.copy() for matrix in base_matrixes), i, 4 * group, 2
                 )
             )
 
         # Then, we repeat the group as many times as necessary
-        for i in range(math.ceil(pages / (4 * self.group))):
+        for i in range(math.ceil(pages / (4 * group))):
             for matrix in group_matrixes:
-                yield matrix.stack(i * 4 * self.group)
+                yield matrix.stack(i * 4 * group)
 
 
 def impose(
