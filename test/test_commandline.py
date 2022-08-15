@@ -306,6 +306,19 @@ FIXTURES = {
                 "saddle-control.pdf",
             ),
         },
+        {
+            "command": [
+                "saddle",
+                "group3.pdf",
+                "--group",
+                "3",
+            ],
+            "returncode": 0,
+            "diff": (
+                "group3-impose.pdf",
+                "group3-control.pdf",
+            ),
+        },
     ),
     "copycutfold": (
         {

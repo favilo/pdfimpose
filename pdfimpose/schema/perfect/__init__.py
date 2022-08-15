@@ -167,12 +167,10 @@ class PerfectImpositor(common.AbstractImpositor):
 
     def group_matrixes(self, total):
         """TODO Document"""
-        print(self.group)
         if self.group == 0:
             group = math.ceil(total / (2 * self.signature[0] * self.signature[1]))
         else:
             group = self.group
-        print(group)
 
         for g in range(group):  #  pylint: disable=invalid-name
             for matrix in self.base_matrix(total):
