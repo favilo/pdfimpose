@@ -101,7 +101,7 @@ class PerfectImpositor(common.AbstractImpositor):
         return margins
 
     def base_matrix(self, total):
-        """TODO Document"""
+        """Yield two matrixes (recto and verso) corresponding to one folded sheet."""
         # pylint: disable=unused-argument
 
         def _rotate(y):
@@ -166,7 +166,41 @@ class PerfectImpositor(common.AbstractImpositor):
         )
 
     def group_matrixes(self, total):
-        """TODO Document"""
+        """Yield matrixes corresponding to a group of sheets.
+
+        1. First, we compute the matrix corresponding to a single folded sheet
+           (see :meth:`PerfectImpositor.base_matrix`).
+
+        2. Then, we compute the matrix corresponding to the outer sheet of the group.
+           Note that:
+
+           - The way the sheet is folded is irrelevant here:
+             everything can be computed using only page numbers, regardless of their position.
+           - One side of the sheet, when folded, faces the same sheet, or the outer world;
+             the other side, when folded, faces other sheets of the same group.
+
+           Here is an example.
+           Let's consider a (output) sheet with 8 (input) pages per (output page):
+           this sheet has 16 input pages on it, from 0 to 15.
+           When folded, the original page numbers become (with different ``self.group`` values):
+
+           Original sheets: 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+           self.group == 1: 0  1  6  7  8  9 14 15 16 17 22 23 24 25 30 31
+           self.group == 2: 0  1 10 11 12 13 22 23 24 25 34 35 36 37 46 47
+           self.group == 3: 0  1 14 15 16 17 30 31 32 33 46 47 48 49 62 63
+
+           To compute this yourself, take 1, 2, 3 (or more) sheets of paper,
+           place (output) page numbers on the outer one, fold them,
+           and watch the new page numbers you get.
+
+           Note that the numbers are consecutives, exepted for gaps every 4 numbers,
+           starting between 1 and 2. Each of these gaps is 4×(self.group-1).
+           Thus, the formula used to compute `outer` (see code below).
+
+        3. At last, we compute the matrix of the inner sheets.
+           Those being adjacent to the inner sheets,
+           we simply add or substract page numbers to them.
+        """
         if self.group == 0:
             group = math.ceil(total / (2 * self.signature[0] * self.signature[1]))
         else:
@@ -178,6 +212,7 @@ class PerfectImpositor(common.AbstractImpositor):
                     [None for y in range(matrix.height)] for x in range(matrix.width)
                 ]
                 for x, y in matrix.coordinates():
+                    # `outer` is the matrix of the outer sheet. Matrixes of the inner sheets will be computed by adding or substracting pages from `outer`.
                     outer = matrix[x, y].number + math.floor(
                         (matrix[x, y].number + 2) / 4
                     ) * 4 * (group - 1)
