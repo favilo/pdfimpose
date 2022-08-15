@@ -175,7 +175,7 @@ class ArgumentParser(argparse.ArgumentParser):
         if "epilog" not in kwargs:
             kwargs[
                 "epilog"
-            ] = "For more information, see: https://pdfimpose.readthedocs.io/en/latest/lib/."
+            ] = "For more information, see: https://pdfimpose.readthedocs.io"
 
         super().__init__(**kwargs)
 
@@ -187,33 +187,36 @@ class ArgumentParser(argparse.ArgumentParser):
             type=str,
         )
 
-        self.add_argument(
-            "--output",
-            "-o",
-            metavar="FILE",
-            help=(
-                'Destination file. Default is "-impose" appended to first source file. '
-                'If "-", print to standard output.'
-            ),
-            type=str,
-        )
+        if "cutsignature" in options or "signature" in options or "format" in options:
+            group = self.add_mutually_exclusive_group()
 
-        if "imargin" in options:
+        if "back" in options:
             self.add_argument(
-                "--imargin",
-                "-m",
-                help="Set margin added to input pages when imposed on the output page.",
-                default=0,
-                type=_type_length,
+                "--back",
+                "-b",
+                help=(
+                    textwrap.dedent(
+                        """\
+                                    Back sides of cards.
+
+                                - If absent, pages of source files are considered to be : front1, back1, front2, back2, etc.
+                                - If a one-page file, source files are the front pages, and argument to this command is the common back side of all those pages.
+                                - If a file with as many page as the source files, pages of the source files are considered to be : front1, front2, front3, etc., while pages of the back file are considered to be : back1, back2, back3, etc.
+                                - If a file with any other number of pages, the behavior is the same as the previous item, excepted that the back pages are repeated as much as needed, and extra back pages are ignored.
+                                """
+                    )
+                ),
+                type=str,
+                default="",
             )
 
-        if "omargin" in options:
+        if "bind" in options:
             self.add_argument(
-                "--omargin",
-                "-M",
-                help="Set margin added to output pages.",
-                default=0,
-                type=_type_length,
+                "--bind",
+                "-b",
+                help="Binding edge.",
+                choices=["left", "right", "top", "bottom"],
+                default="left",
             )
 
         if "creep" in options:
@@ -234,6 +237,41 @@ class ArgumentParser(argparse.ArgumentParser):
                 default=nocreep,
             )
 
+        if "format" in options:
+            group.add_argument(
+                "--format",
+                "-f",
+                type=_type_papersize,
+                help=(
+                    "Put as much source pages into the destination page of the given format. "
+                    "Note that margins are ignored when computing this; "
+                    "if options --imargin and --omargin are set, "
+                    "the resulting file might be larger than the required format."
+                ),
+                default=None,
+            )
+
+        if "group0" in options or "group1" in options:
+            if "group0" in options:
+                default = 0
+            else:
+                default = 1
+            self.add_argument(
+                "--group",
+                "-g",
+                help=textwrap.dedent(
+                    f"""\
+                            Group paper sheets before folding/cutting them. Special value 0 means "group everything". Default value is {default}.
+
+                            This can be used to simulate a "big" printer on an home printer: Suppose you want to print your book on an A2 printer (and fold it 5 times), but you only have an A4 printer. If you print on A2 sheets, and fold it twice, you get A4 paper. So, instead of printing on an A2 printer, then folding it 5 times, you can print it on an A4 printer, process sheets by groups of 4 (--group=4), and fold it thrice.
+
+                            Note: I am a non-native English speaker, sick at the time of writing this. Sorry if this is unclear; proofreading would be appreciated…
+                            """
+                ),
+                default=default,
+                type=_type_positive_int,
+            )
+
         if "last" in options:
             self.add_argument(
                 "--last",
@@ -246,13 +284,22 @@ class ArgumentParser(argparse.ArgumentParser):
                 default=0,
             )
 
-        if "bind" in options:
+        if "imargin" in options:
             self.add_argument(
-                "--bind",
-                "-b",
-                help="Binding edge.",
-                choices=["left", "right", "top", "bottom"],
-                default="left",
+                "--imargin",
+                "-m",
+                help="Set margin added to input pages when imposed on the output page.",
+                default=0,
+                type=_type_length,
+            )
+
+        if "omargin" in options:
+            self.add_argument(
+                "--omargin",
+                "-M",
+                help="Set margin added to output pages.",
+                default=0,
+                type=_type_length,
             )
 
         if "mark" in options:
@@ -265,8 +312,16 @@ class ArgumentParser(argparse.ArgumentParser):
                 default=[],
             )
 
-        if "cutsignature" in options or "signature" in options or "format" in options:
-            group = self.add_mutually_exclusive_group()
+        self.add_argument(
+            "--output",
+            "-o",
+            metavar="FILE",
+            help=(
+                'Destination file. Default is "-impose" appended to first source file. '
+                'If "-", print to standard output.'
+            ),
+            type=str,
+        )
 
         if "signature" in options:
             group.add_argument(
@@ -291,61 +346,6 @@ class ArgumentParser(argparse.ArgumentParser):
                         """
                 ),
                 default=None,
-            )
-
-        if "format" in options:
-            group.add_argument(
-                "--format",
-                "-f",
-                type=_type_papersize,
-                help=(
-                    "Put as much source pages into the destination page of the given format. "
-                    "Note that margins are ignored when computing this; "
-                    "if options --imargin and --omargin are set, "
-                    "the resulting file might be larger than the required format."
-                ),
-                default=None,
-            )
-
-        if "back" in options:
-            self.add_argument(
-                "--back",
-                "-b",
-                help=(
-                    textwrap.dedent(
-                        """\
-                                    Back sides of cards.
-
-                                - If absent, pages of source files are considered to be : front1, back1, front2, back2, etc.
-                                - If a one-page file, source files are the front pages, and argument to this command is the common back side of all those pages.
-                                - If a file with as many page as the source files, pages of the source files are considered to be : front1, front2, front3, etc., while pages of the back file are considered to be : back1, back2, back3, etc.
-                                - If a file with any other number of pages, the behavior is the same as the previous item, excepted that the back pages are repeated as much as needed, and extra back pages are ignored.
-                                """
-                    )
-                ),
-                type=str,
-                default="",
-            )
-
-        if "group0" in options or "group1" in options:
-            if "group0" in options:
-                default = 0
-            else:
-                default = 1
-            self.add_argument(
-                "--group",
-                "-g",
-                help=textwrap.dedent(
-                    f"""\
-                            Group paper sheets before folding/cutting them. Special value 0 means "group everything". Default value is {default}.
-
-                            This can be used to simulate a "big" printer on an home printer: Suppose you want to print your book on an A2 printer (and fold it 5 times), but you only have an A4 printer. If you print on A2 sheets, and fold it twice, you get A4 paper. So, instead of printing on an A2 printer, then folding it 5 times, you can print it on an A4 printer, process sheets by groups of 4 (--group=4), and fold it thrice.
-
-                            Note: I am a non-native English speaker, sick at the time of writing this. Sorry if this is unclear; proofreading would be appreciated…
-                            """
-                ),
-                default=default,
-                type=_type_positive_int,
             )
 
     def parse_args(self, *args, **kwargs):
