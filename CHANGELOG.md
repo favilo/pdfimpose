@@ -1,4 +1,4 @@
-* pdfimpose 2.2.0 (unreleased)
+* pdfimpose 2.2.0 (2022-08-17)
 
     * [cards] Add a --back option.
     * [cutstackfold, copycutfold, perfect, saddle] Add a --group option (see #33).
