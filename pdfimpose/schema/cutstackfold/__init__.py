@@ -34,6 +34,7 @@ With option --group=3 (for instance), repeat the step above for every group of t
 import dataclasses
 import decimal
 import itertools
+import math
 import numbers
 import typing
 
@@ -125,7 +126,7 @@ class CutStackFoldImpositor(AbstractImpositor):
         assert pages % pages_per_sheet == 0
 
         if self.group == 0:
-            group = pages // pages_per_sheet
+            group = math.ceil(pages / pages_per_sheet)
         else:
             group = self.group
 
@@ -156,7 +157,7 @@ class CutStackFoldImpositor(AbstractImpositor):
             group_matrixes.append(matrix)
 
         # Then, we repeat the group as many times as necessary
-        for i in range(pages // (group * pages_per_sheet)):
+        for i in range(math.ceil(pages / (group * pages_per_sheet))):
             for matrix in group_matrixes:
                 yield matrix.stack(i * pages_per_sheet * group)
 

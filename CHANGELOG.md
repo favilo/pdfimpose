@@ -1,3 +1,10 @@
+* pdfimpose 2.2.1 (unreleased)
+
+    * [cutstackfold] Fix a bug with option --group : some source pages could be lost.
+    * Minor refactoring and code improvement.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.2.0 (2022-08-17)
 
     * [cards] Add a --back option.

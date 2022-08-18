@@ -66,12 +66,7 @@ class SaddleImpositor(perfect.PerfectImpositor):
         return margins
 
     def matrixes(self, pages: int):
-        if self.group == 0:
-            group = math.ceil(pages / (2 * self.signature[0] * self.signature[1]))
-        else:
-            group = self.group
-
-        pages_per_group = group * self.signature[0] * self.signature[1]
+        pages_per_group = self.fix_group(pages) * self.signature[0] * self.signature[1]
         assert pages % pages_per_group == 0
 
         matrixes = list(self.group_matrixes(pages))

@@ -74,11 +74,19 @@ class PerfectImpositor(AbstractImpositor):
             2 ** self.folds.count("v"),
         )
 
+    def fix_group(self, pages):
+        """If `self.group == 0` compute the right group value, depending of the number of pages."""
+        if self.group == 0:
+            return math.ceil(pages / (2 * self.signature[0] * self.signature[1]))
+        return self.group
+
     def blank_page_number(self, source):
         pagesperpage = 2 * self.signature[0] * self.signature[1]
-        if source % pagesperpage == 0:
+        if source % (pagesperpage * self.fix_group(source)) == 0:
             return 0
-        return pagesperpage - (source % pagesperpage)
+        return pagesperpage * self.fix_group(source) - (
+            source % (pagesperpage * self.fix_group(source))
+        )
 
     def _margins(self, x, y):
         """Compute and return margin for page at coordinate (x, y)."""
@@ -200,12 +208,7 @@ class PerfectImpositor(AbstractImpositor):
            Those being adjacent to the inner sheets,
            we simply add or substract page numbers to them.
         """
-        if self.group == 0:
-            group = math.ceil(total / (2 * self.signature[0] * self.signature[1]))
-        else:
-            group = self.group
-
-        for g in range(group):  #  pylint: disable=invalid-name
+        for g in range(self.fix_group(total)):  #  pylint: disable=invalid-name
             for matrix in self.base_matrix(total):
                 grouped = [
                     [None for y in range(matrix.height)] for x in range(matrix.width)
@@ -214,7 +217,7 @@ class PerfectImpositor(AbstractImpositor):
                     # `outer` is the matrix of the outer sheet. Matrixes of the inner sheets will be computed by adding or substracting pages from `outer`.
                     outer = matrix[x, y].number + math.floor(
                         (matrix[x, y].number + 2) / 4
-                    ) * 4 * (group - 1)
+                    ) * 4 * (self.fix_group(total) - 1)
                     if g == 0:
                         grouped[x][y] = dataclasses.replace(matrix[x, y], number=outer)
                     elif matrix[x, y].number % 4 <= 1:
@@ -228,12 +231,9 @@ class PerfectImpositor(AbstractImpositor):
                 yield Matrix(grouped)
 
     def matrixes(self, pages: int):
-        if self.group == 0:
-            group = math.ceil(pages / (2 * self.signature[0] * self.signature[1]))
-        else:
-            group = self.group
-
-        pages_per_group = 2 * self.signature[0] * self.signature[1] * group
+        pages_per_group = (
+            2 * self.signature[0] * self.signature[1] * self.fix_group(pages)
+        )
         assert pages % pages_per_group == 0
 
         yield from self.stack_matrixes(
