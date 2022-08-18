@@ -1,4 +1,4 @@
-* pdfimpose 2.2.1 (unreleased)
+* pdfimpose 2.2.1 (2022-08-18)
 
     * [cutstackfold] Fix a bug with option --group : some source pages could be lost.
     * Minor refactoring and code improvement.
