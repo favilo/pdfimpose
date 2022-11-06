@@ -1,3 +1,9 @@
+* pdfimpose 2.3.0 (unreleased)
+
+    * Python3.11 support.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.2.1 (2022-08-18)
 
     * [cutstackfold] Fix a bug with option --group : some source pages could be lost.

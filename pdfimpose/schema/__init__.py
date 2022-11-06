@@ -570,7 +570,7 @@ class AbstractImpositor:
     """
 
     last: int = 0
-    omargin: Margins = Margins()
+    omargin: Margins = dataclasses.field(default_factory=Margins)
     mark: list[str] = dataclasses.field(default_factory=list)
     creep = nocreep
 
