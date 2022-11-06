@@ -2,8 +2,9 @@ image: paternal/pythons
 
 before_script:
   - apt update
-  - apt install --yes --force-yes --no-install-recommends ghostscript libmagickwand-dev
-  - apt install --yes --force-yes moreutils
+  - apt install --yes --force-yes --no-install-recommends ghostscript libmagickwand-dev # Needed to install wand
+  - apt install --yes --force-yes swig # Needed to install pymupdf
+  - apt install --yes --force-yes moreutils # Needed by the next line
   - (head -n-1 /etc/ImageMagick-6/policy.xml; echo '  <policy domain="coder" rights="read | write" pattern="PDF" />'; tail -n1 /etc/ImageMagick-6/policy.xml) | sponge /etc/ImageMagick-6/policy.xml 
 
 tox:
