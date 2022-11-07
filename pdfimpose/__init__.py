@@ -17,7 +17,7 @@
 
 "Perform an imposition on the PDF file given in argument."
 
-VERSION = "2.2.1"
+VERSION = "2.3.0"
 
 
 class UserError(BaseException):
