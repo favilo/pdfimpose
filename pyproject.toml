@@ -1,3 +1,55 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdfimpose"
+authors = [
+  {name = "Louis Paternault"},
+  {email = "spalax@gresille.org"},
+  ]
+description = "Perform imposition of a PDF file."
+readme = "README.rst"
+requires-python = ">=3.9, <4"
+keywords = ["pdf", "imposition", "print"]
+license = {text = "AGPLv3 or any later version"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Printing",
+    ]
+dependencies = [
+  "argdispatch",
+  "papersize",
+  "pymupdf>=1.19",
+  "xdg",
+  ]
+dynamic = ["version"]
+
+[project.urls]
+homepage = "http://framagit.org/spalax/pdfimpose"
+documentation = "http://pdfimpose.readthedocs.io"
+repository = "https://framagit.org/spalax/pdfimpose.git"
+changelog = "https://framagit.org/spalax/pdfimpose/-/raw/main/CHANGELOG.md"
+
+[project.scripts]
+pdfimpose = "pdfimpose.__main__:main"
+
+[tool.setuptools]
+zip-safe = true
+
+[tool.setuptools.packages.find]
+exclude = ["test"]
+
+[tool.setuptools.dynamic]
+version = {attr = "pdfimpose.VERSION"}
+
 [tool.black]
 line-length = 88
 target-version = ["py39", "py310", "py311"]
