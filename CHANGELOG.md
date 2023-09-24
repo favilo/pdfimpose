@@ -1,3 +1,9 @@
+* pdfimpose 2.3.1 (unreleased)
+
+    * Fix bug: pdfimpose could not read PDF file from standard input.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.3.0 (2022-11-07)
 
     * Python3.11 support.

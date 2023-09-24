@@ -1,4 +1,4 @@
-# Copyright 2021-2022 Louis Paternault
+# Copyright 2021-2023 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -35,18 +35,16 @@ def readpdf(file):
 
     The argument can be:
     - a filename (type `str`);
-    - a stream, as returnd with ``open("foo.pdf", mode="rb")`` (type `io.BytesIO`);
+    - None (read from standard input);
     - a `fitz.Document` object.
     """
     try:
+        if file is None:
+            return fitz.Document(
+                stream=io.BytesIO(sys.stdin.buffer.read()), filetype="application/pdf"
+            )
         if isinstance(file, str):
             return fitz.Document(file)
-        if isinstance(file, io.IOBase):
-            if file.name:
-                kwargs = {"filename": file.name}
-            else:
-                kwargs = {"filetype": "application/pdf"}
-            return fitz.Document(stream=file.read(), **kwargs)
         if isinstance(file, fitz.Document):
             return file
     except Exception as error:
@@ -64,7 +62,7 @@ class Reader(contextlib.AbstractContextManager):
 
         if not files:
             # Read from standard input
-            self.files = [readpdf(sys.stdin.buffer)]
+            self.files = [readpdf(None)]
         else:
             self.files = [readpdf(name) for name in files]
 
