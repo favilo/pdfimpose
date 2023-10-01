@@ -388,7 +388,7 @@ class TestCommandLine(unittest.TestCase):
         self.assertEqual(len(images[0].sequence), len(images[1].sequence))
 
         # Check if pages look the same
-        for (pagea, pageb) in zip(images[0].sequence, images[1].sequence):
+        for pagea, pageb in zip(images[0].sequence, images[1].sequence):
             self.assertEqual(pagea.compare(pageb, metric="absolute")[1], 0)
 
     def _test_commandline(self, subtest):
