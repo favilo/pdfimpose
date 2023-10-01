@@ -1,15 +1,15 @@
 SCHEMAS=cards copycutfold cutstackfold onepagezine perfect saddle wire
 EXAMPLES=$(SCHEMAS:%=%-impose.pdf)
 
-all: calendar2022-impose.pdf $(EXAMPLES)
+all: calendar2024-impose.pdf $(EXAMPLES)
 
 # Calendar
 
-calendar2022-impose.pdf: calendar2022.pdf
-	pdfimpose perfect --bind top --format A4 --last 1 $<
-
-calendar2022.pdf: calendar2022.tex
+calendar2024.pdf: calendar2024.tex
 	pdflatex $<
+
+calendar2024-impose.pdf: calendar2024.pdf
+	pdftk $< cat 1-r2 r1south output - | pdfimpose perfect --bind top --format A4 --last 1 --output $@
 
 # Schemas
 

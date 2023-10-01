@@ -74,7 +74,19 @@ class Reader(contextlib.AbstractContextManager):
         if (
             len(
                 set(
-                    tuple(map(functools.partial(round, ndigits=5), page.cropbox))
+                    tuple(
+                        map(
+                            functools.partial(round, ndigits=5),
+                            page.cropbox
+                            if page.rotation % 180 == 0
+                            else (
+                                page.cropbox[1],
+                                page.cropbox[0],
+                                page.cropbox[3],
+                                page.cropbox[2],
+                            ),
+                        )
+                    )
                     for page in self
                 )
             )
@@ -172,20 +184,22 @@ class Writer(contextlib.AbstractContextManager):
             of the topleft corner of the source page.
         :param int rotate: Angle of a rotation to apply to the source page (one of 0, 90, 180, 270).
         """
-        if rotate in (90, 270):
-            rect = fitz.Rect(
-                topleft,
-                fitz.Point(topleft)
-                + fitz.Point(source.cropbox.height, source.cropbox.width),
-            )
+        rotation = source.rotation
+        source.set_rotation(0)
+        if (rotate - rotation) % 180 == 0:
+            mediabox = source.mediabox
         else:
-            rect = fitz.Rect(
-                topleft,
-                fitz.Point(topleft)
-                + fitz.Point(source.cropbox.width, source.cropbox.height),
+            mediabox = fitz.Rect(
+                source.mediabox[1],
+                source.mediabox[0],
+                source.mediabox[3],
+                source.mediabox[2],
             )
         self.doc[number].show_pdf_page(
-            rect, source.parent, source.number, rotate=rotate
+            mediabox + fitz.Rect(topleft, topleft),
+            source.parent,
+            source.number,
+            rotate=rotate - rotation,
         )
 
     def __getitem__(self, key):
