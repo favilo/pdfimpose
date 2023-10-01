@@ -1,6 +1,7 @@
 * pdfimpose 2.3.1 (unreleased)
 
     * Fix bug: pdfimpose could not read PDF file from standard input.
+    * Fix bug: PDF files with rotated pages are handled correctly (closes #38).
 
     -- Louis Paternault <spalax@gresille.org>
 
