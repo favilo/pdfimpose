@@ -133,6 +133,17 @@ FIXTURES = {
                 "cards-back7-control.pdf",
             ),
         },
+        {
+            "command": [
+                "cards",
+                "rotated.pdf",
+            ],
+            "returncode": 0,
+            "diff": (
+                "rotated-impose.pdf",
+                "rotated-control.pdf",
+            ),
+        },
     ),
     "wire": (
         {
