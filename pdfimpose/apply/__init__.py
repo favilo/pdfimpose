@@ -1,4 +1,4 @@
-# Copyright 2011-2021 Louis Paternault
+# Copyright 2011-2023 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -20,7 +20,7 @@
 import importlib
 import pathlib
 
-import xdg
+import xdg_base_dirs
 
 from .. import UserError
 
@@ -42,14 +42,14 @@ def confignames():
 
     # Configuration directory
     for base in BASENAMES:
-        yield xdg.xdg_config_home() / base
+        yield xdg_base_dirs.xdg_config_home() / base
 
     # Home directory
     for base in BASENAMES:
         yield pathlib.Path.home() / base
 
     # OS configuration directory
-    for configdir in xdg.xdg_config_dirs():
+    for configdir in xdg_base_dirs.xdg_config_dirs():
         for base in BASENAMES:
             yield configdir / base
 

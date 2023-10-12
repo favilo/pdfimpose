@@ -1,5 +1,6 @@
 * pdfimpose 2.3.1 (unreleased)
 
+    * Rename xdg dependency to xdg-base-dirs (project was renamed).
     * Fix bug: pdfimpose could not read PDF file from standard input.
     * Fix bug: PDF files with rotated pages are handled correctly (closes #38).
 
