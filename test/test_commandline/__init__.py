@@ -1,4 +1,4 @@
-# Copyright 2017-2022 Louis Paternault
+# Copyright 2017-2023 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -18,12 +18,12 @@
 """Tests"""
 
 import os
+import pathlib
 import subprocess
 import sys
 import textwrap
 import unittest
 
-import pkg_resources
 from wand.image import Image
 
 if "COVERAGE_PROCESS_START" in os.environ:
@@ -31,8 +31,8 @@ if "COVERAGE_PROCESS_START" in os.environ:
 else:
     EXECUTABLE = [sys.executable]
 
-TEST_DATA_DIR = pkg_resources.resource_filename(__name__, "test_commandline-data")
-ROOT_DIR = os.path.abspath(os.path.join(TEST_DATA_DIR, "..", ".."))
+TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
+ROOT_DIR = TEST_DATA_DIR.parent.parent.parent.absolute()
 
 # pylint: disable=line-too-long
 FIXTURES = {
@@ -410,13 +410,13 @@ class TestCommandLine(unittest.TestCase):
                     subprocess.run(
                         command,
                         env=self.environ,
-                        cwd=os.path.join(TEST_DATA_DIR, subtest),
+                        cwd=TEST_DATA_DIR / subtest,
                         check=True,
                     )
                 completed = subprocess.run(  # pylint: disable=subprocess-run-check
                     EXECUTABLE + ["-m", "pdfimpose"] + data["command"],
                     env=self.environ,
-                    cwd=os.path.join(TEST_DATA_DIR, subtest),
+                    cwd=TEST_DATA_DIR / subtest,
                     capture_output=True,
                     text=True,
                 )
@@ -428,7 +428,7 @@ class TestCommandLine(unittest.TestCase):
                 if "diff" in data:
                     self.assertPdfEqual(
                         *(
-                            os.path.join(TEST_DATA_DIR, subtest, filename)
+                            TEST_DATA_DIR / subtest / filename
                             for filename in data["diff"]
                         )
                     )
