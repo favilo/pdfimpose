@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2023 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -198,6 +198,7 @@ class CardsImpositor(AbstractImpositor):
 
 
 def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None, back=""):
+    # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, to be cut as flash cards.
 
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).

@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2023 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -348,7 +348,7 @@ def impose(
     last=0,
     bind="left",
     group=1,
-):
+):  # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, to be bound using "perfect binding".
 
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).

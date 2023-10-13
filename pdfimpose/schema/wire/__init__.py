@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2023 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -90,6 +90,7 @@ class WireImpositor(cards.CardsImpositor):
 
 
 def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=None):
+    # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, to be cut and "wire bound".
 
     :param list[str] files: List of source files (as strings or :class:`io.BytesIO` streams).

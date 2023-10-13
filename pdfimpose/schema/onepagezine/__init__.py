@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2023 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -123,6 +123,7 @@ class OnePageZineImpositor(AbstractImpositor):
 
 
 def impose(files, output, *, omargin=0, last=0, mark=None, bind="left"):
+    # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, to be printed as a "one page zine".
 
     :param list[str] files: List of source files. If empty, reads from standard input.
