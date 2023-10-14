@@ -385,7 +385,7 @@ class TestCommandLine(unittest.TestCase):
 
     def setUp(self):
         self.environ = os.environ.copy()
-        self.environ["PYTHONPATH"] = f"{ROOT_DIR}:self.environ['PYTHONPATH']"
+        self.environ["PYTHONPATH"] = f"{ROOT_DIR}:{self.environ['PYTHONPATH']}"
 
     def assertPdfEqual(self, filea, fileb):
         """Test whether PDF files given in argument (as file names) are equal.
