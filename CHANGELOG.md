@@ -1,5 +1,7 @@
-* pdfimpose 2.3.1 (unreleased)
+* pdfimpose 2.4.0 (unreleased)
 
+    * Add Python3.12 support.
+    * Drop Python3.9 support.
     * Rename xdg dependency to xdg-base-dirs (project was renamed).
     * Fix bug: pdfimpose could not read PDF file from standard input.
     * Fix bug: PDF files with rotated pages are handled correctly (closes #38).
