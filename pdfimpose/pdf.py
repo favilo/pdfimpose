@@ -23,9 +23,12 @@ import io
 import logging
 import sys
 
-import fitz
-
 from . import VERSION, UserError
+
+if sys.version_info >= (3, 11):
+    import fitz_new as fitz
+else:
+    import fitz
 
 _BLACK = fitz.utils.getColor("black")
 
