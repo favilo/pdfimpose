@@ -40,7 +40,7 @@ Contents
 Examples
 --------
 
-* :download:`2022 calendar <examples/calendar2022-impose.pdf>` (:download:`source <examples/calendar2022.pdf>`, see LaTeX source file in sources repository).
+* :download:`2024 calendar <examples/calendar2024-impose.pdf>` (:download:`source <examples/calendar2024.pdf>`, see LaTeX source file in sources repository).
 * Imposition schemas (here are quick examples, more explanation can be found in :ref:`library`):
 
   * cards: :download:`examples/cards-impose.pdf` (:download:`source <examples/cards.pdf>`);

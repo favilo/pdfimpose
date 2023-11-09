@@ -13,7 +13,7 @@ See `documentation <https://pdfimpose.rtfd.io>`__ for more details.
 Examples
 --------
 
-* `2022 calendar <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/calendar2022-impose.pdf?inline=false>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/calendar2022.pdf?inline=false>`__, see LaTeX source file in sources repository).
+* `2024 calendar <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/calendar2024-impose.pdf?inline=false>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/calendar2024.pdf?inline=false>`__, see LaTeX source file in sources repository).
 * `Flash cards <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cards-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cards.pdf>`__);
 * `Copy, cut, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold.pdf>`__);
 * `Cut, stack, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold.pdf>`__);
