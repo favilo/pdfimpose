@@ -1,4 +1,4 @@
-* pdfimpose 2.4.0 (unreleased)
+* pdfimpose 2.4.0 (2023-11-09)
 
     * Add Python3.12 support.
     * Drop Python3.9 support.
