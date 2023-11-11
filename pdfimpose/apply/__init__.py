@@ -20,7 +20,10 @@
 import importlib
 import pathlib
 
-import xdg_base_dirs
+try:
+    import xdg_base_dirs
+except ImportError:
+    import xdg as xdg_base_dirs
 
 from .. import UserError
 

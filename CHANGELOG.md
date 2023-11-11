@@ -1,3 +1,9 @@
+* pdfimpose 2.4.1 (unreleased)
+
+    * Fix regression: xdg-base-dirs can be imported as xdg (to ease transition from xdg to xdg-base-dirs).
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.4.0 (2023-11-09)
 
     * Add Python3.12 support.
