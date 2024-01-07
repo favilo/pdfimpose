@@ -1,6 +1,7 @@
 * pdfimpose 2.4.2 (unreleased)
 
     * Library functions can now open `pathlib.Path` files.
+    * Remove useless imports.
 
     -- Louis Paternault <spalax@gresille.org>
 

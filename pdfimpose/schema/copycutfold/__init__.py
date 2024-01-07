@@ -1,4 +1,4 @@
-# Copyright 2011-2023 Louis Paternault
+# Copyright 2011-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -30,7 +30,6 @@ With option --group=3 (for instance), repeat the step above for every group of t
 """  # pylint: disable=line-too-long
 
 import dataclasses
-import decimal
 import itertools
 import math
 import numbers
