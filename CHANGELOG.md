@@ -1,3 +1,9 @@
+* pdfimpose 2.4.2 (unreleased)
+
+    * Library functions can now open `pathlib.Path` files.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.4.1 (2023-11-11)
 
     * Fix regression: xdg-base-dirs can be imported as xdg (to ease transition from xdg to xdg-base-dirs).

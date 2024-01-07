@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Louis Paternault
+# Copyright 2021-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -21,6 +21,7 @@ import contextlib
 import functools
 import io
 import logging
+import pathlib
 import sys
 
 from . import VERSION, UserError
@@ -46,7 +47,7 @@ def readpdf(file):
             return fitz.Document(
                 stream=io.BytesIO(sys.stdin.buffer.read()), filetype="application/pdf"
             )
-        if isinstance(file, str):
+        if isinstance(file, (str, pathlib.Path)):
             return fitz.Document(file)
         if isinstance(file, fitz.Document):
             return file
