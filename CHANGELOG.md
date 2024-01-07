@@ -2,6 +2,7 @@
 
     * Library functions can now open `pathlib.Path` files.
     * Remove useless imports.
+    * Remove bind marks from "one-page zine" help: it was ignored anyway.
 
     -- Louis Paternault <spalax@gresille.org>
 

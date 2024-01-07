@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -308,6 +308,16 @@ class ArgumentParser(argparse.ArgumentParser):
                 "-k",
                 help="List of marks to add (crop or bind). Can be given multiple times.",
                 choices=["bind", "crop"],
+                action="append",
+                default=[],
+            )
+
+        if "mark-crop" in options:
+            self.add_argument(
+                "--mark",
+                "-k",
+                help="Use '--mark=crop' to add crop marks.",
+                choices=["crop"],
                 action="append",
                 default=[],
             )

@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -31,7 +31,7 @@ def main(argv=None):
 
     parser = ArgumentParser(
         subcommand="onepagezine",
-        options=["omargin", "mark", "last", "bind"],
+        options=["omargin", "mark-crop", "last", "bind"],
         description=DESCRIPTION,
     )
 
