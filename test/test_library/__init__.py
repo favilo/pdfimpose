@@ -17,39 +17,23 @@
 
 """Tests"""
 
-import unittest
-import sys
 import pathlib
+import sys
+import unittest
 
 from pdfimpose.schema import onepagezine
+
+from .. import TestComparePDF
 
 TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
 TEST_FILE = TEST_DATA_DIR / "A7.pdf"
 
-from wand.image import Image
 
-class TestLibrary(unittest.TestCase):
+class TestLibrary(TestComparePDF):
     """Test library calls"""
 
-    def assertPdfEqual(self, filea, fileb):
-        """Test whether PDF files given in argument (as file names) are equal.
-
-        Equal means: they look the same.
-        """
-        # pylint: disable=invalid-name
-        images = (Image(filename=filea), Image(filename=fileb))
-
-        # Check that files have the same number of pages
-        self.assertEqual(len(images[0].sequence), len(images[1].sequence))
-
-        # Check if pages look the same
-        for pagea, pageb in zip(images[0].sequence, images[1].sequence):
-            if sys.version_info >= (3, 11):
-                # Wand considers the output PDF different, althought I cannot see the difference.
-                self.assertEqual(pagea.compare(pageb, metric="absolute")[1], 0)
-
-
     def test_filetype(self):
+        """Test that both `str` and `pathlib.Path` are valid types for file input."""
         file1 = TEST_FILE.with_stem("filetype1")
         onepagezine.impose([pathlib.Path(TEST_FILE)], file1)
 
@@ -58,37 +42,5 @@ class TestLibrary(unittest.TestCase):
 
         self.assertPdfEqual(file1, file2)
 
-
-    def test_onepagezine(self):
-        TODO
-
-    def _test_commandline(self, subtest):
-        """Test binary, from command line to produced files."""
-        for data in FIXTURES[subtest]:
-            with self.subTest(**data):
-                for command in data.get("before", ()):
-                    subprocess.run(
-                        command,
-                        env=self.environ,
-                        cwd=TEST_DATA_DIR / subtest,
-                        check=True,
-                    )
-                completed = subprocess.run(  # pylint: disable=subprocess-run-check
-                    EXECUTABLE + ["-m", "pdfimpose"] + data["command"],
-                    env=self.environ,
-                    cwd=TEST_DATA_DIR / subtest,
-                    capture_output=True,
-                    text=True,
-                )
-
-                for key in ["returncode", "stderr", "stdout"]:
-                    if key in data:
-                        self.assertEqual(getattr(completed, key), data.get(key))
-
-                if "diff" in data:
-                    self.assertPdfEqual(
-                        *(
-                            TEST_DATA_DIR / subtest / filename
-                            for filename in data["diff"]
-                        )
-                    )
+    # def test_onepagezine(self):
+    #    TODO

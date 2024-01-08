@@ -24,7 +24,7 @@ import sys
 import textwrap
 import unittest
 
-from wand.image import Image
+from .. import TestComparePDF
 
 if "COVERAGE_PROCESS_START" in os.environ:
     EXECUTABLE = ["coverage", "run"]
@@ -378,7 +378,7 @@ FIXTURES = {
 }
 
 
-class TestCommandLine(unittest.TestCase):
+class TestCommandLine(TestComparePDF):
     """Run binary, and check produced files."""
 
     maxDiff = None
@@ -389,23 +389,6 @@ class TestCommandLine(unittest.TestCase):
             self.environ["PYTHONPATH"] = f"{ROOT_DIR}:{self.environ['PYTHONPATH']}"
         else:
             self.environ["PYTHONPATH"] = f"{ROOT_DIR}"
-
-    def assertPdfEqual(self, filea, fileb):
-        """Test whether PDF files given in argument (as file names) are equal.
-
-        Equal means: they look the same.
-        """
-        # pylint: disable=invalid-name
-        images = (Image(filename=filea), Image(filename=fileb))
-
-        # Check that files have the same number of pages
-        self.assertEqual(len(images[0].sequence), len(images[1].sequence))
-
-        # Check if pages look the same
-        for pagea, pageb in zip(images[0].sequence, images[1].sequence):
-            if sys.version_info >= (3, 11):
-                # Wand considers the output PDF different, althought I cannot see the difference.
-                self.assertEqual(pagea.compare(pageb, metric="absolute")[1], 0)
 
     def _test_commandline(self, subtest):
         """Test binary, from command line to produced files."""

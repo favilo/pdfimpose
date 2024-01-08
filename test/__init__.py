@@ -17,18 +17,30 @@
 
 """Tests"""
 
-import os
+import sys
 import unittest
+
+from wand.image import Image
 
 import pdfimpose
 
 
-def suite():
-    """Return a :class:`TestSuite` object, testing all module :mod:`pdfimpose`."""
-    return unittest.defaultTestLoader.discover(
-        os.path.abspath(os.path.join(pdfimpose.__path__[0], ".."))
-    )
+class TestComparePDF(unittest.TestCase):
+    """A :class:`unittest.TestCase` implementation with an `assertPdfEqual` method."""
 
+    def assertPdfEqual(self, filea, fileb):
+        """Test whether PDF files given in argument (as file names) are equal.
 
-if __name__ == "__main__":
-    unittest.TextTestRunner().run(suite())
+        Equal means: they look the same.
+        """
+        # pylint: disable=invalid-name
+        images = (Image(filename=filea), Image(filename=fileb))
+
+        # Check that files have the same number of pages
+        self.assertEqual(len(images[0].sequence), len(images[1].sequence))
+
+        # Check if pages look the same
+        for pagea, pageb in zip(images[0].sequence, images[1].sequence):
+            if sys.version_info >= (3, 11):
+                # Wand considers the output PDF different, althought I cannot see the difference.
+                self.assertEqual(pagea.compare(pageb, metric="absolute")[1], 0)
