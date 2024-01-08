@@ -3,6 +3,7 @@
     * Library functions can now open `pathlib.Path` files.
     * Remove useless imports.
     * Remove bind marks from "one-page zine" help: it was ignored anyway.
+    * [test] Doctests work again (they were silently ignored before)
 
     -- Louis Paternault <spalax@gresille.org>
 

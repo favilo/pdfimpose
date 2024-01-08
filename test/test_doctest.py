@@ -1,4 +1,4 @@
-# Copyright 2015-2021 Louis Paternault
+# Copyright 2015-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -18,12 +18,17 @@
 """Tests"""
 
 import doctest
+import importlib
+import pkgutil
 
 import pdfimpose
 
 
 def load_tests(__loader, tests, __pattern):
     """Load tests (unittests and doctests)."""
-    # Loading doctests
-    tests.addTests(doctest.DocTestSuite(pdfimpose))
+    # Iterate over all modules, and load doctests from them
+    for _loader, name, _ispkg in pkgutil.walk_packages(
+        pdfimpose.__path__, prefix="pdfimpose."
+    ):
+        tests.addTests(doctest.DocTestSuite(importlib.import_module(name)))
     return tests
