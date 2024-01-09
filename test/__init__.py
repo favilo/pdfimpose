@@ -28,7 +28,7 @@ import pdfimpose
 class TestComparePDF(unittest.TestCase):
     """A :class:`unittest.TestCase` implementation with an `assertPdfEqual` method."""
 
-    def assertPdfEqual(self, *files): #  pylint: disable=invalid-name
+    def assertPdfEqual(self, *files):  #  pylint: disable=invalid-name
         """Test whether PDF files given in argument (as file names) are equal.
 
         Equal means: they look the same.

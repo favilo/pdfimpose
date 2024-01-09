@@ -24,7 +24,7 @@ import unittest
 
 import papersize
 
-from pdfimpose.schema import onepagezine, Margins
+from pdfimpose.schema import Margins, copycutfold, onepagezine
 
 from .. import TestComparePDF
 
@@ -68,3 +68,29 @@ class TestLibrary(TestComparePDF):
         )
         onepagezine.impose([TEST_FILE], files[3], omargin="1cm")
         self.assertPdfEqual(*files)
+
+    def test_copycutfold(self):
+        """Test types of :func:`pdfimpose.schema.copycutfold.impose`."""
+        with self.subTest("margins"):
+            files = self.outputfiles("copycutfold-margin", ("decimal", "float", "str"))
+            copycutfold.impose(
+                [TEST_FILE],
+                files[0],
+                signature=(2, 2),
+                omargin=decimal.Decimal(papersize.parse_length("1cm")),
+                imargin=decimal.Decimal(papersize.parse_length("1cm")),
+            )
+            copycutfold.impose(
+                [TEST_FILE],
+                files[1],
+                signature=(2, 2),
+                omargin=float(papersize.parse_length("1cm")),
+                imargin=float(papersize.parse_length("1cm")),
+            )
+            copycutfold.impose(
+                [TEST_FILE], files[2], signature=(2, 2), omargin="1cm", imargin="1cm"
+            )
+            self.assertPdfEqual(*files)
+
+        with self.subTest("format"):
+            signature = None

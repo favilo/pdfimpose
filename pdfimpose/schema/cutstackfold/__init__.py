@@ -32,10 +32,13 @@ With option --group=3 (for instance), repeat the step above for every group of t
 """  # pylint: disable=line-too-long
 
 import dataclasses
+import decimal
 import itertools
 import math
 import numbers
 import typing
+
+import papersize
 
 from .. import BIND2ANGLE, AbstractImpositor, Matrix, Page, nocreep
 
@@ -46,9 +49,16 @@ class CutStackFoldImpositor(AbstractImpositor):
 
     bind: str = "left"
     creep: typing.Callable[[int], float] = dataclasses.field(default=nocreep)
-    imargin: float = 0
+    imargin: str | numbers.Real | decimal.Decimal = 0
     signature: tuple[int] = (0, 0)
     group: int = 0
+
+    def __post_init__(self):
+        super().__post_init__()
+        if isinstance(self.imargin, decimal.Decimal):
+            self.imargin = float(self.imargin)
+        elif isinstance(self.imargin, str):
+            self.imargin = float(papersize.parse_length(self.imargin))
 
     def blank_page_number(self, source):
         pagesperpage = 4 * self.signature[0] * self.signature[1]
