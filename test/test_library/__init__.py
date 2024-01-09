@@ -17,13 +17,14 @@
 
 """Tests"""
 
+import decimal
 import pathlib
 import sys
 import unittest
 
 import papersize
 
-from pdfimpose.schema import onepagezine
+from pdfimpose.schema import onepagezine, Margins
 
 from .. import TestComparePDF
 
@@ -35,24 +36,35 @@ class TestLibrary(TestComparePDF):
     """Test library calls"""
 
     @staticmethod
-    def outputfiles(*suffixes):
+    def outputfiles(prefix, suffixes):
         """Return names for output files with given suffixes."""
         return tuple(
-            TEST_FILE.with_stem(f"{TEST_FILE.stem}-{suffix}") for suffix in suffixes
+            TEST_FILE.with_stem(f"{TEST_FILE.stem}-{prefix}-{suffix}")
+            for suffix in suffixes
         )
 
     def test_filetype(self):
         """Test that both `str` and `pathlib.Path` are valid types for file input."""
-        file1, file2 = self.outputfiles("filetype-str", "filetype-pathlib")
+        file1, file2 = self.outputfiles("filetype", ("str", "pathlib"))
         onepagezine.impose([pathlib.Path(TEST_FILE)], file1)
         onepagezine.impose([str(TEST_FILE)], file2)
         self.assertPdfEqual(file1, file2)
 
     def test_onepagezine(self):
         """Test types of :func:`pdfimpose.schema.onepagezine.impose`."""
-        file1, file2 = self.outputfiles(
-            "onepagezine-margin-float", "onepagezine-margin-str"
+        files = self.outputfiles(
+            "onepagezine-margin", ("decimal", "float", "Margins", "str")
         )
-        onepagezine.impose([TEST_FILE], file1, omargin=papersize.parse_length("1cm"))
-        onepagezine.impose([TEST_FILE], file2, omargin="1cm")
-        self.assertPdfEqual(file1, file2)
+        onepagezine.impose(
+            [TEST_FILE],
+            files[0],
+            omargin=decimal.Decimal(papersize.parse_length("1cm")),
+        )
+        onepagezine.impose(
+            [TEST_FILE], files[1], omargin=float(papersize.parse_length("1cm"))
+        )
+        onepagezine.impose(
+            [TEST_FILE], files[2], omargin=Margins(float(papersize.parse_length("1cm")))
+        )
+        onepagezine.impose([TEST_FILE], files[3], omargin="1cm")
+        self.assertPdfEqual(*files)

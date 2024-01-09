@@ -28,19 +28,28 @@ import pdfimpose
 class TestComparePDF(unittest.TestCase):
     """A :class:`unittest.TestCase` implementation with an `assertPdfEqual` method."""
 
-    def assertPdfEqual(self, filea, fileb):
+    def assertPdfEqual(self, *files): #  pylint: disable=invalid-name
         """Test whether PDF files given in argument (as file names) are equal.
 
         Equal means: they look the same.
+
+        This tests stops as soon as it finds two different files.
+        It does not compare any more files after that.
         """
-        # pylint: disable=invalid-name
-        images = (Image(filename=filea), Image(filename=fileb))
+        if len(files) <= 1:
+            return
 
-        # Check that files have the same number of pages
-        self.assertEqual(len(images[0].sequence), len(images[1].sequence))
+        first = files[0]
+        for other in files[1:]:
+            # pylint: disable=invalid-name
+            images = (Image(filename=first), Image(filename=other))
 
-        # Check if pages look the same
-        for pagea, pageb in zip(images[0].sequence, images[1].sequence):
-            if sys.version_info >= (3, 11):
-                # Wand considers the output PDF different, althought I cannot see the difference.
-                self.assertEqual(pagea.compare(pageb, metric="absolute")[1], 0)
+            # Check that files have the same number of pages
+            self.assertEqual(len(images[0].sequence), len(images[1].sequence))
+
+            # Check if pages look the same
+            for pagea, pageb in zip(images[0].sequence, images[1].sequence):
+                if sys.version_info >= (3, 11):
+                    # Wand considers the output PDF different,
+                    # althought I cannot see the difference.
+                    self.assertEqual(pagea.compare(pageb, metric="absolute")[1], 0)
