@@ -127,7 +127,10 @@ def impose(files, output, *, omargin=0, last=0, mark=None, bind="left"):
 
     :param list[str] files: List of source files. If empty, reads from standard input.
     :param str output: List of output file.
-    :param float omargin: Output margin, in pt. Can also be a :class:`Margins` object.
+    :param number.Real|Margins|decimal.Decimal|str omargin: Output margin, as:
+        a number :class:`number.Real` or :class:`decimal.Decimal`,
+        a :class:`Margins` object,
+        or a :class:`str`, that is to be parsed by :func:`papersize.parse_length`.
     :param int last: Number of last pages (of the source files) to keep at the
         end of the output document.  If blank pages were to be added to the
         source files, they would be added before those last pages.

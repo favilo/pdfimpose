@@ -21,6 +21,8 @@ import pathlib
 import sys
 import unittest
 
+import papersize
+
 from pdfimpose.schema import onepagezine
 
 from .. import TestComparePDF
@@ -32,15 +34,25 @@ TEST_FILE = TEST_DATA_DIR / "A7.pdf"
 class TestLibrary(TestComparePDF):
     """Test library calls"""
 
+    @staticmethod
+    def outputfiles(*suffixes):
+        """Return names for output files with given suffixes."""
+        return tuple(
+            TEST_FILE.with_stem(f"{TEST_FILE.stem}-{suffix}") for suffix in suffixes
+        )
+
     def test_filetype(self):
         """Test that both `str` and `pathlib.Path` are valid types for file input."""
-        file1 = TEST_FILE.with_stem("filetype1")
+        file1, file2 = self.outputfiles("filetype-str", "filetype-pathlib")
         onepagezine.impose([pathlib.Path(TEST_FILE)], file1)
-
-        file2 = TEST_FILE.with_stem("filetype2")
         onepagezine.impose([str(TEST_FILE)], file2)
-
         self.assertPdfEqual(file1, file2)
 
-    # def test_onepagezine(self):
-    #    TODO
+    def test_onepagezine(self):
+        """Test types of :func:`pdfimpose.schema.onepagezine.impose`."""
+        file1, file2 = self.outputfiles(
+            "onepagezine-margin-float", "onepagezine-margin-str"
+        )
+        onepagezine.impose([TEST_FILE], file1, omargin=papersize.parse_length("1cm"))
+        onepagezine.impose([TEST_FILE], file2, omargin="1cm")
+        self.assertPdfEqual(file1, file2)

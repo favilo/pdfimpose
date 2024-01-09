@@ -53,6 +53,7 @@ Each submodule provides:
 import argparse
 import contextlib
 import dataclasses
+import decimal
 import math
 import numbers
 import os
@@ -580,13 +581,19 @@ class AbstractImpositor:
     """
 
     last: int = 0
-    omargin: Margins = dataclasses.field(default_factory=Margins)
+    omargin: Margins | str | numbers.Real | decimal.Decimal = dataclasses.field(
+        default_factory=Margins
+    )
     mark: list[str] = dataclasses.field(default_factory=list)
     creep = nocreep
 
     def __post_init__(self):
         if isinstance(self.omargin, numbers.Real):
             self.omargin = Margins(self.omargin)
+        elif isinstance(self.omargin, decimal.Decimal):
+            self.omargin = Margins(float(self.omargin))
+        elif isinstance(self.omargin, str):
+            self.omargin = Margins(float(papersize.parse_length(self.omargin)))
 
     def blank_page_number(self, source):
         """Return the number of blank pages to insert.
