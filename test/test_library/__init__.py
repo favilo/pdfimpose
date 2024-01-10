@@ -31,6 +31,7 @@ from pdfimpose.schema import (
     cutstackfold,
     onepagezine,
     perfect,
+    saddle,
     wire,
 )
 
@@ -232,4 +233,37 @@ class TestLibrary(TestComparePDF):
             perfect.impose([TEST_FILE], files[1], size="A4")
             perfect.impose([TEST_FILE], files[2], size="21cmx29.7cm")
             perfect.impose([TEST_FILE], files[3], folds="hvh")
+            self.assertPdfEqual(*files, threshold=40000)
+
+    def test_saddle(self):
+        """Test types of :func:`pdfimpose.schema.saddle.impose`."""
+        with self.subTest("margins"):
+            files = self.outputfiles("saddle-margin", ("decimal", "float", "str"))
+            saddle.impose(
+                [TEST_FILE],
+                files[0],
+                folds="hv",
+                omargin=decimal.Decimal(papersize.parse_length("1cm")),
+                imargin=decimal.Decimal(papersize.parse_length("1cm")),
+            )
+            saddle.impose(
+                [TEST_FILE],
+                files[1],
+                folds="hv",
+                omargin=float(papersize.parse_length("1cm")),
+                imargin=float(papersize.parse_length("1cm")),
+            )
+            saddle.impose(
+                [TEST_FILE], files[2], folds="hv", omargin="1cm", imargin="1cm"
+            )
+            self.assertPdfEqual(*files)
+
+        with self.subTest("format"):
+            files = self.outputfiles(
+                "saddle-size", ("signature", "standard", "custom", "folds")
+            )
+            saddle.impose([TEST_FILE], files[0], signature=(4, 2))
+            saddle.impose([TEST_FILE], files[1], size="A4")
+            saddle.impose([TEST_FILE], files[2], size="21cmx29.7cm")
+            saddle.impose([TEST_FILE], files[3], folds="hvh")
             self.assertPdfEqual(*files, threshold=40000)

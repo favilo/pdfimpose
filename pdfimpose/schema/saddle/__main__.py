@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -20,9 +20,8 @@
 import logging
 import sys
 
-from ... import UserError, pdf
-from .. import ArgumentParser, nocreep
-from ..perfect.__main__ import any2folds, folds2margins
+from ... import UserError
+from .. import ArgumentParser
 from . import __doc__ as DESCRIPTION
 from . import impose
 
@@ -47,30 +46,7 @@ def main(argv=None):
     )
 
     try:
-        args = parser.parse_args(argv)
-
-        args.files = pdf.Reader(args.files)
-        if args.bind in ("top", "bottom"):
-            sourcesize = (args.files.size[1], args.files.size[0])
-        else:
-            sourcesize = (args.files.size[0], args.files.size[1])
-
-        # Compute folds (from signature and format), and remove signature and format
-        args.folds, args.format = any2folds(
-            args.signature, args.format, inputsize=sourcesize
-        )
-        del args.signature
-        if (
-            args.format is not None
-            and args.imargin == 0
-            and args.creep == nocreep  # pylint: disable=comparison-with-callable
-        ):
-            args.omargin = folds2margins(
-                args.format, sourcesize, args.folds, args.imargin
-            )
-        del args.format
-
-        return impose(**vars(args))
+        return impose(**vars(parser.parse_args(argv)))
     except UserError as usererror:
         logging.error(usererror)
         sys.exit(1)

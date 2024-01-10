@@ -36,7 +36,11 @@ import math
 import numbers
 import typing
 
+import papersize
+
+from ... import pdf
 from .. import Margins, Matrix, Page, nocreep, perfect
+from ..perfect import _any2folds, _folds2margins
 
 
 @dataclasses.dataclass
@@ -83,7 +87,9 @@ def impose(
     files,
     output,
     *,
-    folds,
+    folds=None,
+    signature=None,
+    size=None,
     imargin=0,
     omargin=0,
     mark=None,
@@ -102,6 +108,12 @@ def impose(
     :param list[str] mark: List of marks to add.
         Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
     :param str folds: Sequence of folds, as a string of characters `h` and `v`.
+    :param str size: Size of the destination pages, as a string that is to be parsed by :func:`papersize.parse_papersize`.
+        This option is incompatible with `signature` and `folds`.
+    :param tuple[int] signature: Layout of source pages on output pages.
+        For instance ``(2, 3)`` means: the printed sheets are to be cut in a matrix of
+        2 horizontal sheets per 3 vertical sheets.
+        This option is incompatible with `size` and `folds`.
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
     :param function creep: Function that takes the number of sheets in argument,
         and return the space to be left between two adjacent pages.
@@ -113,6 +125,24 @@ def impose(
     """
     if mark is None:
         mark = []
+
+    if (signature, size, folds).count(None) <= 1:
+        raise ValueError(
+            "Only one of `size`, `folds` and `signature` arguments can be other than `None`."
+        )
+    if folds is None:
+        files = pdf.Reader(files)
+        if bind in ("top", "bottom"):
+            sourcesize = (files.size[1], files.size[0])
+        else:
+            sourcesize = (files.size[0], files.size[1])
+
+        # Compute folds (from signature and format), and remove signature and format
+        if isinstance(size, str):
+            size = tuple(float(dim) for dim in papersize.parse_papersize(size))
+        folds, size = _any2folds(signature, size, inputsize=sourcesize)
+        if size is not None and imargin == 0 and creep == nocreep: # pylint: disable=comparison-with-callable
+            omargin = _folds2margins(size, sourcesize, folds, imargin)
 
     SaddleImpositor(
         omargin=omargin,

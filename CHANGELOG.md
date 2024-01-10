@@ -4,14 +4,6 @@
         * `pathlib.Path` files.
         * `str` lengths (which are then parsed by `papersize`).
         * `str` sizes (which are then converted to signatures).
-        TODO
-          - [x]  cards
-          - [x]  copycutfold
-          - [x]  cutstackfold
-          - [x]  onepagezine
-          - [x]  perfect
-          - [ ]  saddle
-          - [x]  wire
     * Remove useless imports.
     * Remove bind marks from "one-page zine" help: it was ignored anyway.
     * [test] Doctests work again (they were silently ignored before)
