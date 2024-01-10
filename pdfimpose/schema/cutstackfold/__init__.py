@@ -40,7 +40,16 @@ import typing
 
 import papersize
 
-from .. import BIND2ANGLE, AbstractImpositor, Matrix, Page, nocreep, pdf, size2signature
+from .. import (
+    BIND2ANGLE,
+    DEFAULT_PAPER_SIZE,
+    AbstractImpositor,
+    Matrix,
+    Page,
+    nocreep,
+    pdf,
+    size2signature,
+)
 
 
 @dataclasses.dataclass
@@ -312,6 +321,8 @@ def impose(
         raise ValueError(
             "Only one of `size` and `signature` arguments can be other than `None`."
         )
+    if size is None and signature is None:
+        size = DEFAULT_PAPER_SIZE
     if size is not None:
         # Convert size to signature
         if isinstance(size, str):
@@ -323,7 +334,10 @@ def impose(
         else:
             sourcesize = (2 * sourcesize[0], sourcesize[1])
         signature, omargin = size2signature(
-            size, sourcesize=sourcesize, imargin=imargin
+            size,
+            sourcesize=sourcesize,
+            imargin=imargin,
+            omargin=omargin,
         )
 
     CutStackFoldImpositor(

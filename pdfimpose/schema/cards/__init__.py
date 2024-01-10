@@ -243,7 +243,10 @@ def impose(
         if isinstance(size, str):
             size = tuple(float(dim) for dim in papersize.parse_papersize(size))
         signature, omargin = size2signature(
-            size, sourcesize=files.size, imargin=imargin
+            size,
+            sourcesize=files.size,
+            imargin=imargin,
+            omargin=omargin,
         )
 
     CardsImpositor(

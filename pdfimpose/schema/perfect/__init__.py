@@ -42,7 +42,7 @@ import typing
 import papersize
 
 from ... import UserError, pdf
-from .. import BIND2ANGLE, AbstractImpositor, Margins, Matrix, Page
+from .. import BIND2ANGLE, DEFAULT_PAPER_SIZE, AbstractImpositor, Margins, Matrix, Page
 
 
 def evenodd2oddeven(number):
@@ -376,7 +376,7 @@ def _any2folds(signature, outputsize, *, inputsize):
     # and we will add an "artificial" horizontal fold later in this function.
     inputsize = (2 * inputsize[0], inputsize[1])
     if signature is None and outputsize is None:
-        outputsize = tuple(map(float, papersize.parse_papersize("A4")))
+        outputsize = tuple(map(float, papersize.parse_papersize(DEFAULT_PAPER_SIZE)))
     if signature is not None:
         if not (_ispowerof2(signature[0]) and _ispowerof2(signature[1])):
             raise UserError("Both numbers of signature must be powers of two.")
