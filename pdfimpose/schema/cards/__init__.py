@@ -230,7 +230,7 @@ def impose(
         Only crop marks are supported (``mark=['crop']``); everything else is silently ignored.
     :param tuple[int] signature: Layout of source pages on output pages.
         For instance, ``(2, 3)`` means that each output page will contain
-        2 columns and 3 rows of source pages. Incompatible with `size`.
+        2 columns and 3 rows of source pages. Incompatible with option `size`.
     :param str|tuple[float] size: Size of the output page.
         Signature is computed to fit the page. This option is incompatible with `signature`.
     :param Optional[str] back: Back sides of cards. See --back help for more information.

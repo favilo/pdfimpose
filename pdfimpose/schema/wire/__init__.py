@@ -32,7 +32,10 @@ import dataclasses
 import itertools
 import numbers
 
-from .. import Matrix, Page, cards
+import papersize
+
+from ... import pdf
+from .. import Matrix, Page, cards, size2signature
 
 
 @dataclasses.dataclass
@@ -88,7 +91,9 @@ class WireImpositor(cards.CardsImpositor):
         )
 
 
-def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=None):
+def impose(
+    files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=None, size=None
+):
     # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, to be cut and "wire bound".
 
@@ -104,10 +109,20 @@ def impose(files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=
         Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
     :param tuple[int] signature: Layout of source pages on output pages.
         For instance, ``(2, 3)`` means that each output page will contain
-        2 columns and 3 rows of source pages.
+        2 columns and 3 rows of source pages. Incompatible with option `size`.
+    :param str|tuple[float] size: Size of the output page.
+        Signature is computed to fit the page. This option is incompatible with `signature`.
     """
     if mark is None:
         mark = []
+
+    files = pdf.Reader(files)
+    if signature is None:
+        if isinstance(size, str):
+            size = tuple(float(dim) for dim in papersize.parse_papersize(size))
+        signature, omargin = size2signature(
+            size, sourcesize=files.size, imargin=imargin
+        )
 
     WireImpositor(
         imargin=imargin,

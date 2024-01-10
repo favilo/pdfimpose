@@ -11,7 +11,7 @@
           - [x]  onepagezine
           - [ ]  perfect
           - [ ]  saddle
-          - [ ]  wire
+          - [x]  wire
     * Remove useless imports.
     * Remove bind marks from "one-page zine" help: it was ignored anyway.
     * [test] Doctests work again (they were silently ignored before)
