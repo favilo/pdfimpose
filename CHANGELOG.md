@@ -9,7 +9,7 @@
           - [x]  copycutfold
           - [x]  cutstackfold
           - [x]  onepagezine
-          - [ ]  perfect
+          - [x]  perfect
           - [ ]  saddle
           - [x]  wire
     * Remove useless imports.

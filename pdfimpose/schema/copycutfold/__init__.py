@@ -143,7 +143,7 @@ def impose(
 
     if size is not None and signature is not None:
         raise ValueError(
-            "At least one of `size` and `signature` arguments must be `None`."
+            "Only one of `size` and `signature` arguments can be other than `None`."
         )
     if size is not None:
         # Convert size to signature

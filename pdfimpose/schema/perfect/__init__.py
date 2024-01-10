@@ -33,11 +33,15 @@ With option --group=3 (for instance), repeat the step above for every group of t
 """  # pylint: disable=line-too-long
 
 import dataclasses
+import decimal
 import itertools
 import math
 import numbers
 import typing
 
+import papersize
+
+from ... import UserError, pdf
 from .. import BIND2ANGLE, AbstractImpositor, Margins, Matrix, Page
 
 
@@ -72,6 +76,10 @@ class PerfectImpositor(AbstractImpositor):
             2 ** self.folds.count("h"),
             2 ** self.folds.count("v"),
         )
+        if isinstance(self.imargin, decimal.Decimal):
+            self.imargin = float(self.imargin)
+        elif isinstance(self.imargin, str):
+            self.imargin = float(papersize.parse_length(self.imargin))
 
     def fix_group(self, pages):
         """If `self.group == 0` compute the right group value, depending of the number of pages."""
@@ -336,11 +344,107 @@ class PerfectImpositor(AbstractImpositor):
             )
 
 
+def _signature2folds(width, height):
+    """Convert a signature into a list of folds."""
+    if width > height:
+        alternator = itertools.cycle("hv")
+    else:
+        alternator = itertools.cycle("vh")
+
+    folds = ""
+    while width * height != 1:
+        fold = next(alternator)
+        folds += fold
+        if fold == "h":
+            width /= 2
+        else:
+            height /= 2
+
+    return folds
+
+
+def _ispowerof2(number):
+    """Return True iff the number is a power of two."""
+    # Is there a cleaner way?
+    return round(math.log2(number)) == math.log2(number)
+
+
+def _any2folds(signature, outputsize, *, inputsize):
+    """Convert signature or outputsize to a list of folds."""
+    # We enforce that the last fold is horizontal (to make sure the bind edge is correct).
+    # To do so, we consider that the source page is twice as wide,
+    # and we will add an "artificial" horizontal fold later in this function.
+    inputsize = (2 * inputsize[0], inputsize[1])
+    if signature is None and outputsize is None:
+        outputsize = tuple(map(float, papersize.parse_papersize("A4")))
+    if signature is not None:
+        if not (_ispowerof2(signature[0]) and _ispowerof2(signature[1])):
+            raise UserError("Both numbers of signature must be powers of two.")
+        return _signature2folds(*signature), outputsize
+    else:
+        # We are rounding the ratio of (dest/source) to
+        # 0.00001, so that 0.99999 is rounded to 1:
+        # in some cases, we *should* get 1, but due to
+        # floating point arithmetic, we get 0.99999
+        # instead. We want it to be 1.
+        #
+        # Let's compute the error: how long is such an error?
+        #
+        # log2(ratio)=10^(-5) => ratio=2^(10^(-5))=1.00000693
+        #
+        # The ratio error is about 1.00000693.
+        # What does this represent on the big side of an A4 sheet of paper?
+        #
+        # 0.00000693×29.7cm = 0.00020582cm = 2.0582 nm
+        #
+        # We are talking about a 2 nanometers error. We do not care.
+        notrotated = (
+            math.floor(math.log2(round(outputsize[0] / inputsize[0], 5))),
+            math.floor(math.log2(round(outputsize[1] / inputsize[1], 5))),
+        )
+        rotated = (
+            math.floor(math.log2(round(outputsize[1] / inputsize[0], 5))),
+            math.floor(math.log2(round(outputsize[0] / inputsize[1], 5))),
+        )
+        if (rotated[0] < 0 or rotated[1] < 0) and (
+            notrotated[0] < 0 or notrotated[1] < 0
+        ):
+            raise UserError(
+                "Incompatible source size, outputsize, bind edge, or signature."
+            )
+        if rotated[0] + rotated[1] > notrotated[0] + notrotated[1]:
+            return _signature2folds(2 ** (1 + rotated[0]), 2 ** rotated[1]), (
+                outputsize[1],
+                outputsize[0],
+            )
+        return (
+            _signature2folds(2 ** (1 + notrotated[0]), 2 ** notrotated[1]),
+            outputsize,
+        )
+
+
+def _folds2margins(outputsize, sourcesize, folds, imargin):
+    """Return output margins."""
+    leftright = (
+        outputsize[0]
+        - sourcesize[0] * 2 ** folds.count("h")
+        - imargin * (2 ** folds.count("h") - 1)
+    )
+    topbottom = (
+        outputsize[1]
+        - sourcesize[1] * 2 ** folds.count("v")
+        - imargin * (2 ** folds.count("v") - 1)
+    )
+    return Margins(top=topbottom, bottom=topbottom, left=leftright, right=leftright)
+
+
 def impose(
     files,
     output,
     *,
-    folds,
+    folds=None,
+    signature=None,
+    size=None,
     imargin=0,
     omargin=0,
     mark=None,
@@ -357,7 +461,13 @@ def impose(
     :param float imargin: Input margin, in pt.
     :param list[str] mark: List of marks to add.
         Only crop marks are supported (`mark=['crop']`); everything else is silently ignored.
-    :param str folds: Sequence of folds, as a string of characters `h` and `v`.
+    :param str folds: Sequence of folds, as a string of characters `h` and `v`. Incompatible with `size` and `signature`.
+    :param str size: Size of the destination pages, as a string that is to be parsed by :func:`papersize.parse_papersize`.
+        This option is incompatible with `signature` and `folds`.
+    :param tuple[int] signature: Layout of source pages on output pages.
+        For instance ``(2, 3)`` means: the printed sheets are to be cut in a matrix of
+        2 horizontal sheets per 3 vertical sheets.
+        This option is incompatible with `size` and `folds`.
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
     :param int last: Number of last pages (of the source files) to keep at the
         end of the output document.  If blank pages were to be added to the
@@ -367,6 +477,24 @@ def impose(
     """
     if mark is None:
         mark = []
+
+    if (signature, size, folds).count(None) <= 1:
+        raise ValueError(
+            "Only one of `size`, `folds` and `signature` arguments can be other than `None`."
+        )
+    if folds is None:
+        files = pdf.Reader(files)
+        if bind in ("top", "bottom"):
+            sourcesize = (files.size[1], files.size[0])
+        else:
+            sourcesize = (files.size[0], files.size[1])
+
+        # Compute folds (from signature and format), and remove signature and format
+        if isinstance(size, str):
+            size = tuple(float(dim) for dim in papersize.parse_papersize(size))
+        folds, size = _any2folds(signature, size, inputsize=sourcesize)
+        if size is not None and imargin == 0:
+            omargin = _folds2margins(size, sourcesize, folds, imargin)
 
     PerfectImpositor(
         omargin=omargin,

@@ -30,6 +30,7 @@ from pdfimpose.schema import (
     copycutfold,
     cutstackfold,
     onepagezine,
+    perfect,
     wire,
 )
 
@@ -141,7 +142,7 @@ class TestLibrary(TestComparePDF):
             self.assertPdfEqual(*files, threshold=25000)
 
     def test_cards(self):
-        """Test types of :func:`pdfimpose.schema.cutstackfold.impose`."""
+        """Test types of :func:`pdfimpose.schema.cards.impose`."""
         with self.subTest("margins"):
             files = self.outputfiles("cards-margin", ("decimal", "float", "str"))
             cards.impose(
@@ -171,7 +172,7 @@ class TestLibrary(TestComparePDF):
             self.assertPdfEqual(*files, threshold=20000)
 
     def test_wire(self):
-        """Test types of :func:`pdfimpose.schema.cutstackfold.impose`."""
+        """Test types of :func:`pdfimpose.schema.wire.impose`."""
         with self.subTest("margins"):
             files = self.outputfiles("wire-margin", ("decimal", "float", "str"))
             wire.impose(
@@ -199,3 +200,36 @@ class TestLibrary(TestComparePDF):
             wire.impose([TEST_FILE], files[1], size="A4")
             wire.impose([TEST_FILE], files[2], size="21cmx29.7cm")
             self.assertPdfEqual(*files, threshold=20000)
+
+    def test_perfect(self):
+        """Test types of :func:`pdfimpose.schema.perfect.impose`."""
+        with self.subTest("margins"):
+            files = self.outputfiles("perfect-margin", ("decimal", "float", "str"))
+            perfect.impose(
+                [TEST_FILE],
+                files[0],
+                folds="hv",
+                omargin=decimal.Decimal(papersize.parse_length("1cm")),
+                imargin=decimal.Decimal(papersize.parse_length("1cm")),
+            )
+            perfect.impose(
+                [TEST_FILE],
+                files[1],
+                folds="hv",
+                omargin=float(papersize.parse_length("1cm")),
+                imargin=float(papersize.parse_length("1cm")),
+            )
+            perfect.impose(
+                [TEST_FILE], files[2], folds="hv", omargin="1cm", imargin="1cm"
+            )
+            self.assertPdfEqual(*files)
+
+        with self.subTest("format"):
+            files = self.outputfiles(
+                "perfect-size", ("signature", "standard", "custom", "folds")
+            )
+            perfect.impose([TEST_FILE], files[0], signature=(4, 2))
+            perfect.impose([TEST_FILE], files[1], size="A4")
+            perfect.impose([TEST_FILE], files[2], size="21cmx29.7cm")
+            perfect.impose([TEST_FILE], files[3], folds="hvh")
+            self.assertPdfEqual(*files, threshold=40000)
