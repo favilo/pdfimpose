@@ -93,7 +93,13 @@ class TestLibrary(TestComparePDF):
             self.assertPdfEqual(*files)
 
         with self.subTest("format"):
-            print("TODO signature")
+            files = self.outputfiles(
+                "copycutfold-size", ("signature", "custom", "standard")
+            )
+            copycutfold.impose([TEST_FILE], files[0], signature=(2, 2))
+            copycutfold.impose([TEST_FILE], files[1], size="A4")
+            copycutfold.impose([TEST_FILE], files[2], size="21cmx29.7cm")
+            self.assertPdfEqual(*files, threshold=40000)
 
     def test_cutstackfold(self):
         """Test types of :func:`pdfimpose.schema.cutstackfold.impose`."""

@@ -6,7 +6,7 @@
         * `str` sizes (which are then converted to signatures).
         TODO
           - [ ]  cards
-          - [ ]  copycutfold
+          - [x]  copycutfold
           - [x]  cutstackfold
           - [x]  onepagezine
           - [ ]  perfect

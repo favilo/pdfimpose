@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -20,9 +20,8 @@
 import logging
 import sys
 
-from ... import UserError, pdf
+from ... import UserError
 from .. import ArgumentParser
-from ..cards.__main__ import format2signature
 from . import __doc__ as DESCRIPTION
 from . import impose
 
@@ -47,18 +46,7 @@ def main(argv=None):
     )
 
     try:
-        args = parser.parse_args(argv)
-
-        args.files = pdf.Reader(args.files)
-
-        sourcesize = args.files.size
-        if args.bind in ("top", "bottom"):
-            sourcesize = (2 * sourcesize[1], sourcesize[0])
-        else:
-            sourcesize = (2 * sourcesize[0], sourcesize[1])
-        format2signature(sourcesize, args)
-
-        return impose(**vars(args))
+        return impose(**vars(parser.parse_args(argv)))
 
     except UserError as uerror:
         logging.error(uerror)
