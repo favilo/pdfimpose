@@ -1,4 +1,4 @@
-# Copyright 2011-2023 Louis Paternault
+# Copyright 2011-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -18,6 +18,8 @@
 "Perform an imposition on the PDF file given in argument."
 
 VERSION = "2.4.1"
+
+DEFAULT_PAPER_SIZE = "A4"
 
 
 class UserError(BaseException):

@@ -1,4 +1,4 @@
-# Copyright 2015-2021 Louis Paternault
+# Copyright 2015-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -28,7 +28,7 @@ import pdfimpose
 class TestComparePDF(unittest.TestCase):
     """A :class:`unittest.TestCase` implementation with an `assertPdfEqual` method."""
 
-    def assertPdfEqual(self, *files):  #  pylint: disable=invalid-name
+    def assertPdfEqual(self, *files, threshold=0):  #  pylint: disable=invalid-name
         """Test whether PDF files given in argument (as file names) are equal.
 
         Equal means: they look the same.
@@ -52,4 +52,6 @@ class TestComparePDF(unittest.TestCase):
                 if sys.version_info >= (3, 11):
                     # Wand considers the output PDF different,
                     # althought I cannot see the difference.
-                    self.assertEqual(pagea.compare(pageb, metric="absolute")[1], 0)
+                    self.assertLessEqual(
+                        pagea.compare(pageb, metric="absolute")[1], threshold
+                    )

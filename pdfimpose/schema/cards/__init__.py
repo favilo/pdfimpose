@@ -31,8 +31,10 @@ import dataclasses
 import itertools
 import numbers
 
+import papersize
+
 from ... import pdf
-from .. import AbstractImpositor, Matrix, Page
+from .. import AbstractImpositor, Matrix, Page, size2signature
 
 
 class PdfReader(pdf.Reader):
@@ -196,7 +198,17 @@ class CardsImpositor(AbstractImpositor):
         return PdfReader(files, back=self.back)
 
 
-def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None, back=""):
+def impose(
+    files,
+    output,
+    *,
+    imargin=0,
+    omargin=0,
+    mark=None,
+    signature=None,
+    size=None,
+    back="",
+):
     # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, to be cut as flash cards.
 
@@ -210,11 +222,21 @@ def impose(files, output, *, imargin=0, omargin=0, mark=None, signature=None, ba
         Only crop marks are supported (``mark=['crop']``); everything else is silently ignored.
     :param tuple[int] signature: Layout of source pages on output pages.
         For instance, ``(2, 3)`` means that each output page will contain
-        2 columns and 3 rows of source pages.
+        2 columns and 3 rows of source pages. Incompatible with `size`.
+    :param str|tuple[float] size: Size of the output page.
+        Signature is computed to fit the page. This option is incompatible with `signature`.
     :param Optional[str] back: Back sides of cards. See --back help for more information.
     """
     if mark is None:
         mark = []
+
+    files = PdfReader(files, back=back)
+    if signature is None:
+        if isinstance(size, str):
+            size = tuple(float(dim) for dim in papersize.parse_papersize(size))
+        signature, omargin = size2signature(
+            size, sourcesize=files.size, imargin=imargin
+        )
 
     CardsImpositor(
         omargin=omargin,

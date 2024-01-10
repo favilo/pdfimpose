@@ -40,7 +40,7 @@ import typing
 
 import papersize
 
-from .. import BIND2ANGLE, AbstractImpositor, Matrix, Page, nocreep
+from .. import BIND2ANGLE, AbstractImpositor, Matrix, Page, nocreep, pdf, size2signature
 
 
 @dataclasses.dataclass
@@ -276,6 +276,7 @@ def impose(
     last=0,
     mark=None,
     signature=None,
+    size=None,
     bind="left",
     creep=nocreep,
     group=0,
@@ -295,6 +296,8 @@ def impose(
     :param tuple[int] signature: Layout of source pages on output pages.
         For instance ``(2, 3)`` means: the printed sheets are to be cut in a matrix of
         2 horizontal sheets per 3 vertical sheets.
+        This option is incompatible with `size`.
+    :param str|tuple[float] size: Size of the output page. Signature is computed to fit the page. This option is incompatible with `signature`.
     :param str bind: Binding edge. Can be one of `left`, `right`, `top`, `bottom`.
     :param function creep: Function that takes the number of sheets in argument,
         and return the space to be left between two adjacent pages
@@ -304,6 +307,24 @@ def impose(
     """
     if mark is None:
         mark = []
+
+    if size is not None and signature is not None:
+        raise ValueError(
+            "At least one of `size` and `signature` arguments must be `None`."
+        )
+    if size is not None:
+        # Convert size to signature
+        if isinstance(size, str):
+            size = tuple(float(dim) for dim in papersize.parse_papersize(size))
+        files = pdf.Reader(files)
+        sourcesize = files.size
+        if bind in ("top", "bottom"):
+            sourcesize = (2 * sourcesize[1], sourcesize[0])
+        else:
+            sourcesize = (2 * sourcesize[0], sourcesize[1])
+        signature, omargin = size2signature(
+            size, sourcesize=sourcesize, imargin=imargin
+        )
 
     CutStackFoldImpositor(
         imargin=imargin,

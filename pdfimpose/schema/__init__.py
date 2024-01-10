@@ -63,7 +63,7 @@ import textwrap
 
 import papersize
 
-from .. import UserError, pdf
+from .. import DEFAULT_PAPER_SIZE, UserError, pdf
 
 BIND2ANGLE = {
     "left": 0,
@@ -242,6 +242,7 @@ class ArgumentParser(argparse.ArgumentParser):
             group.add_argument(
                 "--format",
                 "-f",
+                dest="size",
                 type=_type_papersize,
                 help=(
                     "Put as much source pages into the destination page of the given format. "
@@ -403,6 +404,28 @@ def compute_signature(source, dest):
     if notrotated[0] * notrotated[1] > rotated[0] * rotated[1]:
         return notrotated, False
     return rotated, True
+
+
+def size2signature(destsize, *, sourcesize, imargin):
+    """Compute the signature corresponding to a paper size.
+
+    Warning: This function changes the value of its argument ``args``.
+    """
+    if destsize is None:
+        destsize = tuple(map(float, papersize.parse_papersize(DEFAULT_PAPER_SIZE)))
+
+    signature, rotated = compute_signature(sourcesize, destsize)
+    if rotated:
+        destsize = (destsize[1], destsize[0])
+
+    omargin = Margins(
+        top=(destsize[1] - (sourcesize[1] + 2 * imargin) * signature[1]) / 2,
+        bottom=(destsize[1] - (sourcesize[1] + 2 * imargin) * signature[1]) / 2,
+        left=(destsize[0] - (sourcesize[0] + 2 * imargin) * signature[0]) / 2,
+        right=(destsize[0] - (sourcesize[0] + 2 * imargin) * signature[0]) / 2,
+    )
+
+    return (signature, omargin)
 
 
 @dataclasses.dataclass

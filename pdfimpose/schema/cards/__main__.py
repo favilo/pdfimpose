@@ -20,37 +20,10 @@
 import logging
 import sys
 
-import papersize
-
 from ... import UserError
-from .. import ArgumentParser, Margins, compute_signature
-from . import PdfReader
+from .. import ArgumentParser
 from . import __doc__ as DESCRIPTION
 from . import impose
-
-
-def format2signature(sourcesize, args):
-    """Convert the --format option into a --signature option.
-
-    Warning: This function changes the value of its argument ``args``.
-    """
-    if args.signature is None:
-        if args.format is None:
-            args.format = tuple(map(float, papersize.parse_papersize("A4")))
-
-        args.signature, rotated = compute_signature(sourcesize, args.format)
-        if rotated:
-            args.format = (args.format[1], args.format[0])
-
-        if args.imargin == 0:
-            args.omargin = Margins(
-                top=(args.format[1] - sourcesize[1] * args.signature[1]) / 2,
-                bottom=(args.format[1] - sourcesize[1] * args.signature[1]) / 2,
-                left=(args.format[0] - sourcesize[0] * args.signature[0]) / 2,
-                right=(args.format[0] - sourcesize[0] * args.signature[0]) / 2,
-            )
-
-    del args.format
 
 
 def main(argv=None):
@@ -63,12 +36,7 @@ def main(argv=None):
     )
 
     try:
-        args = parser.parse_args(argv)
-
-        args.files = PdfReader(args.files, back=args.back)
-        format2signature(args.files.size, args)
-
-        return impose(**vars(args))
+        return impose(**vars(parser.parse_args(argv)))
     except UserError as usererror:
         logging.error(usererror)
         sys.exit(1)

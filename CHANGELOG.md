@@ -1,6 +1,17 @@
-* pdfimpose 2.4.2 (unreleased)
+* pdfimpose 2.5.0 (unreleased)
 
-    * Library functions can now open `pathlib.Path` files.
+    * Library classes and functions are more user-friendly: they now accept:
+        * `pathlib.Path` files.
+        * `str` lengths (which are then parsed by `papersize`).
+        * `str` sizes (which are then converted to signatures).
+        TODO
+          - [ ]  cards
+          - [ ]  copycutfold
+          - [x]  cutstackfold
+          - [x]  onepagezine
+          - [ ]  perfect
+          - [ ]  saddle
+          - [ ]  wire
     * Remove useless imports.
     * Remove bind marks from "one-page zine" help: it was ignored anyway.
     * [test] Doctests work again (they were silently ignored before)
