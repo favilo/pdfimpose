@@ -406,11 +406,8 @@ def compute_signature(source, dest):
     return rotated, True
 
 
-def size2signature(destsize, *, sourcesize, imargin):
-    """Compute the signature corresponding to a paper size.
-
-    Warning: This function changes the value of its argument ``args``.
-    """
+def size2signature(destsize, *, sourcesize, imargin, omargin):
+    """Compute the signature and margins corresponding to a paper size."""
     if destsize is None:
         destsize = tuple(map(float, papersize.parse_papersize(DEFAULT_PAPER_SIZE)))
 
@@ -418,12 +415,13 @@ def size2signature(destsize, *, sourcesize, imargin):
     if rotated:
         destsize = (destsize[1], destsize[0])
 
-    omargin = Margins(
-        top=(destsize[1] - (sourcesize[1] + 2 * imargin) * signature[1]) / 2,
-        bottom=(destsize[1] - (sourcesize[1] + 2 * imargin) * signature[1]) / 2,
-        left=(destsize[0] - (sourcesize[0] + 2 * imargin) * signature[0]) / 2,
-        right=(destsize[0] - (sourcesize[0] + 2 * imargin) * signature[0]) / 2,
-    )
+    if imargin == 0:
+        omargin = Margins(
+            top=(destsize[1] - sourcesize[1] * signature[1]) / 2,
+            bottom=(destsize[1] - sourcesize[1] * signature[1]) / 2,
+            left=(destsize[0] - sourcesize[0] * signature[0]) / 2,
+            right=(destsize[0] - sourcesize[0] * signature[0]) / 2,
+        )
 
     return (signature, omargin)
 

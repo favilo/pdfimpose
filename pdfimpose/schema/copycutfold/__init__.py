@@ -156,7 +156,7 @@ def impose(
         else:
             sourcesize = (2 * sourcesize[0], sourcesize[1])
         signature, omargin = size2signature(
-            size, sourcesize=sourcesize, imargin=imargin
+            size, sourcesize=sourcesize, imargin=imargin, omargin=omargin,
         )
 
     CopyCutFoldImpositor(
