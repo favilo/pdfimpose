@@ -24,7 +24,7 @@ import unittest
 
 import papersize
 
-from pdfimpose.schema import Margins, copycutfold, cutstackfold, onepagezine
+from pdfimpose.schema import Margins, cards, copycutfold, cutstackfold, onepagezine
 
 from .. import TestComparePDF
 
@@ -132,3 +132,33 @@ class TestLibrary(TestComparePDF):
             cutstackfold.impose([TEST_FILE], files[1], size="A4")
             cutstackfold.impose([TEST_FILE], files[2], size="21cmx29.7cm")
             self.assertPdfEqual(*files, threshold=25000)
+
+    def test_cards(self):
+        """Test types of :func:`pdfimpose.schema.cutstackfold.impose`."""
+        with self.subTest("margins"):
+            files = self.outputfiles("cards-margin", ("decimal", "float", "str"))
+            cards.impose(
+                [TEST_FILE],
+                files[0],
+                signature=(2, 2),
+                omargin=decimal.Decimal(papersize.parse_length("1cm")),
+                imargin=decimal.Decimal(papersize.parse_length("1cm")),
+            )
+            cards.impose(
+                [TEST_FILE],
+                files[1],
+                signature=(2, 2),
+                omargin=float(papersize.parse_length("1cm")),
+                imargin=float(papersize.parse_length("1cm")),
+            )
+            cards.impose(
+                [TEST_FILE], files[2], signature=(2, 2), omargin="1cm", imargin="1cm"
+            )
+            self.assertPdfEqual(*files)
+
+        with self.subTest("format"):
+            files = self.outputfiles("cards-size", ("signature", "custom", "standard"))
+            cards.impose([TEST_FILE], files[0], signature=(4, 2))
+            cards.impose([TEST_FILE], files[1], size="A4")
+            cards.impose([TEST_FILE], files[2], size="21cmx29.7cm")
+            self.assertPdfEqual(*files, threshold=20000)

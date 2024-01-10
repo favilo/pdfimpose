@@ -28,6 +28,7 @@ This schema can be used when you want to print flash cards:
 
 
 import dataclasses
+import decimal
 import itertools
 import numbers
 
@@ -73,6 +74,13 @@ class CardsImpositor(AbstractImpositor):
     imargin: float = 0
     signature: tuple[int] = (0, 0)
     back: str = ""
+
+    def __post_init__(self):
+        super().__post_init__()
+        if isinstance(self.imargin, decimal.Decimal):
+            self.imargin = float(self.imargin)
+        elif isinstance(self.imargin, str):
+            self.imargin = float(papersize.parse_length(self.imargin))
 
     def blank_page_number(self, source):
         pagesperpage = 2 * self.signature[0] * self.signature[1]

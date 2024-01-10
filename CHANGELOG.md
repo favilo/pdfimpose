@@ -5,7 +5,7 @@
         * `str` lengths (which are then parsed by `papersize`).
         * `str` sizes (which are then converted to signatures).
         TODO
-          - [ ]  cards
+          - [x]  cards
           - [x]  copycutfold
           - [x]  cutstackfold
           - [x]  onepagezine
