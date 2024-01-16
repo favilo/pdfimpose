@@ -1,7 +1,7 @@
 .. _hardcover:
 
 :mod:`pdfimpose.schema.hardcover`
-===============================
+=================================
 
 .. automodule:: pdfimpose.schema.hardcover
 
@@ -10,7 +10,7 @@ Example:
     :download:`destination <../examples/hardcover-impose.pdf>`.
 
 :class:`HardcoverImpositor`
--------------------------
+---------------------------
 
 .. autoclass:: HardcoverImpositor
 
