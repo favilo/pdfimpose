@@ -27,7 +27,10 @@ import sys
 from . import VERSION, UserError
 
 if sys.version_info >= (3, 11):
-    import fitz_new as fitz
+    try:
+        import fitz_new as fitz
+    except ImportError:
+        import fitz
 else:
     import fitz
 
