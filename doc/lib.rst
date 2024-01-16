@@ -20,6 +20,11 @@ Use the others at your own risk!
    lib/copycutfold
    lib/cutstackfold
    lib/onepagezine
-   lib/perfect
+   lib/hardcover
    lib/saddle
    lib/wire
+
+.. deprecated:: 2.5.0
+
+   A ``perfect`` imposition schema did exist before version 2.5.0, when it has been renamed to ``hardcover``. It can still be used for backward compatibility, but will be removed in some later version.
+

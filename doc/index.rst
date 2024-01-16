@@ -47,7 +47,7 @@ Examples
   * copycutfold: :download:`examples/copycutfold-impose.pdf` (:download:`source <examples/copycutfold.pdf>`);
   * cutstackfold: :download:`examples/cutstackfold-impose.pdf` (:download:`source <examples/cutstackfold.pdf>`);
   * onepagezine: :download:`examples/onepagezine-impose.pdf` (:download:`source <examples/onepagezine.pdf>`);
-  * perfect: :download:`examples/perfect-impose.pdf` (:download:`source <examples/perfect.pdf>`);
+  * hardcover: :download:`examples/hardcover-impose.pdf` (:download:`source <examples/hardcover.pdf>`);
   * saddle: :download:`examples/saddle-impose.pdf` (:download:`source <examples/saddle.pdf>`);
   * wire: :download:`examples/wire-impose.pdf` (:download:`source <examples/wire.pdf>`).
 

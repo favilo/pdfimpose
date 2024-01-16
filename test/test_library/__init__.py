@@ -29,8 +29,8 @@ from pdfimpose.schema import (
     cards,
     copycutfold,
     cutstackfold,
+    hardcover,
     onepagezine,
-    perfect,
     saddle,
     wire,
 )
@@ -202,37 +202,37 @@ class TestLibrary(TestComparePDF):
             wire.impose([TEST_FILE], files[2], size="21cmx29.7cm")
             self.assertPdfEqual(*files, threshold=20000)
 
-    def test_perfect(self):
-        """Test types of :func:`pdfimpose.schema.perfect.impose`."""
+    def test_hardcover(self):
+        """Test types of :func:`pdfimpose.schema.hardcover.impose`."""
         with self.subTest("margins"):
-            files = self.outputfiles("perfect-margin", ("decimal", "float", "str"))
-            perfect.impose(
+            files = self.outputfiles("hardcover-margin", ("decimal", "float", "str"))
+            hardcover.impose(
                 [TEST_FILE],
                 files[0],
                 folds="hv",
                 omargin=decimal.Decimal(papersize.parse_length("1cm")),
                 imargin=decimal.Decimal(papersize.parse_length("1cm")),
             )
-            perfect.impose(
+            hardcover.impose(
                 [TEST_FILE],
                 files[1],
                 folds="hv",
                 omargin=float(papersize.parse_length("1cm")),
                 imargin=float(papersize.parse_length("1cm")),
             )
-            perfect.impose(
+            hardcover.impose(
                 [TEST_FILE], files[2], folds="hv", omargin="1cm", imargin="1cm"
             )
             self.assertPdfEqual(*files)
 
         with self.subTest("format"):
             files = self.outputfiles(
-                "perfect-size", ("signature", "standard", "custom", "folds")
+                "hardcover-size", ("signature", "standard", "custom", "folds")
             )
-            perfect.impose([TEST_FILE], files[0], signature=(4, 2))
-            perfect.impose([TEST_FILE], files[1], size="A4")
-            perfect.impose([TEST_FILE], files[2], size="21cmx29.7cm")
-            perfect.impose([TEST_FILE], files[3], folds="hvh")
+            hardcover.impose([TEST_FILE], files[0], signature=(4, 2))
+            hardcover.impose([TEST_FILE], files[1], size="A4")
+            hardcover.impose([TEST_FILE], files[2], size="21cmx29.7cm")
+            hardcover.impose([TEST_FILE], files[3], folds="hvh")
             self.assertPdfEqual(*files, threshold=40000)
 
     def test_saddle(self):

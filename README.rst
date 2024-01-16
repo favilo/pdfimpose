@@ -6,7 +6,7 @@ the printer’s sheet, in order to obtain faster printing, simplify binding
 and reduce paper waste (source: http://en.wikipedia.org/wiki/Imposition).
 
 This software can perform imposition on PDF files of arbitrary size.
-It handles several imposition schemas: perfect binding, saddle stitch, one page zine, etc.
+It handles several imposition schemas: hardcover binding, saddle stitch, one page zine, etc.
 See `documentation <https://pdfimpose.rtfd.io>`__ for more details.
 
 
@@ -18,7 +18,7 @@ Examples
 * `Copy, cut, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/copycutfold.pdf>`__);
 * `Cut, stack, fold <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/cutstackfold.pdf>`__);
 * `One-page-zine <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/onepagezine-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/onepagezine.pdf>`__);
-* `Perfect binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/perfect-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/perfect.pdf>`__);
+* `Hardcover binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/hardcover-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/hardcover.pdf>`__);
 * `Saddle stitch <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/saddle-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/saddle.pdf>`__);
 * `Wire binding <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/wire-impose.pdf>`_ (`source <https://framagit.org/spalax/pdfimpose/-/raw/main/doc/examples/wire.pdf>`__).
 

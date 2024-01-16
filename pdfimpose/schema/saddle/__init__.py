@@ -39,12 +39,12 @@ import typing
 import papersize
 
 from ... import pdf
-from .. import Margins, Matrix, Page, nocreep, perfect
-from ..perfect import _any2folds, _folds2margins
+from .. import Margins, Matrix, Page, nocreep, hardcover
+from ..hardcover import _any2folds, _folds2margins
 
 
 @dataclasses.dataclass
-class SaddleImpositor(perfect.PerfectImpositor):
+class SaddleImpositor(hardcover.HardcoverImpositor):
     """Perform imposition of source files, with the 'saddle' schema."""
 
     creep: typing.Callable[[int], float] = dataclasses.field(default=nocreep)

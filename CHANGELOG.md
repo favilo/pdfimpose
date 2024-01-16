@@ -1,5 +1,6 @@
 * pdfimpose 2.5.0 (unreleased)
 
+    * Renamed "perfect" to "hardcover". It is still possible to use "perfect", but a warning will be displayed to standard error.
     * Library classes and functions are more user-friendly: they now accept:
         * `pathlib.Path` files.
         * `str` lengths (which are then parsed by `papersize`).

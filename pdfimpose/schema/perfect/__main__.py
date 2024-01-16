@@ -1,4 +1,4 @@
-# Copyright 2011-2024 Louis Paternault
+# Copyright 2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -15,41 +15,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with pdfimpose.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Parse arguments for the schema "perfect"."""
+"""Old name for "hardcover" imposition schema."""
 
 import logging
-import sys
 
-from ... import UserError
-from .. import ArgumentParser
-from . import __doc__ as DESCRIPTION
-from . import impose
-
-
-def main(argv=None):
-    """Main function"""
-
-    parser = ArgumentParser(
-        subcommand="perfect",
-        options=[
-            "omargin",
-            "imargin",
-            "mark",
-            "signature",
-            "format",
-            "last",
-            "bind",
-            "group1",
-        ],
-        description=DESCRIPTION,
-    )
-
-    try:
-        return impose(**vars(parser.parse_args(argv)))
-    except UserError as usererror:
-        logging.error(usererror)
-        sys.exit(1)
-
+from ..hardcover.__main__ import main
 
 if __name__ == "__main__":
+    logging.warning(
+        """Imposition layout "perfect" has been renamed to "hardcover", and is deprecated."""
+        """It will be removed in a later version."""
+    )
     main()

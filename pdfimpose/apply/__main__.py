@@ -1,4 +1,4 @@
-# Copyright 2011-2022 Louis Paternault
+# Copyright 2011-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -56,16 +56,16 @@ def main():
                 Then, each schema has its own section, where values are transmitted as-is to the corresponding pdfimpose call. For instance, the following configuration file:
 
                     [general]
-                    schema = perfect
+                    schema = hardcover
                     files = foo.pdf bar.pdf
 
-                    [perfect]
+                    [hardcover]
                     imargin = 1cm
                     omargin = .5cm
 
                 is equivalent to the following command line:
 
-                    pdfimpose perfect --imargin 1cm --omargin .5cm foo.pdf bar.pdf
+                    pdfimpose hardcover --imargin 1cm --omargin .5cm foo.pdf bar.pdf
 
                 # Path of configuration file
 

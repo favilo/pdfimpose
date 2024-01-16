@@ -50,13 +50,13 @@ For instance, calling ``pdfimpose apply foo.cfg``, where ``foo.cfg`` contains:
 .. code-block:: cfg
 
     [general]
-    schema = perfect
+    schema = hardcover
     files = foo.pdf bar.pdf
 
-    [perfect]
+    [hardcover]
     imargin = 1cm
     omargin = .5cm
 
 is equivalent to the following command line::
 
-    pdfimpose perfect --imargin 1cm --omargin .5cm foo.pdf bar.pdf
+    pdfimpose hardcover --imargin 1cm --omargin .5cm foo.pdf bar.pdf

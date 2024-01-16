@@ -39,7 +39,7 @@ FIXTURES = {
     "errors": (
         {"command": [], "returncode": 2},
         {
-            "command": ["perfect", "malformed.pdf"],
+            "command": ["hardcover", "malformed.pdf"],
             "returncode": 1,
         },
         {
@@ -64,10 +64,10 @@ FIXTURES = {
         },
         {"command": ["cutstackfold", "nometadata.pdf"], "returncode": 0},
     ),
-    "perfect": (
+    "hardcover": (
         {
             "command": [
-                "perfect",
+                "hardcover",
                 "small.pdf",
                 "--signature",
                 "4x4",
@@ -90,7 +90,7 @@ FIXTURES = {
         },
         {
             "command": [
-                "perfect",
+                "hardcover",
                 "group3.pdf",
                 "--group",
                 "3",
@@ -375,6 +375,20 @@ FIXTURES = {
             ),
         },
     ),
+    "perfect": (
+        {
+            "command": [
+                "perfect",
+                "a7.pdf",
+            ],
+            "returncode": 0,
+            "diff": (
+                "a7-impose.pdf",
+                "a7-control.pdf",
+            ),
+            "stderr": """WARNING:root:Imposition layout "perfect" has been renamed to "hardcover", and is deprecated. It will be removed in a later version.\n""",
+        },
+    ),
 }
 
 
@@ -441,9 +455,9 @@ class TestCommandLine(TestComparePDF):
         """Test of the cut-stack-fold schema."""
         return self._test_commandline("cutstackfold")
 
-    def test_perfect(self):
-        """Test of the perfect-bind schema."""
-        return self._test_commandline("perfect")
+    def test_hardcover(self):
+        """Test of the hardcover-bind schema."""
+        return self._test_commandline("hardcover")
 
     def test_saddle(self):
         """Test of the saddle-stitch schema."""
@@ -456,3 +470,7 @@ class TestCommandLine(TestComparePDF):
     def test_apply(self):
         """Test of the "apply" subcommand."""
         return self._test_commandline("apply")
+
+    def test_perfect(self):
+        """Test that "perfect" is a deprecated alias to "hardcover"."""
+        return self._test_commandline("perfect")
