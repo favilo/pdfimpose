@@ -39,7 +39,7 @@ import typing
 import papersize
 
 from ... import pdf
-from .. import Margins, Matrix, Page, nocreep, hardcover
+from .. import Margins, Matrix, Page, hardcover, nocreep
 from ..hardcover import _any2folds, _folds2margins
 
 
@@ -142,7 +142,9 @@ def impose(
             size = tuple(float(dim) for dim in papersize.parse_papersize(size))
         folds, size = _any2folds(signature, size, inputsize=sourcesize)
         if (
-            size is not None and imargin == 0 and creep == nocreep  # pylint: disable=comparison-with-callable
+            size is not None
+            and imargin == 0
+            and creep == nocreep  # pylint: disable=comparison-with-callable
         ):
             omargin = _folds2margins(size, sourcesize, folds, imargin)
 
