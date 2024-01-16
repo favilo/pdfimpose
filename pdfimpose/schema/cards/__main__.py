@@ -31,7 +31,7 @@ def main(argv=None):
 
     parser = ArgumentParser(
         subcommand="cards",
-        options=["omargin", "imargin", "mark", "cutsignature", "format", "back"],
+        options=["omargin", "imargin", "mark-crop", "cutsignature", "format", "back"],
         description=DESCRIPTION,
     )
 
