@@ -23,7 +23,7 @@ from ..hardcover.__main__ import main
 
 if __name__ == "__main__":
     logging.warning(
-        """Imposition layout "perfect" has been renamed to "hardcover", and is deprecated."""
-        """It will be removed in a later version."""
+        # pylint: disable=line-too-long
+        """Imposition layout "perfect" has been renamed to "hardcover", and is deprecated. It will be removed in a later version."""
     )
     main()
