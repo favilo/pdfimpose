@@ -1,4 +1,4 @@
-* pdfimpose 2.5.0 (unreleased)
+* pdfimpose 2.5.0 (2024-02-19)
 
     * Renamed "perfect" to "hardcover". It is still possible to use "perfect", but a warning will be displayed to standard error.
     * Library classes and functions are more user-friendly: they now accept:

@@ -54,14 +54,14 @@ root_doc = "index"
 
 # General information about the project.
 project = "pdfimpose"
-copyright = "2014-2023, Louis Paternault"
+copyright = "2014-2024, Louis Paternault"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = "2.4.1"
+version = "2.5.0"
 # The full version, including alpha/beta/rc tags.
 release = version
 

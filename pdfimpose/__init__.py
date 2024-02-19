@@ -17,7 +17,7 @@
 
 "Perform an imposition on the PDF file given in argument."
 
-VERSION = "2.4.1"
+VERSION = "2.5.0"
 
 DEFAULT_PAPER_SIZE = "A4"
 
