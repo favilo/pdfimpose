@@ -59,23 +59,31 @@ class WireImpositor(cards.CardsImpositor):
             recto[x][y] = Page(
                 2 * i * repeat,
                 top=self.omargin.top if y == 0 else self.imargin / 2,
-                bottom=self.omargin.bottom
-                if y == self.signature[1] - 1
-                else self.imargin / 2,
+                bottom=(
+                    self.omargin.bottom
+                    if y == self.signature[1] - 1
+                    else self.imargin / 2
+                ),
                 left=self.omargin.left if x == 0 else self.imargin / 2,
-                right=self.omargin.right
-                if x == self.signature[0] - 1
-                else self.imargin / 2,
+                right=(
+                    self.omargin.right
+                    if x == self.signature[0] - 1
+                    else self.imargin / 2
+                ),
             )
             verso[self.signature[0] - x - 1][y] = Page(
                 2 * i * repeat + 1,
                 top=self.omargin.top if y == 0 else self.imargin / 2,
-                bottom=self.omargin.bottom
-                if y == self.signature[1] - 1
-                else self.imargin / 2,
-                left=self.omargin.left
-                if x == self.signature[0] - 1
-                else self.imargin / 2,
+                bottom=(
+                    self.omargin.bottom
+                    if y == self.signature[1] - 1
+                    else self.imargin / 2
+                ),
+                left=(
+                    self.omargin.left
+                    if x == self.signature[0] - 1
+                    else self.imargin / 2
+                ),
                 right=self.omargin.right if x == 0 else self.imargin / 2,
             )
         yield Matrix(recto)

@@ -84,13 +84,15 @@ class Reader(contextlib.AbstractContextManager):
                     tuple(
                         map(
                             functools.partial(round, ndigits=5),
-                            page.cropbox
-                            if page.rotation % 180 == 0
-                            else (
-                                page.cropbox[1],
-                                page.cropbox[0],
-                                page.cropbox[3],
-                                page.cropbox[2],
+                            (
+                                page.cropbox
+                                if page.rotation % 180 == 0
+                                else (
+                                    page.cropbox[1],
+                                    page.cropbox[0],
+                                    page.cropbox[3],
+                                    page.cropbox[2],
+                                )
                             ),
                         )
                     )
@@ -227,9 +229,9 @@ class Writer(contextlib.AbstractContextManager):
             metadata[keyword] = ", ".join(
                 doc.metadata.get(keyword, ()) for doc in source.files
             )
-        metadata[
-            "creator"
-        ] = "Created with PdfImpose — https://framagit.org/spalax/pdfimpose"
+        metadata["creator"] = (
+            "Created with PdfImpose — https://framagit.org/spalax/pdfimpose"
+        )
         metadata["producer"] = f"pdfimpose-{VERSION}"
         # pylint: disable=no-member
         self.doc.set_metadata(metadata)

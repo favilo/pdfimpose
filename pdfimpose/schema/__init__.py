@@ -174,9 +174,9 @@ class ArgumentParser(argparse.ArgumentParser):
         if "formatter_class" not in kwargs:
             kwargs["formatter_class"] = argparse.RawTextHelpFormatter
         if "epilog" not in kwargs:
-            kwargs[
-                "epilog"
-            ] = "For more information, see: https://pdfimpose.readthedocs.io"
+            kwargs["epilog"] = (
+                "For more information, see: https://pdfimpose.readthedocs.io"
+            )
 
         super().__init__(**kwargs)
 

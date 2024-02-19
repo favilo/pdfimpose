@@ -99,9 +99,9 @@ class HardcoverImpositor(AbstractImpositor):
         """Compute and return margin for page at coordinate (x, y)."""
         margins = Margins(
             top=self.omargin.top if y == 0 else self.imargin / 2,
-            bottom=self.omargin.bottom
-            if y == self.signature[1] - 1
-            else self.imargin / 2,
+            bottom=(
+                self.omargin.bottom if y == self.signature[1] - 1 else self.imargin / 2
+            ),
             left=0 if x % 2 == 1 else self.imargin / 2,
             right=0 if x % 2 == 0 else self.imargin / 2,
         )
