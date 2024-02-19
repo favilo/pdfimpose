@@ -1,6 +1,8 @@
 pdfimpose 📕 Perform imposition of a PDF file
 =============================================
 
+*Check out my other PDF tools:* `pdfautonup <https://framagit.org/spalax/pdfautonup>`__ | `dummypdf <https://framagit.org/spalax/dummypdf>`__.
+
 Imposition consists in the arrangement of the printed product’s pages on
 the printer’s sheet, in order to obtain faster printing, simplify binding
 and reduce paper waste (source: http://en.wikipedia.org/wiki/Imposition).
