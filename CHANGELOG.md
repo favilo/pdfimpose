@@ -1,3 +1,9 @@
+* pdfimpose 2.6.0 (unreleased)
+
+    * Replace `xdg-base-dirs` by `pyxdg`.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.5.0 (2024-02-19)
 
     * Renamed "perfect" to "hardcover". It is still possible to use "perfect", but a warning will be displayed to standard error.

@@ -1,4 +1,4 @@
 argdispatch
 papersize
 pymupdf>=1.23.6
-xdg-base-dirs
+pyxdg

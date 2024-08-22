@@ -20,10 +20,7 @@
 import importlib
 import pathlib
 
-try:
-    import xdg_base_dirs
-except ImportError:
-    import xdg as xdg_base_dirs
+from xdg import BaseDirectory
 
 from .. import UserError
 
@@ -45,17 +42,16 @@ def confignames():
 
     # Configuration directory
     for base in BASENAMES:
-        yield xdg_base_dirs.xdg_config_home() / base
+        yield pathlib.Path(BaseDirectory.xdg_config_home) / base
 
     # Home directory
     for base in BASENAMES:
         yield pathlib.Path.home() / base
 
     # OS configuration directory
-    for configdir in xdg_base_dirs.xdg_config_dirs():
+    for configdir in BaseDirectory.xdg_config_dirs:
         for base in BASENAMES:
-            yield configdir / base
-
+            yield pathlib.Path(configdir) / base
 
 def find_config():
     """Return the name of the configuration file."""
