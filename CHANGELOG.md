@@ -1,3 +1,9 @@
+* pdfimpose 2.7.0 (unreleased)
+
+    * Add Python3.13 support.
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.6.0 (2024-08-27)
 
     * Replace `xdg-base-dirs` by `pyxdg`.
