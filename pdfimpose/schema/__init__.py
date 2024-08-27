@@ -239,6 +239,7 @@ class ArgumentParser(argparse.ArgumentParser):
             )
 
         if "format" in options:
+            # pylint: disable=possibly-used-before-assignment
             group.add_argument(
                 "--format",
                 "-f",

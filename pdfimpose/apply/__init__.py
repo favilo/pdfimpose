@@ -53,6 +53,7 @@ def confignames():
         for base in BASENAMES:
             yield pathlib.Path(configdir) / base
 
+
 def find_config():
     """Return the name of the configuration file."""
     for name in confignames():
