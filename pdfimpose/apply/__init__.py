@@ -1,4 +1,4 @@
-# Copyright 2011-2023 Louis Paternault
+# Copyright 2011-2024 Louis Paternault
 #
 # This file is part of pdfimpose.
 #

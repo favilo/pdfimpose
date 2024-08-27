@@ -1,4 +1,4 @@
-* pdfimpose 2.6.0 (unreleased)
+* pdfimpose 2.6.0 (2024-08-27)
 
     * Replace `xdg-base-dirs` by `pyxdg`.
 
