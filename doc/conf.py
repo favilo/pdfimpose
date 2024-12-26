@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # Pdfimpose documentation build configuration file, created by
 # sphinx-quickstart on Mon Oct 20 10:09:32 2014.

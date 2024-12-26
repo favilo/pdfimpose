@@ -80,7 +80,7 @@ class Reader(contextlib.AbstractContextManager):
         # All pages have the same size
         if (
             len(
-                set(
+                {
                     tuple(
                         map(
                             functools.partial(round, ndigits=5),
@@ -97,7 +97,7 @@ class Reader(contextlib.AbstractContextManager):
                         )
                     )
                     for page in self
-                )
+                }
             )
             != 1
         ):
