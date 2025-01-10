@@ -1,4 +1,4 @@
-# Copyright 2021-2024 Louis Paternault
+# Copyright 2021-2025 Louis Paternault
 #
 # This file is part of pdfimpose.
 #
@@ -24,17 +24,11 @@ import logging
 import pathlib
 import sys
 
+import pymupdf
+
 from . import VERSION, UserError
 
-if sys.version_info >= (3, 11):
-    try:
-        import fitz_new as fitz
-    except ImportError:
-        import fitz
-else:
-    import fitz
-
-_BLACK = fitz.utils.getColor("black")
+_BLACK = pymupdf.utils.getColor("black")
 
 
 def readpdf(file):
@@ -43,16 +37,16 @@ def readpdf(file):
     The argument can be:
     - a filename (type `str`);
     - None (read from standard input);
-    - a `fitz.Document` object.
+    - a `pymupdf.Document` object.
     """
     try:
         if file is None:
-            return fitz.Document(
+            return pymupdf.Document(
                 stream=io.BytesIO(sys.stdin.buffer.read()), filetype="application/pdf"
             )
         if isinstance(file, (str, pathlib.Path)):
-            return fitz.Document(file)
-        if isinstance(file, fitz.Document):
+            return pymupdf.Document(file)
+        if isinstance(file, pymupdf.Document):
             return file
     except Exception as error:
         raise UserError(f"Cannot open document '{file}': {error}.") from error
@@ -168,7 +162,7 @@ class Writer(contextlib.AbstractContextManager):
     def __init__(self, output):
         super().__init__()
         self.name = output
-        self.doc = fitz.Document()
+        self.doc = pymupdf.Document()
 
     def __exit__(self, exc_type, exc_value, traceback):
         super().__exit__(exc_type, exc_value, traceback)
@@ -188,8 +182,8 @@ class Writer(contextlib.AbstractContextManager):
         """Insert a pdf page (source) into another pdf page (destination).
 
         :param int number: Destination page number.
-        :param fitz.Page source: Source page to insert.
-        :param fitz.Rect topleft: Position (on the dest page)
+        :param pymupdf.Page source: Source page to insert.
+        :param pymupdf.Rect topleft: Position (on the dest page)
             of the topleft corner of the source page.
         :param int rotate: Angle of a rotation to apply to the source page (one of 0, 90, 180, 270).
         """
@@ -198,14 +192,14 @@ class Writer(contextlib.AbstractContextManager):
         if (rotate - rotation) % 180 == 0:
             mediabox = source.mediabox
         else:
-            mediabox = fitz.Rect(
+            mediabox = pymupdf.Rect(
                 source.mediabox[1],
                 source.mediabox[0],
                 source.mediabox[3],
                 source.mediabox[2],
             )
         self.doc[number].show_pdf_page(
-            mediabox + fitz.Rect(topleft, topleft),
+            mediabox + pymupdf.Rect(topleft, topleft),
             source.parent,
             source.number,
             rotate=rotate - rotation,
@@ -220,7 +214,7 @@ class Writer(contextlib.AbstractContextManager):
         :param int page: Page number
         :param tuple[tuple[Int, Int], tuple[Int, Int]] rect: Coordinates of the rectangles.
         """
-        self.doc[page].draw_rect(fitz.Rect(*rect), color=_BLACK, fill=_BLACK)
+        self.doc[page].draw_rect(pymupdf.Rect(*rect), color=_BLACK, fill=_BLACK)
 
     def set_metadata(self, source):
         """Read metadata from the input files, and (kind of) copy them to the output file."""

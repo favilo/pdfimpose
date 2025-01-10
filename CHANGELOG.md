@@ -1,3 +1,9 @@
+* pdfimpose 2.8.0 (unreleased)
+
+    * Renamed `fitz` python dependency to `pymupdf` (same library, new name).
+
+    -- Louis Paternault <spalax@gresille.org>
+
 * pdfimpose 2.7.0 (2024-12-27)
 
     * Add Python3.13 support.
