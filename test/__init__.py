@@ -22,8 +22,6 @@ import unittest
 
 from wand.image import Image
 
-import pdfimpose
-
 
 class TestComparePDF(unittest.TestCase):
     """A :class:`unittest.TestCase` implementation with an `assertPdfEqual` method."""

@@ -38,12 +38,14 @@ import math
 import numbers
 import typing
 
+import dataclass_wizard
 import papersize
 
 from .. import (
     BIND2ANGLE,
     DEFAULT_PAPER_SIZE,
     AbstractImpositor,
+    Margins,
     Matrix,
     Page,
     nocreep,
@@ -53,23 +55,41 @@ from .. import (
 
 
 @dataclasses.dataclass
-class CutStackFoldImpositor(AbstractImpositor):
+class CutStackFoldImpositor(
+    AbstractImpositor, metaclass=dataclass_wizard.property_wizard
+):
     """Perform imposition of source files, with the 'cutstackfold' schema."""
 
     bind: str = "left"
     creep: typing.Callable[[int], float] = dataclasses.field(default=nocreep)
-    imargin: str | numbers.Real | decimal.Decimal = 0
-    signature: tuple[int] = (0, 0)
+    imargin: (  # pyright: ignore [reportRedeclaration]
+        str | numbers.Real | decimal.Decimal | int | float
+    ) = dataclasses.field(
+        default_factory=float  # pyright: ignore [reportAssignmentType]
+    )
+    _imargin: float = dataclasses.field(init=False)
+    signature: tuple[int, int] = (0, 0)
     group: int = 0
 
-    def __post_init__(self):
-        super().__post_init__()
-        if isinstance(self.imargin, decimal.Decimal):
-            self.imargin = float(self.imargin)
-        elif isinstance(self.imargin, str):
-            self.imargin = float(papersize.parse_length(self.imargin))
+    @property
+    def imargin(self) -> float:  # noqa: F811
+        """Margin added to input pages when imposed on the output page."""
+        return self._imargin
+
+    @imargin.setter
+    def imargin(
+        self, value: str | numbers.Real | decimal.Decimal | int | float
+    ) -> None:
+        """Set margin added to input pages when imposed on the output page."""
+        if isinstance(value, (decimal.Decimal, numbers.Real, int)):
+            self._imargin = float(value)
+        elif isinstance(value, str):
+            self._imargin = float(papersize.parse_length(value))
+        else:
+            self._imargin = value
 
     def blank_page_number(self, source):
+        """Return the number of blank pages to add to the output file."""
         pagesperpage = 4 * self.signature[0] * self.signature[1]
         if source % pagesperpage == 0:
             return 0
@@ -104,9 +124,11 @@ class CutStackFoldImpositor(AbstractImpositor):
         stack = total // (2 * self.signature[0] * self.signature[1])
 
         for inner in range(stack // 2):
+            recto: list[list[Page | None]]
+            verso: list[list[Page | None]]
             recto, verso = (
                 [
-                    [None for _ in range(self.signature[1])]
+                    [typing.cast(Page | None, None) for _ in range(self.signature[1])]
                     for _ in range(2 * self.signature[0])
                 ]
                 for _ in range(2)
@@ -129,8 +151,12 @@ class CutStackFoldImpositor(AbstractImpositor):
                     **self.margins(2 * self.signature[0] - 2 * x - 2, y),
                 )
 
-            yield Matrix(recto, rotate=BIND2ANGLE[self.bind])
-            yield Matrix(verso, rotate=BIND2ANGLE[self.bind])
+            yield Matrix(
+                typing.cast(list[list[Page]], recto), rotate=BIND2ANGLE[self.bind]
+            )
+            yield Matrix(
+                typing.cast(list[list[Page]], verso), rotate=BIND2ANGLE[self.bind]
+            )
 
     def _max_creep(self, total):
         """Return the maximum creep of the document.
@@ -254,9 +280,12 @@ class CutStackFoldImpositor(AbstractImpositor):
                     self.omargin.top + y * (inputsize[1] + self.imargin),
                 ),
             )
-            yield ((0, self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin)), (
-                self.omargin.left - left,
-                self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+            yield (
+                ((0, self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin)),
+                (
+                    self.omargin.left - left,
+                    self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                ),
             )
             yield (
                 (outputsize[0], self.omargin.top + y * (inputsize[1] + self.imargin)),
@@ -267,12 +296,15 @@ class CutStackFoldImpositor(AbstractImpositor):
             )
             yield (
                 (
-                    outputsize[0],
+                    (
+                        outputsize[0],
+                        self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                    )
+                ),
+                (
+                    outputsize[0] - self.omargin.right + right,
                     self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
-                )
-            ), (
-                outputsize[0] - self.omargin.right + right,
-                self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                ),
             )
 
 
@@ -280,11 +312,11 @@ def impose(
     files,
     output,
     *,
-    imargin=0,
-    omargin=0,
+    imargin: str | numbers.Real | decimal.Decimal | int = 0,
+    omargin: Margins | str | numbers.Real | decimal.Decimal | int = 0,
     last=0,
     mark=None,
-    signature=None,
+    signature: tuple[int, int] | None = None,
     size=None,
     bind="left",
     creep=nocreep,
@@ -339,6 +371,7 @@ def impose(
             imargin=imargin,
             omargin=omargin,
         )
+    assert signature is not None
 
     CutStackFoldImpositor(
         imargin=imargin,

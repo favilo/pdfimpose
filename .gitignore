@@ -1,0 +1,7 @@
+**/__pycache__/
+**/.coverage
+.coverage.*
+.tox
+pdfimpose.egg-info
+# Don't add uv.lock to git, because this is a library, too
+uv.lock

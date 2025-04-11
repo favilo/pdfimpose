@@ -26,12 +26,13 @@ This schema can be used when you want to print flash cards:
   and cut it to get your flash cards (questions on front, answers on back).
 """
 
-
 import dataclasses
 import decimal
 import itertools
 import numbers
+import typing
 
+import dataclass_wizard
 import papersize
 
 from ... import pdf
@@ -68,34 +69,53 @@ class PdfReader(pdf.Reader):
 
 
 @dataclasses.dataclass
-class CardsImpositor(AbstractImpositor):
+class CardsImpositor(AbstractImpositor, metaclass=dataclass_wizard.property_wizard):
     """Perform imposition of source files, with the 'card' schema."""
 
-    imargin: float = 0
-    signature: tuple[int] = (0, 0)
+    imargin: (  # pyright: ignore [reportRedeclaration]
+        str | numbers.Real | decimal.Decimal | int | float
+    ) = dataclasses.field(  # pyright: ignore [reportAssignmentType]
+        default_factory=float
+    )
+    _imargin: float = dataclasses.field(init=False)
+    signature: tuple[int, int] = (0, 0)
     back: str = ""
 
-    def __post_init__(self):
-        super().__post_init__()
-        if isinstance(self.imargin, decimal.Decimal):
-            self.imargin = float(self.imargin)
-        elif isinstance(self.imargin, str):
-            self.imargin = float(papersize.parse_length(self.imargin))
+    @property
+    def imargin(self) -> float:  # noqa: F811
+        """Margin added to input pages when imposed on the output page."""
+        return self._imargin
 
-    def blank_page_number(self, source):
+    @imargin.setter
+    def imargin(self, value: str | numbers.Real | decimal.Decimal | int) -> None:
+        """Set margin added to input pages when imposed on the output page."""
+        if isinstance(value, (decimal.Decimal, numbers.Real, int)):
+            self._imargin = float(value)
+        elif isinstance(value, str):
+            self._imargin = float(papersize.parse_length(value))
+        else:
+            self._imargin = value
+
+    def blank_page_number(self, source: int) -> int:
+        """Return the number of blank pages to add to the output file."""
         pagesperpage = 2 * self.signature[0] * self.signature[1]
         if source % pagesperpage == 0:
             return 0
         return pagesperpage - (source % pagesperpage)
 
-    def base_matrix(self, total):
-        """Yield a single matrix.
+    def base_matrix(self, total: int) -> typing.Iterable[Matrix]:
+        """Yield two matrices.
 
         This matrix contains the arrangement of source pages on the output pages.
         """
         # pylint: disable=unused-argument
+        recto: list[list[Page | None]]
+        verso: list[list[Page | None]]
         recto, verso = (
-            [[None for _ in range(self.signature[1])] for _ in range(self.signature[0])]
+            [
+                [typing.cast(Page | None, None) for _ in range(self.signature[1])]
+                for _ in range(self.signature[0])
+            ]
             for _ in range(2)
         )
         for i, coord in enumerate(itertools.product(*map(range, self.signature))):
@@ -130,8 +150,8 @@ class CardsImpositor(AbstractImpositor):
                     else self.imargin / 2
                 ),
             )
-        yield Matrix(recto)
-        yield Matrix(verso)
+        yield Matrix(typing.cast(list[list[Page]], recto))
+        yield Matrix(typing.cast(list[list[Page]], verso))
 
     def matrixes(self, pages: int):
         step = 2 * self.signature[0] * self.signature[1]
@@ -189,9 +209,12 @@ class CardsImpositor(AbstractImpositor):
                     self.omargin.top + y * (inputsize[1] + self.imargin),
                 ),
             )
-            yield ((0, self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin)), (
-                self.omargin.left - left,
-                self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+            yield (
+                ((0, self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin)),
+                (
+                    self.omargin.left - left,
+                    self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                ),
             )
             yield (
                 (outputsize[0], self.omargin.top + y * (inputsize[1] + self.imargin)),
@@ -202,15 +225,18 @@ class CardsImpositor(AbstractImpositor):
             )
             yield (
                 (
-                    outputsize[0],
+                    (
+                        outputsize[0],
+                        self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                    )
+                ),
+                (
+                    outputsize[0] - self.omargin.right + right,
                     self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
-                )
-            ), (
-                outputsize[0] - self.omargin.right + right,
-                self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                ),
             )
 
-    def open_pdf(self, files):  # pylint: disable=arguments-differ
+    def open_pdf(self, files: typing.Iterable[str | typing.BinaryIO]) -> PdfReader:
         return PdfReader(files, back=self.back)
 
 

@@ -67,8 +67,10 @@ def main():
     )
 
     subparser = parser.add_subparsers()
-    subparser.add_submodules(schema)
-    subparser.add_module(apply, command="apply")
+    subparser.add_submodules(schema)  # pyright: ignore[reportAttributeAccessIssue]
+    subparser.add_module(  # pyright: ignore[reportAttributeAccessIssue]
+        apply, command="apply"
+    )
     subparser.required = True
     subparser.dest = "schema"
 

@@ -23,6 +23,7 @@ import io
 import logging
 import pathlib
 import sys
+import typing
 
 import pymupdf
 
@@ -79,7 +80,7 @@ class Reader(contextlib.AbstractContextManager):
                         map(
                             functools.partial(round, ndigits=5),
                             (
-                                page.cropbox
+                                tuple(page.cropbox[:])
                                 if page.rotation % 180 == 0
                                 else (
                                     page.cropbox[1],
@@ -116,13 +117,15 @@ class Reader(contextlib.AbstractContextManager):
         The size is returned as a tuple `(width, height)`.
         """
         # Either first or last page is not empty
+        page: pymupdf.Page | None
         if self[0] is None:
             page = self[len(self) - 1]
         else:
             page = self[0]
+        assert page is not None, "page should not be None"
         return (
-            page.cropbox.width,
-            page.cropbox.height,
+            page.cropbox.width,  # pyright: ignore[reportAttributeAccessIssue]
+            page.cropbox.height,  # pyright: ignore[reportAttributeAccessIssue]
         )
 
     @property
@@ -133,11 +136,13 @@ class Reader(contextlib.AbstractContextManager):
     def __len__(self):
         return self.source_len + self._blank_number
 
-    def __iter__(self):
+    def __iter__(self) -> typing.Generator[pymupdf.Page, None, None]:
         for number in range(len(self)):
-            yield self[number]
+            yield typing.cast(pymupdf.Page, self[number])
 
-    def __getitem__(self, key):  # pylint: disable=inconsistent-return-statements
+    def __getitem__(
+        self, key: int
+    ) -> pymupdf.Page | None:  # pylint: disable=inconsistent-return-statements
         if self._blank_position <= key < self._blank_position + self._blank_number:
             # Return a blank page
             return None
@@ -149,9 +154,9 @@ class Reader(contextlib.AbstractContextManager):
             if key < cumulative + len(file):
                 return file[key - cumulative]
             cumulative += len(file)
+        return None
 
     def __exit__(self, *args, **kwargs):
-        super().__exit__(*args, **kwargs)
         for file in self.files:
             file.close()
 
@@ -165,7 +170,6 @@ class Writer(contextlib.AbstractContextManager):
         self.doc = pymupdf.Document()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        super().__exit__(exc_type, exc_value, traceback)
         if exc_type is None:
             if self.name is None:
                 sys.stdout.buffer.write(self.doc.write())
@@ -176,7 +180,9 @@ class Writer(contextlib.AbstractContextManager):
     def new_page(self, width, height):
         """Create a new page, and return its page number."""
         # pylint: disable=no-member
-        return self.doc.new_page(width=width, height=height).number
+        return self.doc.new_page(  # pyright: ignore[reportAttributeAccessIssue]
+            width=width, height=height
+        ).number
 
     def insert(self, number, source, topleft, rotate):
         """Insert a pdf page (source) into another pdf page (destination).
@@ -228,4 +234,4 @@ class Writer(contextlib.AbstractContextManager):
         )
         metadata["producer"] = f"pdfimpose-{VERSION}"
         # pylint: disable=no-member
-        self.doc.set_metadata(metadata)
+        self.doc.set_metadata(metadata)  # pyright: ignore[reportAttributeAccessIssue]

@@ -28,29 +28,38 @@ To use this schema:
 - bind.
 """
 
+from __future__ import annotations
+
 import dataclasses
+import decimal
 import itertools
 import numbers
+import typing
 
 import papersize
 
 from ... import pdf
-from .. import Matrix, Page, cards, size2signature
+from .. import Matrix, Page, cards, size2signature, Margins
 
 
 @dataclasses.dataclass
 class WireImpositor(cards.CardsImpositor):
     """Perform imposition of source files, with the 'wire' schema."""
 
-    def base_matrix(self, total):
+    def base_matrix(self, total: int) -> typing.Iterable[Matrix]:
         """Yield a single matrix.
 
         This matrix contains the arrangement of source pages on the output pages.
         """
         repeat = total // (2 * self.signature[0] * self.signature[1])
 
+        recto: list[list[Page | None]]
+        verso: list[list[Page | None]]
         recto, verso = (
-            [[None for _ in range(self.signature[1])] for _ in range(self.signature[0])]
+            [
+                [typing.cast(Page | None, None) for _ in range(self.signature[1])]
+                for _ in range(self.signature[0])
+            ]
             for _ in range(2)
         )
 
@@ -86,8 +95,8 @@ class WireImpositor(cards.CardsImpositor):
                 ),
                 right=self.omargin.right if x == 0 else self.imargin / 2,
             )
-        yield Matrix(recto)
-        yield Matrix(verso)
+        yield Matrix(typing.cast(list[list[Page]], recto))
+        yield Matrix(typing.cast(list[list[Page]], verso))
 
     def matrixes(self, pages: int):
         assert pages % (2 * self.signature[0] * self.signature[1]) == 0
@@ -100,7 +109,15 @@ class WireImpositor(cards.CardsImpositor):
 
 
 def impose(
-    files, output, *, imargin=0, omargin=0, last=0, mark=None, signature=None, size=None
+    files: typing.Iterable[typing.Union[str, typing.BinaryIO]] | pdf.Reader,
+    output: str,
+    *,
+    imargin: str | numbers.Real | decimal.Decimal | int = 0,
+    omargin: Margins | str | numbers.Real | decimal.Decimal | int = 0,
+    last: int = 0,
+    mark: list[str] | None = None,
+    signature: tuple[int, int] | None = None,
+    size: tuple[float, ...] | None = None,
 ):
     # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, to be cut and "wire bound".

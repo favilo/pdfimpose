@@ -50,17 +50,22 @@ Each submodule provides:
 
 """
 
+from __future__ import annotations
+
 import argparse
 import contextlib
 import dataclasses
 import decimal
 import math
 import numbers
+import io
 import os
 import pathlib
 import re
 import textwrap
+import typing
 
+import dataclass_wizard
 import papersize
 
 from .. import DEFAULT_PAPER_SIZE, UserError, pdf
@@ -77,17 +82,17 @@ RE_CREEP = re.compile(
 )
 
 
-def nocreep(s):
+def nocreep(s: int) -> float:
     """Dummy creep function, which always returns 0."""
     # pylint: disable=invalid-name, unused-argument
     return 0
 
 
-def _type_length(text):
+def _type_length(text: str) -> float:
     return float(papersize.parse_length(text))
 
 
-def _type_signature(text):
+def _type_signature(text: str) -> tuple[int, int]:
     """Check type of '--signature' argument."""
     try:
         if text.count("x") != 1:
@@ -105,11 +110,11 @@ def _type_signature(text):
         ) from error
 
 
-def _type_papersize(text):
+def _type_papersize(text: str) -> tuple[float, ...]:
     return tuple(map(float, papersize.parse_papersize(text)))
 
 
-def _type_creep(text):
+def _type_creep(text: str) -> typing.Callable[[int], float]:
     """Turn a linear function (as a string) into a linear Python function.
 
     >>> _type_creep("-2s+3")(5)
@@ -146,7 +151,7 @@ def _type_creep(text):
     return lambda s: _type_length(text)
 
 
-def _type_positive_int(text):
+def _type_positive_int(text: str) -> int:
     """Return ``int(text)`` iff ``text`` represents a positive integer."""
     try:
         if int(text) >= 0:
@@ -240,7 +245,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
         if "format" in options:
             # pylint: disable=possibly-used-before-assignment
-            group.add_argument(
+            group.add_argument(  # pyright: ignore [reportPossiblyUnboundVariable]
                 "--format",
                 "-f",
                 dest="size",
@@ -337,7 +342,7 @@ class ArgumentParser(argparse.ArgumentParser):
         )
 
         if "signature" in options:
-            group.add_argument(
+            group.add_argument(  # pyright: ignore [reportPossiblyUnboundVariable]
                 "--signature",
                 "-s",
                 metavar="WIDTHxHEIGHT",
@@ -347,7 +352,7 @@ class ArgumentParser(argparse.ArgumentParser):
             )
 
         if "cutsignature" in options:
-            group.add_argument(
+            group.add_argument(  # pyright: ignore [reportPossiblyUnboundVariable]
                 "--signature",
                 "-s",
                 metavar="WIDTHxHEIGHT",
@@ -378,7 +383,9 @@ class ArgumentParser(argparse.ArgumentParser):
         return args
 
 
-def compute_signature(source, dest):
+def compute_signature(
+    source: tuple[float, ...], dest: tuple[float, ...]
+) -> tuple[tuple[int, int], bool]:
     """Compute the signature to fit as many as possible sources in dest.
 
     :param tuple[float] source: Size of the source page.
@@ -407,7 +414,13 @@ def compute_signature(source, dest):
     return rotated, True
 
 
-def size2signature(destsize, *, sourcesize, imargin, omargin):
+def size2signature(
+    destsize: None | tuple[float, ...],
+    *,
+    sourcesize: tuple[float, ...],
+    imargin: Margins | str | numbers.Real | decimal.Decimal | int | float,
+    omargin: Margins | str | numbers.Real | decimal.Decimal | int | float,
+) -> tuple[tuple[int, int], Margins]:
     """Compute the signature and margins corresponding to a paper size."""
     if destsize is None:
         destsize = tuple(map(float, papersize.parse_papersize(DEFAULT_PAPER_SIZE)))
@@ -424,6 +437,12 @@ def size2signature(destsize, *, sourcesize, imargin, omargin):
             right=(destsize[0] - sourcesize[0] * signature[0]) / 2,
         )
 
+    if isinstance(omargin, (decimal.Decimal, numbers.Real, int, float)):
+        omargin = Margins(float(omargin))
+    elif isinstance(omargin, str):
+        omargin = Margins(float(papersize.parse_length(omargin)))
+
+    assert isinstance(omargin, Margins)
     return (signature, omargin)
 
 
@@ -435,17 +454,18 @@ class Margins:
     - If the constructor has no argument, all four margins are 0.
     """
 
+    __uninitialized: typing.ClassVar[float] = float("nan")
     left: float = 0
-    right: float = None
-    top: float = None
-    bottom: float = None
+    right: float = dataclasses.field(default_factory=lambda: Margins.__uninitialized)
+    top: float = dataclasses.field(default_factory=lambda: Margins.__uninitialized)
+    bottom: float = dataclasses.field(default_factory=lambda: Margins.__uninitialized)
 
     def __post_init__(self):
-        if self.right is None:
+        if self.right is self.__uninitialized:
             self.right = self.left
-        if self.top is None:
+        if self.top is self.__uninitialized:
             self.top = self.left
-        if self.bottom is None:
+        if self.bottom is self.__uninitialized:
             self.bottom = self.left
 
 
@@ -455,10 +475,10 @@ class Page:
 
     number: int
     rotate: int = 0
-    left: int = 0
-    right: int = 0
-    top: int = 0
-    bottom: int = 0
+    left: float = 0
+    right: float = 0
+    top: float = 0
+    bottom: float = 0
 
 
 @dataclasses.dataclass
@@ -595,7 +615,7 @@ class Matrix:
 
 
 @dataclasses.dataclass
-class AbstractImpositor:
+class AbstractImpositor(metaclass=dataclass_wizard.property_wizard):
     """Perform imposition of source files onto output file.
 
     This is an abstract method, with common methods,
@@ -603,21 +623,38 @@ class AbstractImpositor:
     """
 
     last: int = 0
-    omargin: Margins | str | numbers.Real | decimal.Decimal = dataclasses.field(
+    omargin: (  # pyright: ignore [reportRedeclaration]
+        Margins | str | numbers.Real | decimal.Decimal | int
+    ) = dataclasses.field(  # pyright: ignore [reportAssignmentType]
         default_factory=Margins
     )
+    _omargin: Margins = dataclasses.field(init=False)
     mark: list[str] = dataclasses.field(default_factory=list)
-    creep = nocreep
+    creep: typing.Callable[[int], float] = nocreep
 
     def __post_init__(self):
-        if isinstance(self.omargin, numbers.Real):
-            self.omargin = Margins(self.omargin)
-        elif isinstance(self.omargin, decimal.Decimal):
-            self.omargin = Margins(float(self.omargin))
-        elif isinstance(self.omargin, str):
-            self.omargin = Margins(float(papersize.parse_length(self.omargin)))
+        # No longer need to do this, with `property_wizard` working
+        pass
 
-    def blank_page_number(self, source):
+    @property
+    def omargin(self) -> Margins:  # noqa: F811
+        """
+        Margin added to output pages.
+        """
+        return self._omargin
+
+    @omargin.setter
+    def omargin(self, value: Margins | str | numbers.Real | decimal.Decimal | int):
+        """
+        Set margin added to output pages.
+        """
+        if isinstance(value, (decimal.Decimal, numbers.Real, int)):
+            value = Margins(float(value))
+        elif isinstance(value, str):
+            value = Margins(float(papersize.parse_length(value)))
+        self._omargin = value
+
+    def blank_page_number(self, source: int) -> int:
         """Return the number of blank pages to insert.
 
         For instance, if the source document has 13 pages,
@@ -626,11 +663,11 @@ class AbstractImpositor:
         """
         raise NotImplementedError()
 
-    def matrixes(self, pages: int):
+    def matrixes(self, pages: int) -> typing.Iterable[Matrix]:
         """Yield the list of all imposition matrixes."""
         raise NotImplementedError()
 
-    def _crop_space(self):
+    def _crop_space(self) -> tuple[float, float, float, float]:
         left = right = bottom = top = 20
         if top > self.omargin.top:
             top = self.omargin.top / 2
@@ -642,7 +679,14 @@ class AbstractImpositor:
             right = self.omargin.right / 2
         return left, right, bottom, top
 
-    def crop_marks(self, number, total, matrix, outputsize, inputsize):
+    def crop_marks(
+        self,
+        number: int,
+        total: int,
+        matrix: Matrix,
+        outputsize: tuple[float, float],
+        inputsize: tuple[float, float],
+    ) -> typing.Generator[tuple[tuple[float, float], tuple[float, float]], None, None]:
         """Yield coordinates of crop marks."""
         # pylint: disable=unused-argument, no-self-use, too-many-arguments
         yield from []
@@ -652,8 +696,7 @@ class AbstractImpositor:
         # pylint: disable=unused-argument, no-self-use, too-many-arguments
         yield from []
 
-    @staticmethod
-    def open_pdf(files):
+    def open_pdf(self, files):
         """Open the PDF files, and return a list of :class:`pdf.Reader` objects."""
         return pdf.Reader(files)
 
@@ -745,7 +788,9 @@ class AbstractImpositor:
 
             yield matrix
 
-    def impose(self, files, output):
+    def impose(
+        self, files: typing.Iterable[str | typing.BinaryIO] | pdf.Reader, output: str
+    ) -> None:
         """Perform imposition.
 
         :param list files: List of files (as names or io.BytesIO tream) to impose.

@@ -63,14 +63,17 @@ def evenodd2oddeven(number):
 class HardcoverImpositor(AbstractImpositor):
     """Perform imposition of source files, with the 'hardcover' schema."""
 
-    folds: str = None
+    __uninitialized: typing.ClassVar[str] = ""
+    folds: str = dataclasses.field(
+        default_factory=lambda: HardcoverImpositor.__uninitialized
+    )
     imargin: float = 0
     bind: str = "left"
     group: int = 1
 
     def __post_init__(self):
         super().__post_init__()
-        if self.folds is None:
+        if self.folds is self.__uninitialized:
             raise TypeError("Argument 'folds' must be given a value.")
         self.signature = (
             2 ** self.folds.count("h"),
@@ -123,7 +126,7 @@ class HardcoverImpositor(AbstractImpositor):
                 return [0, 180][y % 2]
             return [180, 0][y % 2]
 
-        recto = [[0]]
+        recto: list[list[int | None]] = [[0]]
         total = 2
         for fold in self.folds:
             total *= 2
@@ -133,11 +136,12 @@ class HardcoverImpositor(AbstractImpositor):
                     + [[None] * len(column) for column in recto]
                     + recto[len(recto) // 2 :]
                 )
-                # pylint: disable=consider-using-enumerate
-                for x in range(len(recto)):
-                    for y in range(len(recto[x])):
+                for x, _ in enumerate(recto):
+                    for y, _ in enumerate(recto[x]):
                         if recto[x][y] is None:
-                            recto[x][y] = total - recto[evenodd2oddeven(x)][y] - 1
+                            opp_recto = recto[evenodd2oddeven(x)][y]
+                            assert opp_recto is not None
+                            recto[x][y] = total - opp_recto - 1
             if fold == "v":
                 recto = [
                     column[: len(column) // 2]
@@ -149,16 +153,19 @@ class HardcoverImpositor(AbstractImpositor):
                 for x in range(len(recto)):
                     for y in range(len(recto[x])):
                         if recto[x][y] is None:
-                            recto[x][y] = total - recto[x][evenodd2oddeven(y)] - 1
+                            opp_recto = recto[x][evenodd2oddeven(y)]
+                            assert opp_recto is not None
+                            recto[x][y] = total - opp_recto - 1
         yield Matrix(
             [
                 [
                     Page(
-                        recto[x][y],
+                        typing.cast(int, recto[x][y]),
                         rotate=_rotate(y),
                         **vars(self._margins(x, y)),
                     )
                     for y in range(len(recto[x]))
+                    if recto[x][y] is not None
                 ]
                 for x in range(len(recto))
             ],
@@ -217,7 +224,7 @@ class HardcoverImpositor(AbstractImpositor):
         """
         for g in range(self.fix_group(total)):  #  pylint: disable=invalid-name
             for matrix in self.base_matrix(total):
-                grouped = [
+                grouped: list[list[Page | None]] = [
                     [None for y in range(matrix.height)] for x in range(matrix.width)
                 ]
                 for x, y in matrix.coordinates():
@@ -235,9 +242,9 @@ class HardcoverImpositor(AbstractImpositor):
                         grouped[x][y] = dataclasses.replace(
                             matrix[x, y], number=outer - 2 * g
                         )
-                yield Matrix(grouped)
+                yield Matrix(typing.cast(list[list[Page]], grouped))
 
-    def matrixes(self, pages: int):
+    def matrixes(self, pages: int) -> typing.Iterable[Matrix]:
         pages_per_group = (
             2 * self.signature[0] * self.signature[1] * self.fix_group(pages)
         )
@@ -322,9 +329,12 @@ class HardcoverImpositor(AbstractImpositor):
                     self.omargin.top + y * (inputsize[1] + self.imargin),
                 ),
             )
-            yield ((0, self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin)), (
-                self.omargin.left - left,
-                self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+            yield (
+                ((0, self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin)),
+                (
+                    self.omargin.left - left,
+                    self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                ),
             )
             yield (
                 (outputsize[0], self.omargin.top + y * (inputsize[1] + self.imargin)),
@@ -335,16 +345,19 @@ class HardcoverImpositor(AbstractImpositor):
             )
             yield (
                 (
-                    outputsize[0],
+                    (
+                        outputsize[0],
+                        self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                    )
+                ),
+                (
+                    outputsize[0] - self.omargin.right + right,
                     self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
-                )
-            ), (
-                outputsize[0] - self.omargin.right + right,
-                self.omargin.top + (y + 1) * inputsize[1] + y * self.imargin,
+                ),
             )
 
 
-def _signature2folds(width, height):
+def _signature2folds(width: float, height: float) -> str:
     """Convert a signature into a list of folds."""
     if width > height:
         alternator = itertools.cycle("hv")
@@ -369,7 +382,12 @@ def _ispowerof2(number):
     return round(math.log2(number)) == math.log2(number)
 
 
-def _any2folds(signature, outputsize, *, inputsize):
+def _any2folds(
+    signature: tuple[float, ...] | None,
+    outputsize: tuple[float, ...] | None,
+    *,
+    inputsize: tuple[float, ...],
+) -> tuple[str, tuple[float, ...] | None]:
     """Convert signature or outputsize to a list of folds."""
     # We enforce that the last fold is horizontal (to make sure the bind edge is correct).
     # To do so, we consider that the source page is twice as wide,
@@ -398,6 +416,7 @@ def _any2folds(signature, outputsize, *, inputsize):
         # 0.00000693×29.7cm = 0.00020582cm = 2.0582 nm
         #
         # We are talking about a 2 nanometers error. We do not care.
+        assert outputsize is not None, "outputsize should be assigned as (float, float)"
         notrotated = (
             math.floor(math.log2(round(outputsize[0] / inputsize[0], 5))),
             math.floor(math.log2(round(outputsize[1] / inputsize[1], 5))),
@@ -439,18 +458,18 @@ def _folds2margins(outputsize, sourcesize, folds, imargin):
 
 
 def impose(
-    files,
-    output,
+    files: typing.Iterable[typing.Union[str, typing.BinaryIO]] | pdf.Reader,
+    output: str,
     *,
-    folds=None,
-    signature=None,
-    size=None,
-    imargin=0,
-    omargin=0,
-    mark=None,
-    last=0,
-    bind="left",
-    group=1,
+    folds: str | None = None,
+    signature: tuple[float, ...] | None = None,
+    size: str | tuple[float, ...] | None = None,
+    imargin: float = 0,
+    omargin: Margins | str | numbers.Real | decimal.Decimal | int = 0,
+    mark: list[str] | None = None,
+    last: int = 0,
+    bind: str = "left",
+    group: int = 1,
 ):  # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, to be bound using "hardcover binding".
 
@@ -492,7 +511,11 @@ def impose(
         # Compute folds (from signature and format), and remove signature and format
         if isinstance(size, str):
             size = tuple(float(dim) for dim in papersize.parse_papersize(size))
-        folds, size = _any2folds(signature, size, inputsize=sourcesize)
+        folds, size = _any2folds(
+            signature,
+            typing.cast(tuple[float, float] | None, size),
+            inputsize=sourcesize,
+        )
         if size is not None and imargin == 0:
             omargin = _folds2margins(size, sourcesize, folds, imargin)
 

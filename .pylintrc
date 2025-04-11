@@ -8,6 +8,7 @@ good-names=i,j,x,y,z
 disable=
     logging-format-interpolation,
     no-else-return,
+    no-self-use,
     # __main__.py files are too similar
     duplicate-code,
 load-plugins=
@@ -15,3 +16,6 @@ load-plugins=
 
 [SIMILARITIES]
 ignore-imports = yes
+
+[DESIGN]
+max-positional-arguments = 7

@@ -30,6 +30,7 @@ With option --group=3 (for instance), repeat the step above for every group of t
 """  # pylint: disable=line-too-long
 
 import dataclasses
+import decimal
 import itertools
 import math
 import numbers
@@ -40,6 +41,7 @@ import papersize
 from .. import (
     BIND2ANGLE,
     DEFAULT_PAPER_SIZE,
+    Margins,
     Matrix,
     Page,
     cutstackfold,
@@ -66,9 +68,11 @@ class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
         :param int total: Total number of source pages.
         """
 
+        recto: list[list[Page | None]]
+        verso: list[list[Page | None]]
         recto, verso = (
             [
-                [None for _ in range(self.signature[1])]
+                [typing.cast(Page | None, None) for _ in range(self.signature[1])]
                 for _ in range(2 * self.signature[0])
             ]
             for _ in range(2)
@@ -80,8 +84,8 @@ class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
             verso[2 * x][y] = Page(1, **self.margins(2 * x, y))
             verso[2 * x + 1][y] = Page(2, **self.margins(2 * x + 1, y))
 
-        yield Matrix(recto, rotate=BIND2ANGLE[self.bind])
-        yield Matrix(verso, rotate=BIND2ANGLE[self.bind])
+        yield Matrix(typing.cast(list[list[Page]], recto), rotate=BIND2ANGLE[self.bind])
+        yield Matrix(typing.cast(list[list[Page]], verso), rotate=BIND2ANGLE[self.bind])
 
     def matrixes(self, pages: int):
         assert pages % 4 == 0
@@ -108,18 +112,18 @@ class CopyCutFoldImpositor(cutstackfold.CutStackFoldImpositor):
 
 
 def impose(
-    files,
-    output,
+    files: typing.Iterable[typing.Union[str, typing.BinaryIO]] | pdf.Reader,
+    output: str,
     *,
-    imargin=0,
-    omargin=0,
-    last=0,
-    mark=None,
-    signature=None,
-    size=None,
-    bind="left",
-    creep=nocreep,
-    group=0,
+    signature: tuple[int, int] | None = None,
+    size: str | tuple[float, ...] | None = None,
+    imargin: float = 0,
+    omargin: Margins | str | numbers.Real | decimal.Decimal | int = 0,
+    mark: list[str] | None = None,
+    last: int = 0,
+    bind: str = "left",
+    group: int = 1,
+    creep: typing.Callable[[int], float] = nocreep,
 ):  # pylint: disable=too-many-arguments
     """Perform imposition of source files into an output file, using the copy-cut-fold schema.
 
@@ -173,6 +177,7 @@ def impose(
             omargin=omargin,
         )
 
+    assert signature is not None, "signature should be (int, int)"
     CopyCutFoldImpositor(
         imargin=imargin,
         omargin=omargin,
